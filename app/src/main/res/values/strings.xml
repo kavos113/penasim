@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">penasim</string>
+    <string name="game">試合</string>
+    <string name="calender">カレンダー</string>
+    <string name="command">采配</string>
+    <string name="date">%d日</string>
+    <string name="rank">%d位</string>
+</resources>
