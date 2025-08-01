@@ -16,13 +16,13 @@ class CalendarViewModel : ViewModel() {
 
     fun nextGame() {
 
-        val currentGame = pennantManager.nextRandomGame()
+        val currentGameIndex = pennantManager.nextRandomGame()
 
         val recentGames = pennantManager.getRecentGames()
 
         _uiState.update { currentState ->
             val newGames = currentState.games.toMutableList()
-            newGames[currentGame - 1] = recentGames.map { gameInfo ->
+            newGames[currentGameIndex - 1] = recentGames.map { gameInfo ->
                 GameUiInfo(
                     day = gameInfo.day,
                     homeTeamIcon = pennantManager.teamInfo[gameInfo.homeTeamId].teamIcon,
@@ -42,11 +42,11 @@ class CalendarViewModel : ViewModel() {
                         gameBack = teamInfo.gameBack
                     )
                 }.sortedBy { it.rank },
-                currentDay = currentGame
+                currentDay = currentGameIndex
             )
         }
 
-        Log.d("CalendarViewModel", "Current Game: $currentGame ======================")
+        Log.d("CalendarViewModel", "Current Game: $currentGameIndex ======================")
         val league1 = pennantManager.teamInfo.filter { it.league == 0 }
         league1.forEach {
             Log.d(
