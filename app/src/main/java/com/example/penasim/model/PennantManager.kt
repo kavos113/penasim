@@ -1,11 +1,15 @@
 package com.example.penasim.model
 
+import android.content.Context
 import com.example.penasim.R
+import com.example.penasim.repository.PennantDatabase
 import kotlin.random.Random
 
-class PennantManager {
+class PennantManager(context: Context) {
     private val games: MutableList<List<GameInfo>> = mutableListOf()
     val teamInfo: MutableList<TeamInfo> = mutableListOf()
+
+    val gameMasterDao = PennantDatabase.getDatabase(context).gameMasterDao()
 
     fun initTeams() {
         repeat(12) {

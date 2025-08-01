@@ -1,18 +1,21 @@
 package com.example.penasim.ui.calender
 
+import android.app.Application
 import android.util.Log
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import com.example.penasim.model.PennantManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class CalendarViewModel : ViewModel() {
+class CalendarViewModel(application: Application) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow(CalendarUiState())
     val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
 
-    private val pennantManager = PennantManager()
+    private val pennantManager = PennantManager(
+        context = getApplication<Application>().applicationContext
+    )
 
     fun nextGame() {
 
