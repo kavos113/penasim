@@ -7,13 +7,13 @@ import androidx.room.Query
 
 @Dao
 interface GameMasterDao {
-    @Query("SELECT * FROM GameMaster")
+    @Query("SELECT * FROM game_master")
     fun getAll(): List<GameMaster>
 
-    @Query("SELECT * FROM GameMaster WHERE totalDay = :totalDay")
+    @Query("SELECT * FROM game_master WHERE totalDay = :totalDay")
     fun getByTotalDay(totalDay: Int): GameMaster?
 
-    @Query("SELECT * FROM GameMaster WHERE month = :month AND day = :day")
+    @Query("SELECT * FROM game_master WHERE month = :month AND day = :day")
     fun getByDate(month: Int, day: Int): List<GameMaster>
 
     @Insert
