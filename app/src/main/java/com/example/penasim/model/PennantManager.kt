@@ -35,6 +35,8 @@ class PennantManager(context: Context) {
                 )
             )
         }
+
+        println("initial game master: ${gameMasterDao.getAll().size} entries")
     }
 
     private fun getRandomGame(): List<GameInfo> {

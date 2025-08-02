@@ -8,7 +8,7 @@ import com.example.penasim.model.GameMasterDao
 @Database(
     entities = [GameMaster::class],
     version = 1,
-    exportSchema = false
+    exportSchema = true
 )
 abstract class PennantDatabase : RoomDatabase() {
     abstract fun gameMasterDao(): GameMasterDao
@@ -23,7 +23,8 @@ abstract class PennantDatabase : RoomDatabase() {
                     context.applicationContext,
                     PennantDatabase::class.java,
                     "pennant_database"
-                ).build()
+                ).createFromAsset("databases/initial_data.db")
+                    .build()
                 INSTANCE = instance
                 instance
             }
