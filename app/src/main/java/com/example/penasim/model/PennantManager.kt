@@ -3,13 +3,19 @@ package com.example.penasim.model
 import android.content.Context
 import com.example.penasim.R
 import com.example.penasim.repository.PennantDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class PennantManager(context: Context) {
     private val games: MutableList<List<GameInfo>> = mutableListOf()
     val teamInfo: MutableList<TeamInfo> = mutableListOf()
 
-    val gameMasterDao = PennantDatabase.getDatabase(context).gameMasterDao()
+    private val gameMasterDao = PennantDatabase.getDatabase(context).gameMasterDao()
+
+    private val managerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     fun initTeams() {
         repeat(12) {
@@ -36,7 +42,9 @@ class PennantManager(context: Context) {
             )
         }
 
-        println("initial game master: ${gameMasterDao.getAll().size} entries")
+        managerScope.launch {
+            println("initial game master: ${gameMasterDao.getAll().size} entries")
+        }
     }
 
     private fun getRandomGame(): List<GameInfo> {
