@@ -225,7 +225,6 @@ private fun Clause(
     games: List<GameUiInfo>,
     modifier: Modifier = Modifier
 ) {
-    assert(games.size == 6)
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer
@@ -251,6 +250,7 @@ private fun Clause(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     repeat(3) { j ->
+                        if (i * 3 + j >= games.size) return@repeat
                         val game = games[i * 3 + j]
                         Game(
                             homeTeamLogo = game.homeTeamIcon,

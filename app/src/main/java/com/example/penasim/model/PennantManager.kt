@@ -1,8 +1,6 @@
 package com.example.penasim.model
 
-import android.content.Context
 import com.example.penasim.R
-import com.example.penasim.repository.PennantDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -49,7 +47,7 @@ class PennantManager(
     private fun getRandomGame(): List<GameInfo> {
         val currentGame = games.size
 
-        return List(6) {
+        return List(5) {
             GameInfo(
                 day = currentGame,
                 numberOfGames = it,
@@ -65,13 +63,15 @@ class PennantManager(
         return nextGame(getRandomGame())
     }
 
+    fun nextGameFromDB(): Int {
+        return 0
+    }
+
     internal fun nextGame(newGames: List<GameInfo>): Int {
         val currentGame = games.size
         if (currentGame >= 143) {
             return currentGame
         }
-
-        assert(newGames.size == 6)
 
         games.add(newGames)
 
