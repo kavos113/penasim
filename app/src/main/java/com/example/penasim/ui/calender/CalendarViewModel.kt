@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.example.penasim.model.PennantManager
+import com.example.penasim.repository.PennantDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,8 +14,10 @@ class CalendarViewModel(application: Application) : AndroidViewModel(application
     private val _uiState = MutableStateFlow(CalendarUiState())
     val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
 
+    private val db = PennantDatabase.getDatabase(application.applicationContext)
+
     private val pennantManager = PennantManager(
-        context = getApplication<Application>().applicationContext
+        gameMasterDao = db.gameMasterDao()
     )
 
     fun nextGame() {

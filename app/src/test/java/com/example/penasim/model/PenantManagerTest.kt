@@ -1,16 +1,25 @@
 package com.example.penasim.model
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.Mockito.mock
 
 class PennantManagerTest {
     private lateinit var pennantManager: PennantManager
+    private lateinit var mockGameMasterDao: GameMasterDao
+    private lateinit var testScope: CoroutineScope
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
-        pennantManager = PennantManager()
+        mockGameMasterDao = mock(GameMasterDao::class.java)
+        testScope = CoroutineScope(UnconfinedTestDispatcher())
+        pennantManager = PennantManager(mockGameMasterDao)
     }
 
     @Test

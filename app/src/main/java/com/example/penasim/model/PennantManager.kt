@@ -9,13 +9,12 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
-class PennantManager(context: Context) {
+class PennantManager(
+    private val gameMasterDao: GameMasterDao,
+    private val managerScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+) {
     private val games: MutableList<List<GameInfo>> = mutableListOf()
     val teamInfo: MutableList<TeamInfo> = mutableListOf()
-
-    private val gameMasterDao = PennantDatabase.getDatabase(context).gameMasterDao()
-
-    private val managerScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     fun initTeams() {
         repeat(12) {
