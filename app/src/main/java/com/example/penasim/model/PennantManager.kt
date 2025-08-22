@@ -44,12 +44,10 @@ class PennantManager(
         }
     }
 
-    private fun getRandomGame(): List<GameInfo> {
-        val currentGame = games.size
-
-        return List(5) {
+    private fun getRandomGame(totalDay: Int): List<GameInfo> {
+        return List(6) {
             GameInfo(
-                day = currentGame,
+                day = totalDay,
                 numberOfGames = it,
                 homeTeamId = it,
                 awayTeamId = it + 6,
@@ -59,24 +57,32 @@ class PennantManager(
         }
     }
 
-    fun nextRandomGame(): Int {
-        return nextGame(getRandomGame())
+    fun nextRandomGame(totalDay: Int): List<GameInfo> {
+        nextGame(getRandomGame(totalDay))
+        return games.last()
     }
 
-    fun nextGameFromDB(): Int {
-        return 0
-    }
-
-    internal fun nextGame(newGames: List<GameInfo>): Int {
-        val currentGame = games.size
-        if (currentGame >= 143) {
-            return currentGame
+    suspend fun nextGameFromDB(totalDay: Int): List<GameInfo> {
+        val gameMasters = gameMasterDao.getByTotalDay(totalDay)
+        val newGames = gameMasters.map { gameMaster ->
+            GameInfo(
+                day = gameMaster.totalDay,
+                numberOfGames = gameMaster.numberOfGames,
+                homeTeamId = gameMaster.homeTeamId,
+                awayTeamId = gameMaster.awayTeamId,
+                homeTeamScore = Random.nextInt(0, 10), // Placeholder for actual score
+                awayTeamScore = Random.nextInt(0, 10) // Placeholder for actual score
+            )
         }
 
+        nextGame(newGames)
+        return games.lastOrNull() ?: emptyList()
+    }
+
+    internal fun nextGame(newGames: List<GameInfo>){
         games.add(newGames)
 
-        updateRankings(games[currentGame])
-        return games.size
+        updateRankings(games.last())
     }
 
 
@@ -132,10 +138,6 @@ class PennantManager(
             println("${it.teamName} - Rank${it.rank} - W${it.wins} - L${it.losses} - D${it.draws} - ${it.gameBack}")
         }
 
-    }
-
-    fun getRecentGames(): List<GameInfo> {
-        return games.last()
     }
 
     init {

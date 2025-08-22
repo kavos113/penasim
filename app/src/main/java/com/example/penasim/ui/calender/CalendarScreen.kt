@@ -84,6 +84,7 @@ private fun CalendarContent(
             ) {
                 items(uiState.games) { game ->
                     Clause(
+                        currentDay = uiState.currentDay,
                         games = game,
                         modifier = Modifier
                             .padding(8.dp)
@@ -222,6 +223,7 @@ private fun Game(
 
 @Composable
 private fun Clause(
+    currentDay: Int,
     games: List<GameUiInfo>,
     modifier: Modifier = Modifier
 ) {
@@ -237,7 +239,7 @@ private fun Clause(
                 .padding(8.dp)
         ) {
             Text(
-                text = "Day ${games[0].day + 1}",
+                text = "Day $currentDay",
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .fillMaxWidth()

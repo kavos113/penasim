@@ -3,62 +3,69 @@ package com.example.penasim.ui.calender
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.penasim.model.PennantManager
 import com.example.penasim.repository.PennantDatabase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class CalendarViewModel(application: Application) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow(CalendarUiState())
     val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
 
     private val db = PennantDatabase.getDatabase(application.applicationContext)
-
     private val pennantManager = PennantManager(
         gameMasterDao = db.gameMasterDao()
     )
 
+    private var totalDay = 1;
+
     fun nextGame() {
+        if (totalDay > 181){
+            return
+        }
+        viewModelScope.launch {
+            val recentGames = pennantManager.nextGameFromDB(totalDay)
 
-        val currentGameIndex = pennantManager.nextRandomGame()
-
-        val recentGames = pennantManager.getRecentGames()
-
-        _uiState.update { currentState ->
-            val newGames = currentState.games.toMutableList()
-            newGames[currentGameIndex - 1] = recentGames.map { gameInfo ->
-                GameUiInfo(
-                    day = gameInfo.day,
-                    homeTeamIcon = pennantManager.teamInfo[gameInfo.homeTeamId].teamIcon,
-                    awayTeamIcon = pennantManager.teamInfo[gameInfo.awayTeamId].teamIcon,
-                    homeTeamScore = gameInfo.homeTeamScore,
-                    awayTeamScore = gameInfo.awayTeamScore,
-                    isGameFinished = true
+            _uiState.update { currentState ->
+                val newGames = currentState.games.toMutableList()
+                newGames[totalDay - 1] = recentGames.map { gameInfo ->
+                    GameUiInfo(
+                        day = gameInfo.day,
+                        homeTeamIcon = pennantManager.teamInfo[gameInfo.homeTeamId].teamIcon,
+                        awayTeamIcon = pennantManager.teamInfo[gameInfo.awayTeamId].teamIcon,
+                        homeTeamScore = gameInfo.homeTeamScore,
+                        awayTeamScore = gameInfo.awayTeamScore,
+                        isGameFinished = true
+                    )
+                }
+                currentState.copy(
+                    games = newGames,
+                    rankings = pennantManager.teamInfo.map { teamInfo ->
+                        RankingUiInfo(
+                            league = teamInfo.league,
+                            rank = teamInfo.rank,
+                            teamIcon = teamInfo.teamIcon,
+                            gameBack = teamInfo.gameBack
+                        )
+                    }.sortedBy { it.rank },
+                    currentDay = totalDay
                 )
             }
-            currentState.copy(
-                games = newGames,
-                rankings = pennantManager.teamInfo.map { teamInfo ->
-                    RankingUiInfo(
-                        league = teamInfo.league,
-                        rank = teamInfo.rank,
-                        teamIcon = teamInfo.teamIcon,
-                        gameBack = teamInfo.gameBack
-                    )
-                }.sortedBy { it.rank },
-                currentDay = currentGameIndex
-            )
-        }
 
-        Log.d("CalendarViewModel", "Current Game: $currentGameIndex ======================")
-        val league1 = pennantManager.teamInfo.filter { it.league == 0 }
-        league1.forEach {
-            Log.d(
-                "CalendarViewModel",
-                "Team: ${it.teamName} Wins: ${it.wins} Losses: ${it.losses} Draws: ${it.draws} Rank: ${it.rank} Game Back: ${it.gameBack}"
-            )
+            Log.d("CalendarViewModel", "Current Game: $totalDay ======================")
+            val league1 = pennantManager.teamInfo.filter { it.league == 0 }
+            league1.forEach {
+                Log.d(
+                    "CalendarViewModel",
+                    "Team: ${it.teamName} Wins: ${it.wins} Losses: ${it.losses} Draws: ${it.draws} Rank: ${it.rank} Game Back: ${it.gameBack}"
+                )
+            }
+
+            totalDay++
         }
     }
 }
