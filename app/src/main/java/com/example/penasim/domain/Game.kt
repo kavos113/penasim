@@ -5,5 +5,4 @@ data class Game(
     val master: GameMaster,
     val homeScore: Int? = null,
     val awayScore: Int? = null,
-    val isFinished: Boolean,
 )

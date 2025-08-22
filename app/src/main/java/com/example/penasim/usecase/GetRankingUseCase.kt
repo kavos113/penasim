@@ -14,7 +14,7 @@ class GetRankingUseCase(
         val standings = mutableListOf<TeamStanding>()
 
         for (team in teams) {
-            val games = gameRepository.getFinishedGamesByTeam(team)
+            val games = gameRepository.getGamesByTeam(team)
             var wins = 0
             var losses = 0
             var draws = 0
