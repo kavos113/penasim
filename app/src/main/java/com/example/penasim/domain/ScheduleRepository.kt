@@ -1,6 +1,6 @@
 package com.example.penasim.domain
 
 interface ScheduleRepository {
-    fun getSchedule(id: Int): Schedule?
-    fun getScheduleByDate(month: Int, day: Int): Schedule?
+    suspend fun getSchedule(id: Int): Schedule?
+    suspend fun getScheduleByDate(month: Int, day: Int): Schedule?
 }

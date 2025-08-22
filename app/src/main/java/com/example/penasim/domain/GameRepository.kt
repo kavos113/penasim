@@ -1,11 +1,11 @@
 package com.example.penasim.domain
 
 interface GameRepository {
-    fun getGame(id: Int): Game?
-    fun getGamesByDate(date: Schedule): List<Game>
-    fun getGamesByTeam(team: Team): List<Game>
-    fun getGamesByLeague(league: League): List<Game>
-    fun getAllGames(): List<Game>
+    suspend fun getGame(id: Int): Game?
+    suspend fun getGamesByDate(date: Schedule): List<Game>
+    suspend fun getGamesByTeam(team: Team): List<Game>
+    suspend fun getGamesByLeague(league: League): List<Game>
+    suspend fun getAllGames(): List<Game>
 
-    fun recordGameResult(gameId: Int, homeScore: Int, awayScore: Int): Boolean
+    suspend fun recordGameResult(gameId: Int, homeScore: Int, awayScore: Int): Boolean
 }
