@@ -25,7 +25,7 @@ import java.time.LocalDate
     ]
 )
 @TypeConverters(Converters::class)
-data class GameMasterEntity(
+data class GameFixtureEntity(
     @PrimaryKey val id: Int,
     val date: LocalDate,
     val numberOfGames: Int,

@@ -2,9 +2,9 @@ package com.example.penasim.data.mapper
 
 import com.example.penasim.data.entity.GameEntity
 import com.example.penasim.domain.Game
-import com.example.penasim.domain.GameMaster
+import com.example.penasim.domain.GameFixture
 
-fun GameEntity.toDomain(master: GameMaster) = Game(
+fun GameEntity.toDomain(master: GameFixture) = Game(
     id = id,
     master = master,
     homeScore = homeScore,

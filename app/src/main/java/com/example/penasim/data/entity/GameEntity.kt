@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
     tableName = "games",
     foreignKeys = [
         androidx.room.ForeignKey(
-            entity = GameMasterEntity::class,
+            entity = GameFixtureEntity::class,
             parentColumns = ["id"],
             childColumns = ["gameMasterId"],
             onDelete = androidx.room.ForeignKey.CASCADE
