@@ -51,6 +51,19 @@ fun CalendarScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by calendarViewModel.uiState.collectAsState()
+    CalendarContent(
+        uiState = uiState,
+        onNextGame = { calendarViewModel.nextGame() },
+        modifier = modifier
+    )
+}
+
+@Composable
+private fun CalendarContent(
+    uiState: CalendarUiState,
+    onNextGame: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val listState = rememberLazyListState()
 
     LaunchedEffect(uiState.currentDay) {
@@ -79,7 +92,7 @@ fun CalendarScreen(
             }
         }
         NextGameButton(
-            onClick = { calendarViewModel.nextGame() },
+            onClick = onNextGame,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
@@ -224,6 +237,13 @@ private fun Clause(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
+            Text(
+                text = "Day ${games[0].day + 1}",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+            )
             repeat(2) { i ->
                 Row(
                     modifier = Modifier
@@ -271,7 +291,9 @@ fun PreviewCalendarScreen() {
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            CalendarScreen(
+            CalendarContent(
+                uiState = CalendarUiState(),
+                onNextGame = {},
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp)
