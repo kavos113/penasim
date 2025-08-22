@@ -127,6 +127,27 @@ class PennantManager(
         }
     }
 
+    suspend fun getInitialData(): List<List<GameInfo>> {
+        val gameMasters = gameMasterDao.getAll()
+        if (gameMasters.isEmpty()) {
+            return emptyList()
+        }
+
+        val initialGames = gameMasters.groupBy { it.totalDay }.map { (_, games) ->
+            games.map { gameMaster ->
+                GameInfo(
+                    day = gameMaster.totalDay,
+                    numberOfGames = gameMaster.numberOfGames,
+                    homeTeamId = gameMaster.homeTeamId,
+                    awayTeamId = gameMaster.awayTeamId,
+                    homeTeamScore = 0,
+                    awayTeamScore = 0
+                )
+            }
+        }
+        return initialGames
+    }
+
     @Deprecated(message = "only for testing")
     fun displayRankings() {
         println("================Day${games.size}=====================")

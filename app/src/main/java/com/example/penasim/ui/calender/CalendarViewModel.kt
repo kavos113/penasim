@@ -23,6 +23,31 @@ class CalendarViewModel(application: Application) : AndroidViewModel(application
 
     private var totalDay = 1;
 
+    init {
+        viewModelScope.launch {
+            val initialGames = pennantManager.getInitialData()
+            _uiState.update { currentState ->
+                currentState.copy(
+                    games = initialGames.map { dayGames ->
+                        dayGames.map { gameInfo ->
+                            GameUiInfo(
+                                day = gameInfo.day,
+                                homeTeamIcon = pennantManager.teamInfo[gameInfo.homeTeamId].teamIcon,
+                                awayTeamIcon = pennantManager.teamInfo[gameInfo.awayTeamId].teamIcon,
+                                homeTeamScore = gameInfo.homeTeamScore,
+                                awayTeamScore = gameInfo.awayTeamScore,
+                                isGameFinished = false
+                            )
+                        }
+                    },
+                    rankings = currentState.rankings,
+                    currentDay = currentState.currentDay
+                )
+            }
+            Log.d("CalendarViewModel", "Initial data loaded, total days: ${initialGames.size}")
+        }
+    }
+
     fun nextGame() {
         if (totalDay > 181){
             return
