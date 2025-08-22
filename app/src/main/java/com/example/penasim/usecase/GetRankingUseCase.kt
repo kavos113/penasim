@@ -1,8 +1,8 @@
 package com.example.penasim.usecase
 
-import com.example.penasim.domain.GameRepository
+import com.example.penasim.domain.repository.GameRepository
 import com.example.penasim.domain.League
-import com.example.penasim.domain.TeamRepository
+import com.example.penasim.domain.repository.TeamRepository
 import com.example.penasim.domain.TeamStanding
 
 class GetRankingUseCase(

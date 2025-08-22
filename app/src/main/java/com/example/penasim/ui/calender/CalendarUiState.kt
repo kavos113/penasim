@@ -1,6 +1,6 @@
 package com.example.penasim.ui.calender
 
-import com.example.penasim.data.DataSource
+import com.example.penasim.source.DataSource
 
 data class GameUiInfo(
     val day: Int,

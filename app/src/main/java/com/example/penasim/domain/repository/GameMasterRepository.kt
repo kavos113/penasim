@@ -1,4 +1,8 @@
-package com.example.penasim.domain
+package com.example.penasim.domain.repository
+
+import com.example.penasim.domain.Date
+import com.example.penasim.domain.GameMaster
+import com.example.penasim.domain.Team
 
 interface GameMasterRepository {
     suspend fun getGameMaster(id: Int): GameMaster?

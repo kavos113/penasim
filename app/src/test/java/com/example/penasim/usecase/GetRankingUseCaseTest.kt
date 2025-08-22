@@ -1,12 +1,12 @@
 package com.example.penasim.usecase
 
 import com.example.penasim.domain.Game
-import com.example.penasim.domain.GameRepository
+import com.example.penasim.domain.repository.GameRepository
 import com.example.penasim.domain.League
 import com.example.penasim.domain.Date
 import com.example.penasim.domain.GameMaster
 import com.example.penasim.domain.Team
-import com.example.penasim.domain.TeamRepository
+import com.example.penasim.domain.repository.TeamRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test

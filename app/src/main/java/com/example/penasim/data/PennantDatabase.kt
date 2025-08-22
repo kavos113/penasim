@@ -1,4 +1,4 @@
-package com.example.penasim.repository
+package com.example.penasim.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
