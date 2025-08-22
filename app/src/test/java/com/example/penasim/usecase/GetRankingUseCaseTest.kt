@@ -3,7 +3,8 @@ package com.example.penasim.usecase
 import com.example.penasim.domain.Game
 import com.example.penasim.domain.GameRepository
 import com.example.penasim.domain.League
-import com.example.penasim.domain.Schedule
+import com.example.penasim.domain.Date
+import com.example.penasim.domain.GameMaster
 import com.example.penasim.domain.Team
 import com.example.penasim.domain.TeamRepository
 import kotlinx.coroutines.test.runTest
@@ -24,19 +25,18 @@ class GetRankingUseCaseTest {
         init {
             val map = mutableMapOf<Team, MutableList<Game>>()
             for (g in allGames) {
-                map.getOrPut(g.homeTeam) { mutableListOf() }.add(g)
-                map.getOrPut(g.awayTeam) { mutableListOf() }.add(g)
+                map.getOrPut(g.master.homeTeam) { mutableListOf() }.add(g)
+                map.getOrPut(g.master.awayTeam) { mutableListOf() }.add(g)
             }
             gamesByTeam = map
         }
 
         override suspend fun getGame(id: Int): Game? = null
-        override suspend fun getGamesByDate(date: Schedule): List<Game> = emptyList()
+        override suspend fun getGamesByDate(date: Date): List<Game> = emptyList()
         override suspend fun getGamesByTeam(team: Team): List<Game> = gamesByTeam[team] ?: emptyList()
         override suspend fun getFinishedGamesByTeam(team: Team): List<Game> = (gamesByTeam[team] ?: emptyList()).filter { it.isFinished }
         override suspend fun getGamesByLeague(league: League): List<Game> = emptyList()
         override suspend fun getAllGames(): List<Game> = gamesByTeam.values.flatten()
-        override suspend fun recordGameResult(gameId: Int, homeScore: Int, awayScore: Int): Boolean = false
     }
 
     @Test
@@ -52,20 +52,20 @@ class GetRankingUseCaseTest {
         val teams = listOf(t0, t1, t2, t3, t4, t5)
 
         // Two dates (schedules). Use empty games list to avoid circular references.
-        val d1 = Schedule(1, 4, 1, 2, emptyList())
-        val d2 = Schedule(2, 4, 2, 3, emptyList())
+        val d1 = Date(1, 4, 1, 2)
+        val d2 = Date(2, 4, 2, 3)
 
         // Construct games to match the distribution after two rounds used in PennantManagerTest:
         // t0: 2-0-0, t1: 1-0-1, t2: 1-1-0, t3: 0-0-2, t4: 0-1-1, t5: 0-2-0
         val games = listOf(
             // Round 1
-            Game(id = 1, date = d1, homeTeam = t0, awayTeam = t5, homeScore = 5, awayScore = 3, isFinished = true), // t0 W, t5 L
-            Game(id = 2, date = d1, homeTeam = t1, awayTeam = t3, homeScore = 4, awayScore = 4, isFinished = true), // draw
-            Game(id = 3, date = d1, homeTeam = t2, awayTeam = t4, homeScore = 6, awayScore = 2, isFinished = true), // t2 W, t4 L
+            Game(id = 1, GameMaster(id = 0, date = d1, homeTeam = t0, awayTeam = t5, numberOfGames = 0), homeScore = 5, awayScore = 3, isFinished = true), // t0 W, t5 L
+            Game(id = 2, GameMaster(id = 1, date = d1, homeTeam = t1, awayTeam = t3, numberOfGames = 1), homeScore = 4, awayScore = 4, isFinished = true), // draw
+            Game(id = 3, GameMaster(id = 2, date = d1, homeTeam = t2, awayTeam = t4, numberOfGames = 2), homeScore = 6, awayScore = 2, isFinished = true), // t2 W, t4 L
             // Round 2
-            Game(id = 4, date = d2, homeTeam = t0, awayTeam = t5, homeScore = 7, awayScore = 2, isFinished = true), // t0 W, t5 L
-            Game(id = 5, date = d2, homeTeam = t1, awayTeam = t2, homeScore = 3, awayScore = 1, isFinished = true), // t1 W, t2 L
-            Game(id = 6, date = d2, homeTeam = t3, awayTeam = t4, homeScore = 2, awayScore = 2, isFinished = true), // draw
+            Game(id = 4, GameMaster(id = 3, date = d2, homeTeam = t0, awayTeam = t5, numberOfGames = 3), homeScore = 7, awayScore = 2, isFinished = true), // t0 W, t5 L
+            Game(id = 5, GameMaster(id = 4, date = d2, homeTeam = t1, awayTeam = t2, numberOfGames = 4), homeScore = 3, awayScore = 1, isFinished = true), // t1 W, t2 L
+            Game(id = 6, GameMaster(id = 5, date = d2, homeTeam = t3, awayTeam = t4, numberOfGames = 5), homeScore = 2, awayScore = 2, isFinished = true), // draw
         )
 
         val teamRepo = FakeTeamRepository(teams)

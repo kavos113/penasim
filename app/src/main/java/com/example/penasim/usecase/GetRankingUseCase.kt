@@ -19,7 +19,7 @@ class GetRankingUseCase(
             var losses = 0
             var draws = 0
             for (game in games) {
-                assert(game.homeTeam == team || game.awayTeam == team) {
+                assert(game.master.homeTeam == team || game.master.awayTeam == team) {
                     "Game does not belong to the team"
                 }
                 assert(game.homeScore != null && game.awayScore != null) {
@@ -27,14 +27,14 @@ class GetRankingUseCase(
                 }
 
                 when {
-                    game.homeTeam == team -> {
+                    game.master.homeTeam == team -> {
                         when {
                             game.homeScore!! > game.awayScore!! -> wins++
                             game.homeScore < game.awayScore -> losses++
                             else -> draws++
                         }
                     }
-                    game.awayTeam == team -> {
+                    game.master.awayTeam == team -> {
                         when {
                             game.awayScore!! > game.homeScore!! -> wins++
                             game.awayScore < game.homeScore -> losses++
