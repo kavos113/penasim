@@ -2,7 +2,7 @@ package com.example.penasim.domain
 
 data class Game(
     val id: Int,
-    val date: Date,
+    val date: Schedule,
     val homeTeam: Team,
     val awayTeam: Team,
     val homeScore: Int? = null,
