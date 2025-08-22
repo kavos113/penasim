@@ -10,11 +10,16 @@ enum class League {
     L1,
     L2;
 
-    fun fromId(id: Int): League? {
-        return when (id) {
+    companion object {
+        fun fromId(id: Int): League = when (id) {
             1 -> L1
             2 -> L2
-            else -> null
+            else -> throw IllegalArgumentException("Unknown league id: $id")
+        }
+
+        fun toId(league: League): Int = when (league) {
+            L1 -> 1
+            L2 -> 2
         }
     }
 }

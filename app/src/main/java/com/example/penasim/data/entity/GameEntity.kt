@@ -17,7 +17,6 @@ import androidx.room.PrimaryKey
 data class GameEntity(
     @PrimaryKey val id: Int,
     val gameMasterId: Int,
-    val homeTeamScore: Int,
-    val awayTeamScore: Int,
-    val isFinished: Boolean = false,
+    val homeScore: Int,
+    val awayScore: Int,
 )
