@@ -8,7 +8,7 @@ import com.example.penasim.data.repository.Converters
 import java.time.LocalDate
 
 @Entity(
-    tableName = "game_masters",
+    tableName = "game_fixtures",
     foreignKeys = [
         ForeignKey(
             entity = TeamEntity::class,

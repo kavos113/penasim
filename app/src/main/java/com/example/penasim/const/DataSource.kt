@@ -1,4 +1,4 @@
-package com.example.penasim.source
+package com.example.penasim.const
 
 import com.example.penasim.R
 import com.example.penasim.ui.calender.GameUiInfo
