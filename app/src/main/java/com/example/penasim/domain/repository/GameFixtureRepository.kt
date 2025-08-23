@@ -5,8 +5,8 @@ import com.example.penasim.domain.Team
 import java.time.LocalDate
 
 interface GameFixtureRepository {
-    suspend fun getGameMaster(id: Int): GameFixture?
-    suspend fun getGameMastersByDate(date: LocalDate): List<GameFixture>
-    suspend fun getGameMastersByTeam(team: Team): List<GameFixture>
-    suspend fun getAllGameMasters(): List<GameFixture>
+    suspend fun getGameFixture(id: Int): GameFixture?
+    suspend fun getGameFixturesByDate(date: LocalDate): List<GameFixture>
+    suspend fun getGameFixturesByTeam(team: Team): List<GameFixture>
+    suspend fun getAllGameFixtures(): List<GameFixture>
 }

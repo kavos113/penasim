@@ -4,10 +4,7 @@ import com.example.penasim.data.entity.GameFixtureEntity
 import com.example.penasim.domain.GameFixture
 import com.example.penasim.domain.Team
 
-fun GameFixtureEntity.toDomain(
-    homeTeam: Team,
-    awayTeam: Team
-): GameFixture = GameFixture(
+fun GameFixtureEntity.toDomain(): GameFixture = GameFixture(
     id = id,
     date = date,
     numberOfGames = numberOfGames,

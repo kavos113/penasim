@@ -1,13 +1,13 @@
 package com.example.penasim.usecase
 
-import com.example.penasim.domain.repository.GameRepository
+import com.example.penasim.domain.repository.GameResultRepository
 import com.example.penasim.domain.League
 import com.example.penasim.domain.repository.TeamRepository
 import com.example.penasim.domain.TeamStanding
 
 class GetRankingUseCase(
     private val teamRepository: TeamRepository,
-    private val gameRepository: GameRepository,
+    private val gameRepository: GameResultRepository,
 ) {
     suspend fun execute(league: League): List<TeamStanding> {
         val teams = teamRepository.getTeamsByLeague(league)

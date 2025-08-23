@@ -1,7 +1,7 @@
 package com.example.penasim.usecase
 
 import com.example.penasim.domain.GameResult
-import com.example.penasim.domain.repository.GameRepository
+import com.example.penasim.domain.repository.GameResultRepository
 import com.example.penasim.domain.League
 import com.example.penasim.domain.Date
 import com.example.penasim.domain.GameFixture
@@ -19,7 +19,7 @@ class GetRankingUseCaseTest {
         override suspend fun getAllTeams(): List<Team> = teams
     }
 
-    private class FakeGameRepository(allGames: List<GameResult>) : GameRepository {
+    private class FakeGameRepository(allGames: List<GameResult>) : GameResultRepository {
         private val gamesByTeam: Map<Team, List<GameResult>>
 
         init {
@@ -36,7 +36,7 @@ class GetRankingUseCaseTest {
         override suspend fun getGamesByTeam(team: Team): List<GameResult> = gamesByTeam[team] ?: emptyList()
         override suspend fun getAllGames(): List<GameResult> = gamesByTeam.values.flatten()
 
-        override suspend fun createGame(masterId: Int, homeScore: Int, awayScore: Int): GameResult? = null
+        override suspend fun createGame(fixtureId: Int, homeScore: Int, awayScore: Int): GameResult? = null
     }
 
     @Test
