@@ -5,7 +5,7 @@ import com.example.penasim.domain.repository.GameFixtureRepository
 import com.example.penasim.domain.repository.TeamRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
+import kotlin.test.assertFailsWith
 import org.junit.Test
 import java.time.LocalDate
 
@@ -50,10 +50,6 @@ class GetGameSchedulesByDateUseCaseTest {
             FakeGameFixtureRepository(fixtures),
             FakeTeamRepository(emptyList())
         )
-        assertThrows(IllegalStateException::class.java) {
-            runTest {
-                useCase.execute(date)
-            }
-        }
+        assertFailsWith<IllegalArgumentException> { useCase.execute(date) }
     }
 }

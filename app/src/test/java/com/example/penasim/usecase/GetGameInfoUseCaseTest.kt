@@ -6,7 +6,7 @@ import com.example.penasim.domain.repository.GameResultRepository
 import com.example.penasim.domain.repository.TeamRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
+import kotlin.test.assertFailsWith
 import org.junit.Test
 import java.time.LocalDate
 
@@ -63,47 +63,39 @@ class GetGameInfoUseCaseTest {
         val result = GameResult(10, 5, 2)
 
         // Missing fixture
-        assertThrows(IllegalArgumentException::class.java) {
-            runTest {
-                GetGameInfoUseCase(
-                    FakeGameFixtureRepository(emptyList()),
-                    FakeGameResultRepository(listOf(result)),
-                    FakeTeamRepository(listOf(home, away))
-                ).execute(10)
-            }
+        assertFailsWith<IllegalArgumentException> {
+            GetGameInfoUseCase(
+                FakeGameFixtureRepository(emptyList()),
+                FakeGameResultRepository(listOf(result)),
+                FakeTeamRepository(listOf(home, away))
+            ).execute(10)
         }
 
         // Missing home team
-        assertThrows(IllegalArgumentException::class.java) {
-            runTest {
-                GetGameInfoUseCase(
-                    FakeGameFixtureRepository(listOf(fixture)),
-                    FakeGameResultRepository(listOf(result)),
-                    FakeTeamRepository(listOf(away))
-                ).execute(10)
-            }
+        assertFailsWith<IllegalArgumentException> {
+            GetGameInfoUseCase(
+                FakeGameFixtureRepository(listOf(fixture)),
+                FakeGameResultRepository(listOf(result)),
+                FakeTeamRepository(listOf(away))
+            ).execute(10)
         }
 
         // Missing away team
-        assertThrows(IllegalArgumentException::class.java) {
-            runTest {
-                GetGameInfoUseCase(
-                    FakeGameFixtureRepository(listOf(fixture)),
-                    FakeGameResultRepository(listOf(result)),
-                    FakeTeamRepository(listOf(home))
-                ).execute(10)
-            }
+        assertFailsWith<IllegalArgumentException> {
+            GetGameInfoUseCase(
+                FakeGameFixtureRepository(listOf(fixture)),
+                FakeGameResultRepository(listOf(result)),
+                FakeTeamRepository(listOf(home))
+            ).execute(10)
         }
 
         // Missing result
-        assertThrows(IllegalArgumentException::class.java) {
-            runTest {
-                GetGameInfoUseCase(
-                    FakeGameFixtureRepository(listOf(fixture)),
-                    FakeGameResultRepository(emptyList()),
-                    FakeTeamRepository(listOf(home, away))
-                ).execute(10)
-            }
+        assertFailsWith<IllegalArgumentException> {
+            GetGameInfoUseCase(
+                FakeGameFixtureRepository(listOf(fixture)),
+                FakeGameResultRepository(emptyList()),
+                FakeTeamRepository(listOf(home, away))
+            ).execute(10)
         }
     }
 }

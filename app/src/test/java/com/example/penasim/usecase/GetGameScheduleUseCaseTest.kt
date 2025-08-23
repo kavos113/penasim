@@ -5,7 +5,7 @@ import com.example.penasim.domain.repository.GameFixtureRepository
 import com.example.penasim.domain.repository.TeamRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
+import kotlin.test.assertFailsWith
 import org.junit.Test
 import java.time.LocalDate
 
@@ -48,31 +48,25 @@ class GetGameScheduleUseCaseTest {
         val fixture = GameFixture(10, LocalDate.now(), 1, 1, 2)
 
         // Missing fixture
-        assertThrows(IllegalArgumentException::class.java) {
-            runTest {
-                GetGameScheduleUseCase(
-                    FakeGameFixtureRepository(emptyList()),
-                    FakeTeamRepository(listOf(home, away))
-                ).execute(10)
-            }
+        assertFailsWith<IllegalArgumentException> {
+            GetGameScheduleUseCase(
+                FakeGameFixtureRepository(emptyList()),
+                FakeTeamRepository(listOf(home, away))
+            ).execute(10)
         }
         // Missing home team
-        assertThrows(IllegalStateException::class.java) {
-            runTest {
-                GetGameScheduleUseCase(
-                    FakeGameFixtureRepository(listOf(fixture)),
-                    FakeTeamRepository(listOf(away))
-                ).execute(10)
-            }
+        assertFailsWith<IllegalArgumentException> {
+            GetGameScheduleUseCase(
+                FakeGameFixtureRepository(listOf(fixture)),
+                FakeTeamRepository(listOf(away))
+            ).execute(10)
         }
         // Missing away team
-        assertThrows(IllegalStateException::class.java) {
-            runTest {
-                GetGameScheduleUseCase(
-                    FakeGameFixtureRepository(listOf(fixture)),
-                    FakeTeamRepository(listOf(home))
-                ).execute(10)
-            }
+        assertFailsWith<IllegalArgumentException> {
+            GetGameScheduleUseCase(
+                FakeGameFixtureRepository(listOf(fixture)),
+                FakeTeamRepository(listOf(home))
+            ).execute(10)
         }
     }
 }

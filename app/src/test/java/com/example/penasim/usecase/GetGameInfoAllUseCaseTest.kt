@@ -6,7 +6,7 @@ import com.example.penasim.domain.repository.GameResultRepository
 import com.example.penasim.domain.repository.TeamRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
+import kotlin.test.assertFailsWith
 import org.junit.Test
 import java.time.LocalDate
 
@@ -67,25 +67,21 @@ class GetGameInfoAllUseCaseTest {
         val results = listOf(GameResult(10, 1, 1))
 
         // missing team
-        assertThrows(IllegalArgumentException::class.java) {
-            runTest {
-                GetGameInfoAllUseCase(
-                    FakeGameFixtureRepository(fixtures),
-                    FakeGameResultRepository(results),
-                    FakeTeamRepository(teams)
-                ).execute()
-            }
+        assertFailsWith<IllegalArgumentException> {
+            GetGameInfoAllUseCase(
+                FakeGameFixtureRepository(fixtures),
+                FakeGameResultRepository(results),
+                FakeTeamRepository(teams)
+            ).execute()
         }
 
         // missing fixture
-        assertThrows(IllegalArgumentException::class.java) {
-            runTest {
-                GetGameInfoAllUseCase(
-                    FakeGameFixtureRepository(emptyList()),
-                    FakeGameResultRepository(results),
-                    FakeTeamRepository(listOf(Team(1, "A", league), Team(2, "B", league)))
-                ).execute()
-            }
+        assertFailsWith<IllegalArgumentException> {
+            GetGameInfoAllUseCase(
+                FakeGameFixtureRepository(emptyList()),
+                FakeGameResultRepository(results),
+                FakeTeamRepository(listOf(Team(1, "A", league), Team(2, "B", league)))
+            ).execute()
         }
     }
 }

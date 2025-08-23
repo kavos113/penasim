@@ -6,7 +6,7 @@ import com.example.penasim.domain.repository.GameResultRepository
 import com.example.penasim.domain.repository.TeamRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertThrows
+import kotlin.test.assertFailsWith
 import org.junit.Test
 import java.time.LocalDate
 
@@ -65,6 +65,6 @@ class GetGameInfoByTeamUseCaseTest {
             FakeGameResultRepository(results),
             FakeTeamRepository(emptyList())
         )
-        assertThrows(IllegalArgumentException::class.java) { runTest { useCase.execute(team) } }
+        assertFailsWith<IllegalArgumentException> { useCase.execute(team) }
     }
 }
