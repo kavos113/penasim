@@ -1,8 +1,7 @@
 package com.example.penasim.domain
 
-data class GameInfo(
+data class GameSchedule(
     val fixture: GameFixture,
     val homeTeam: Team,
     val awayTeam: Team,
-    val result: GameResult,
 )

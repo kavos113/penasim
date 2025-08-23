@@ -4,46 +4,50 @@ import com.example.penasim.domain.repository.GameResultRepository
 import com.example.penasim.domain.League
 import com.example.penasim.domain.repository.TeamRepository
 import com.example.penasim.domain.TeamStanding
+import com.example.penasim.domain.repository.GameFixtureRepository
 
 class GetRankingUseCase(
     private val teamRepository: TeamRepository,
-    private val gameRepository: GameResultRepository,
+    private val gameFixtureRepository: GameFixtureRepository,
+    private val gameResultRepository: GameResultRepository,
 ) {
     suspend fun execute(league: League): List<TeamStanding> {
         val teams = teamRepository.getTeamsByLeague(league)
         val standings = mutableListOf<TeamStanding>()
 
         for (team in teams) {
-            val games = gameRepository.getGamesByTeam(team)
+            val fixtures = gameFixtureRepository.getGameFixturesByTeam(team)
+            val fixtureIds = fixtures.map { it.id }
+            val gameResults = gameResultRepository.getGamesByFixtureIds(fixtureIds)
+
             var wins = 0
             var losses = 0
             var draws = 0
-            for (game in games) {
-                assert(game.master.homeTeam == team || game.master.awayTeam == team) {
+            for (gameResult in gameResults) {
+                val fixture = fixtures.find { it.id == gameResult.fixtureId }
+                    ?: throw IllegalArgumentException("Fixture with id ${gameResult.fixtureId} not found")
+                assert(fixture.homeTeamId == team.id || fixture.awayTeamId == team.id) {
                     "Game does not belong to the team"
-                }
-                assert(game.homeScore != null && game.awayScore != null) {
-                    "Game scores must be recorded"
                 }
 
                 when {
-                    game.master.homeTeam == team -> {
+                    fixture.homeTeamId == team.id -> { // team is home
                         when {
-                            game.homeScore!! > game.awayScore!! -> wins++
-                            game.homeScore < game.awayScore -> losses++
+                            gameResult.homeScore > gameResult.awayScore -> wins++
+                            gameResult.homeScore < gameResult.awayScore -> losses++
                             else -> draws++
                         }
                     }
-                    game.master.awayTeam == team -> {
-                        when {
-                            game.awayScore!! > game.homeScore!! -> wins++
-                            game.awayScore < game.homeScore -> losses++
-                            else -> draws++
-                        }
-                    }
-                    else -> throw IllegalStateException("Game does not belong to the team")
-                }
 
+                    fixture.awayTeamId == team.id -> { // team is away
+                        when {
+                            gameResult.awayScore > gameResult.homeScore -> wins++
+                            gameResult.awayScore < gameResult.homeScore -> losses++
+                            else -> draws++
+                        }
+                    }
+                    else -> throw IllegalStateException("Unreachable code")
+                }
             }
 
             standings.add(
