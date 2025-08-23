@@ -244,7 +244,7 @@ private fun Clause(
                 .padding(8.dp)
         ) {
             Text(
-                text = "Day $currentDay",
+                text = "$currentDay",
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier
                     .fillMaxWidth()
