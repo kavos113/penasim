@@ -23,7 +23,8 @@ object DatabaseModule {
             context,
             PennantDatabase::class.java,
             "pennant_database"
-        ).createFromAsset("databases/initial_data.db")
+        )
+            .createFromAsset("databases/pennant_database.db")
             .build()
     }
 

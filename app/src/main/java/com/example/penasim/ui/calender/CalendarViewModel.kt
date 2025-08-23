@@ -51,7 +51,7 @@ class CalendarViewModel @Inject constructor(
     }
 
     fun nextGame() {
-        if (currentDate >= DateConst.END) {
+        if (currentDate > DateConst.END) {
             Log.d("CalendarViewModel", "All games have been processed.")
             return
         }
@@ -79,6 +79,8 @@ class CalendarViewModel @Inject constructor(
             league1Rankings.forEach {
                 Log.d("CalendarViewModel", "L1 Ranking - Rank: ${it.rank}, Team: ${it.team.name}, Wins: ${it.wins}, Losses: ${it.losses}, GB: ${"%.1f".format(it.gameBack)}")
             }
+
+            currentDate = currentDate.plusDays(1)
         }
     }
 }
