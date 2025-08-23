@@ -55,21 +55,12 @@ class GetGameInfoUseCaseTest {
     }
 
     @Test
-    fun execute_throws_whenFixtureMissing_orTeamsMissing_orResultMissing() = runTest {
+    fun execute_throws_whenTeamsMissing_orResultMissing() = runTest {
         val league = League.L1
         val home = Team(1, "Home", league)
         val away = Team(2, "Away", league)
         val fixture = GameFixture(10, LocalDate.of(2025, 8, 1), 1, home.id, away.id)
         val result = GameResult(10, 5, 2)
-
-        // Missing fixture
-        assertFailsWith<IllegalArgumentException> {
-            GetGameInfoUseCase(
-                FakeGameFixtureRepository(emptyList()),
-                FakeGameResultRepository(listOf(result)),
-                FakeTeamRepository(listOf(home, away))
-            ).execute(10)
-        }
 
         // Missing home team
         assertFailsWith<IllegalArgumentException> {

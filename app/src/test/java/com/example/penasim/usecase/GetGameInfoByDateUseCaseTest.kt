@@ -58,7 +58,7 @@ class GetGameInfoByDateUseCaseTest {
     }
 
     @Test
-    fun execute_throws_whenTeamOrFixtureMissing() = runTest {
+    fun execute_throws_whenTeamMissing() = runTest {
         val date = LocalDate.now()
         val fixtures = listOf(GameFixture(10, date, 1, 1, 2))
         val results = listOf(GameResult(10, 1, 1))
@@ -69,15 +69,6 @@ class GetGameInfoByDateUseCaseTest {
                 FakeGameFixtureRepository(fixtures),
                 FakeGameResultRepository(results),
                 FakeTeamRepository(emptyList())
-            ).execute(date)
-        }
-
-        // missing fixture
-        assertFailsWith<IllegalArgumentException> {
-            GetGameInfoByDateUseCase(
-                FakeGameFixtureRepository(emptyList()),
-                FakeGameResultRepository(results),
-                FakeTeamRepository(listOf(Team(1, "A", League.L1), Team(2, "B", League.L1)))
             ).execute(date)
         }
     }

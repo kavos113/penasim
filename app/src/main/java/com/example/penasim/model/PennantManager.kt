@@ -39,9 +39,9 @@ class PennantManager(
             )
         }
 
-        managerScope.launch {
-            println("initial game master: ${gameMasterDao.getAll().size} entries")
-        }
+//        managerScope.launch {
+//            println("initial game master: ${gameMasterDao.getAll().size} entries")
+//        }
     }
 
     private fun getRandomGame(totalDay: Int): List<GameInfo> {
