@@ -35,9 +35,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.penasim.R
+import com.example.penasim.const.DateConst
+import com.example.penasim.domain.toLeague
 import com.example.penasim.ui.AppViewModelProvider
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.PenasimTheme
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 object CalenderDestination : NavigationDestination {
     override val route: String = "calendar"
@@ -47,8 +51,8 @@ object CalenderDestination : NavigationDestination {
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun CalendarScreen(
+    modifier: Modifier = Modifier,
     calendarViewModel: CalendarViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    modifier: Modifier = Modifier
 ) {
     val uiState by calendarViewModel.uiState.collectAsState()
     CalendarContent(
@@ -67,9 +71,9 @@ private fun CalendarContent(
     val listState = rememberLazyListState()
 
     LaunchedEffect(uiState.currentDay) {
-        if (uiState.currentDay >= 4) {
+        if (uiState.currentDay >= DateConst.START.plusDays(4)) {
             listState.animateScrollToItem(
-                index = uiState.currentDay - 4,
+                index = (ChronoUnit.DAYS.between(DateConst.START, uiState.currentDay) - 4).toInt(),
                 scrollOffset = 0
             )
         }
@@ -82,10 +86,12 @@ private fun CalendarContent(
             LazyColumn(
                 state = listState
             ) {
-                items(uiState.games) { game ->
+                items(
+                    items = uiState.games.entries.sortedBy { it.key }.toList()
+                ) { game ->
                     Clause(
-                        currentDay = uiState.currentDay,
-                        games = game,
+                        currentDay = game.key,
+                        games = game.value,
                         modifier = Modifier
                             .padding(8.dp)
                     )
@@ -112,7 +118,7 @@ private fun Ranking(
     ) {
         repeat(2) {
             LeagueRanking(
-                rankings = rankings.filter { ranking -> ranking.league == it },
+                rankings = rankings.filter { ranking -> ranking.league == it.toLeague() },
                 modifier = Modifier
                     .fillMaxWidth()
             )
@@ -165,12 +171,12 @@ private fun RankingTeam(
 
 @Composable
 private fun Game(
+    modifier: Modifier = Modifier,
     homeTeamLogo: Int,
     awayTeamLogo: Int,
     homeTeamScore: Int,
     awayTeamScore: Int,
     isGameFinished: Boolean = false,
-    modifier: Modifier = Modifier
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -223,7 +229,7 @@ private fun Game(
 
 @Composable
 private fun Clause(
-    currentDay: Int,
+    currentDay: LocalDate,
     games: List<GameUiInfo>,
     modifier: Modifier = Modifier
 ) {
