@@ -6,8 +6,9 @@ import com.example.penasim.domain.GameFixture
 import com.example.penasim.domain.Team
 import com.example.penasim.domain.repository.GameFixtureRepository
 import java.time.LocalDate
+import javax.inject.Inject
 
-class GameFixtureRepository(
+class GameFixtureRepository @Inject constructor(
     private val gameFixtureDao: GameFixtureDao,
 ): GameFixtureRepository {
     override suspend fun getGameFixture(id: Int): GameFixture? = gameFixtureDao.getById(id)?.toDomain()

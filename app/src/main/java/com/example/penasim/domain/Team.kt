@@ -12,12 +12,12 @@ enum class League {
 }
 
 fun League.toId(): Int = when (this) {
-    League.L1 -> 1
-    League.L2 -> 2
+    League.L1 -> 0
+    League.L2 -> 1
 }
 
 fun Int.toLeague(): League = when (this) {
-    1 -> League.L1
-    2 -> League.L2
+    0 -> League.L1
+    1 -> League.L2
     else -> throw IllegalArgumentException("Unknown league id: $this")
 }

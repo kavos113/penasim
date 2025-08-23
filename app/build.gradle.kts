@@ -56,6 +56,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.hlit)
+    implementation(libs.hlit.compiler)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.corountine.test)

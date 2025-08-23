@@ -5,8 +5,9 @@ import com.example.penasim.domain.League
 import com.example.penasim.domain.repository.TeamRepository
 import com.example.penasim.domain.TeamStanding
 import com.example.penasim.domain.repository.GameFixtureRepository
+import javax.inject.Inject
 
-class GetRankingUseCase(
+class GetRankingUseCase @Inject constructor(
     private val teamRepository: TeamRepository,
     private val gameFixtureRepository: GameFixtureRepository,
     private val gameResultRepository: GameResultRepository,

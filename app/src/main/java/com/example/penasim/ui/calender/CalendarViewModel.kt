@@ -1,32 +1,30 @@
 package com.example.penasim.ui.calender
 
-import android.app.Application
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.penasim.const.DateConst
-import com.example.penasim.data.PennantDatabase
 import com.example.penasim.domain.League
 import com.example.penasim.usecase.ExecuteGamesByDateUseCase
 import com.example.penasim.usecase.GetGameSchedulesAllUseCase
 import com.example.penasim.usecase.GetRankingUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import javax.inject.Inject
 
-class CalendarViewModel(
-    application: Application,
+@HiltViewModel
+class CalendarViewModel @Inject constructor(
     private val getGameSchedulesAllUseCase: GetGameSchedulesAllUseCase,
     private val getRankingUseCase: GetRankingUseCase,
     private val executeGamesByDateUseCase: ExecuteGamesByDateUseCase
-) : AndroidViewModel(application) {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(CalendarUiState())
     val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
-
-    private val db = PennantDatabase.getDatabase(application.applicationContext)
 
     private var currentDate = DateConst.START
 

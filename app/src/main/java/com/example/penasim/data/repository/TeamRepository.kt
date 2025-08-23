@@ -6,8 +6,9 @@ import com.example.penasim.domain.League
 import com.example.penasim.domain.Team
 import com.example.penasim.domain.repository.TeamRepository
 import com.example.penasim.domain.toId
+import javax.inject.Inject
 
-class TeamRepository(
+class TeamRepository @Inject constructor(
     private val teamDao: TeamDao
 ): TeamRepository {
     override suspend fun getTeam(id: Int): Team? = teamDao.getById(id)?.toDomain()

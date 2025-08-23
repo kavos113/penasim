@@ -5,8 +5,9 @@ import com.example.penasim.data.entity.GameResultEntity
 import com.example.penasim.data.mapper.toDomain
 import com.example.penasim.domain.GameResult
 import com.example.penasim.domain.repository.GameResultRepository
+import javax.inject.Inject
 
-class GameResultRepository(
+class GameResultRepository @Inject constructor(
     private val gameResultDao: GameResultDao
 ): GameResultRepository {
     override suspend fun getGameByFixtureId(fixtureId: Int): GameResult?

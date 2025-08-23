@@ -4,8 +4,9 @@ import com.example.penasim.domain.GameInfo
 import com.example.penasim.domain.repository.GameFixtureRepository
 import com.example.penasim.domain.repository.GameResultRepository
 import com.example.penasim.domain.repository.TeamRepository
+import javax.inject.Inject
 
-class ExecuteGameUseCase(
+class ExecuteGameUseCase @Inject constructor(
     private val gameResultRepository: GameResultRepository,
     private val gameFixtureRepository: GameFixtureRepository,
     private val teamRepository: TeamRepository

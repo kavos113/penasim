@@ -5,9 +5,10 @@ import com.example.penasim.domain.repository.GameFixtureRepository
 import com.example.penasim.domain.repository.GameResultRepository
 import com.example.penasim.domain.repository.TeamRepository
 import java.time.LocalDate
+import javax.inject.Inject
 
 // TODO: remove random score generation
-class ExecuteGamesByDateUseCase(
+class ExecuteGamesByDateUseCase @Inject constructor(
     private val gameResultRepository: GameResultRepository,
     private val gameFixtureRepository: GameFixtureRepository,
     private val teamRepository: TeamRepository

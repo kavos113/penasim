@@ -3,8 +3,9 @@ package com.example.penasim.usecase
 import com.example.penasim.domain.GameSchedule
 import com.example.penasim.domain.repository.GameFixtureRepository
 import com.example.penasim.domain.repository.TeamRepository
+import javax.inject.Inject
 
-class GetGameScheduleUseCase(
+class GetGameScheduleUseCase @Inject constructor(
     private val gameFixtureRepository: GameFixtureRepository,
     private val teamRepository: TeamRepository
 ) {

@@ -5,8 +5,9 @@ import com.example.penasim.domain.repository.GameFixtureRepository
 import com.example.penasim.domain.repository.GameResultRepository
 import com.example.penasim.domain.repository.TeamRepository
 import java.time.LocalDate
+import javax.inject.Inject
 
-class GetGameInfoByDateUseCase(
+class GetGameInfoByDateUseCase @Inject constructor(
     private val gameFixtureRepository: GameFixtureRepository,
     private val gameResultRepository: GameResultRepository,
     private val teamRepository: TeamRepository,
