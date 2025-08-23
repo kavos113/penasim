@@ -13,11 +13,11 @@ interface GameDao {
     @Query("SELECT * FROM games")
     suspend fun getAll(): List<GameEntity>
 
-    @Query("SELECT * FROM games WHERE gameMasterId = :gameMasterId")
-    suspend fun getByGameMasterId(gameMasterId: Int): List<GameEntity>
+    @Query("SELECT * FROM games WHERE gameFixtureId = :gameFixtureId")
+    suspend fun getByGameFixtureId(gameFixtureId: Int): List<GameEntity>
 
-    @Query("SELECT * FROM games WHERE gameMasterId IN (:gameMasterIds)")
-    suspend fun getByGameMasterIds(gameMasterIds: List<Int>): List<GameEntity>
+    @Query("SELECT * FROM games WHERE gameFixtureId IN (:gameFixtureIds)")
+    suspend fun getByGameFixtureIds(gameFixtureIds: List<Int>): List<GameEntity>
 
     @Insert
     suspend fun insert(game: GameEntity): Long

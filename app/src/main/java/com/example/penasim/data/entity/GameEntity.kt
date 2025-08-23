@@ -9,14 +9,14 @@ import androidx.room.PrimaryKey
         androidx.room.ForeignKey(
             entity = GameFixtureEntity::class,
             parentColumns = ["id"],
-            childColumns = ["gameMasterId"],
+            childColumns = ["gameFixtureId"],
             onDelete = androidx.room.ForeignKey.CASCADE
         )
     ]
 )
 data class GameEntity(
     @PrimaryKey val id: Int,
-    val gameMasterId: Int,
+    val gameFixtureId: Int,
     val homeScore: Int,
     val awayScore: Int,
 )

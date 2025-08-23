@@ -1,17 +1,17 @@
 package com.example.penasim.data.mapper
 
 import com.example.penasim.data.entity.GameEntity
-import com.example.penasim.domain.Game
+import com.example.penasim.domain.GameResult
 import com.example.penasim.domain.GameFixture
 
-fun GameEntity.toDomain(master: GameFixture) = Game(
+fun GameEntity.toDomain(master: GameFixture) = GameResult(
     id = id,
     master = master,
     homeScore = homeScore,
     awayScore = awayScore,
 )
 
-fun Game.toEntity(): GameEntity = GameEntity(
+fun GameResult.toEntity(): GameEntity = GameEntity(
     id = id,
     gameMasterId = master.id,
     homeScore = homeScore,

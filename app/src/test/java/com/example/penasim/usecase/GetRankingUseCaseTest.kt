@@ -1,6 +1,6 @@
 package com.example.penasim.usecase
 
-import com.example.penasim.domain.Game
+import com.example.penasim.domain.GameResult
 import com.example.penasim.domain.repository.GameRepository
 import com.example.penasim.domain.League
 import com.example.penasim.domain.Date
@@ -19,11 +19,11 @@ class GetRankingUseCaseTest {
         override suspend fun getAllTeams(): List<Team> = teams
     }
 
-    private class FakeGameRepository(allGames: List<Game>) : GameRepository {
-        private val gamesByTeam: Map<Team, List<Game>>
+    private class FakeGameRepository(allGames: List<GameResult>) : GameRepository {
+        private val gamesByTeam: Map<Team, List<GameResult>>
 
         init {
-            val map = mutableMapOf<Team, MutableList<Game>>()
+            val map = mutableMapOf<Team, MutableList<GameResult>>()
             for (g in allGames) {
                 map.getOrPut(g.master.homeTeam) { mutableListOf() }.add(g)
                 map.getOrPut(g.master.awayTeam) { mutableListOf() }.add(g)
@@ -31,12 +31,12 @@ class GetRankingUseCaseTest {
             gamesByTeam = map
         }
 
-        override suspend fun getGame(id: Int): Game? = null
-        override suspend fun getGamesByDate(date: Date): List<Game> = emptyList()
-        override suspend fun getGamesByTeam(team: Team): List<Game> = gamesByTeam[team] ?: emptyList()
-        override suspend fun getAllGames(): List<Game> = gamesByTeam.values.flatten()
+        override suspend fun getGame(id: Int): GameResult? = null
+        override suspend fun getGamesByDate(date: Date): List<GameResult> = emptyList()
+        override suspend fun getGamesByTeam(team: Team): List<GameResult> = gamesByTeam[team] ?: emptyList()
+        override suspend fun getAllGames(): List<GameResult> = gamesByTeam.values.flatten()
 
-        override suspend fun createGame(masterId: Int, homeScore: Int, awayScore: Int): Game? = null
+        override suspend fun createGame(masterId: Int, homeScore: Int, awayScore: Int): GameResult? = null
     }
 
     @Test
@@ -59,13 +59,13 @@ class GetRankingUseCaseTest {
         // t0: 2-0-0, t1: 1-0-1, t2: 1-1-0, t3: 0-0-2, t4: 0-1-1, t5: 0-2-0
         val games = listOf(
             // Round 1
-            Game(id = 1, GameFixture(id = 0, date = d1, homeTeam = t0, awayTeam = t5, numberOfGames = 0), homeScore = 5, awayScore = 3), // t0 W, t5 L
-            Game(id = 2, GameFixture(id = 1, date = d1, homeTeam = t1, awayTeam = t3, numberOfGames = 1), homeScore = 4, awayScore = 4), // draw
-            Game(id = 3, GameFixture(id = 2, date = d1, homeTeam = t2, awayTeam = t4, numberOfGames = 2), homeScore = 6, awayScore = 2), // t2 W, t4 L
+            GameResult(id = 1, GameFixture(id = 0, date = d1, homeTeam = t0, awayTeam = t5, numberOfGames = 0), homeScore = 5, awayScore = 3), // t0 W, t5 L
+            GameResult(id = 2, GameFixture(id = 1, date = d1, homeTeam = t1, awayTeam = t3, numberOfGames = 1), homeScore = 4, awayScore = 4), // draw
+            GameResult(id = 3, GameFixture(id = 2, date = d1, homeTeam = t2, awayTeam = t4, numberOfGames = 2), homeScore = 6, awayScore = 2), // t2 W, t4 L
             // Round 2
-            Game(id = 4, GameFixture(id = 3, date = d2, homeTeam = t0, awayTeam = t5, numberOfGames = 3), homeScore = 7, awayScore = 2), // t0 W, t5 L
-            Game(id = 5, GameFixture(id = 4, date = d2, homeTeam = t1, awayTeam = t2, numberOfGames = 4), homeScore = 3, awayScore = 1), // t1 W, t2 L
-            Game(id = 6, GameFixture(id = 5, date = d2, homeTeam = t3, awayTeam = t4, numberOfGames = 5), homeScore = 2, awayScore = 2), // draw
+            GameResult(id = 4, GameFixture(id = 3, date = d2, homeTeam = t0, awayTeam = t5, numberOfGames = 3), homeScore = 7, awayScore = 2), // t0 W, t5 L
+            GameResult(id = 5, GameFixture(id = 4, date = d2, homeTeam = t1, awayTeam = t2, numberOfGames = 4), homeScore = 3, awayScore = 1), // t1 W, t2 L
+            GameResult(id = 6, GameFixture(id = 5, date = d2, homeTeam = t3, awayTeam = t4, numberOfGames = 5), homeScore = 2, awayScore = 2), // draw
         )
 
         val teamRepo = FakeTeamRepository(teams)
