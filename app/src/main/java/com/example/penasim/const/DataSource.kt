@@ -1,13 +1,13 @@
-package com.example.penasim.data
+package com.example.penasim.const
 
 import com.example.penasim.R
-import com.example.penasim.ui.calender.GameUiInfo
+import com.example.penasim.domain.toLeague
 import com.example.penasim.ui.calender.RankingUiInfo
 
 object DataSource {
     val rankings = List(12) {
         RankingUiInfo(
-            league = it % 2,
+            league = (it % 2).toLeague(),
             rank = it / 2,
             teamIcon = when (it) {
                 0 -> R.drawable.team1_icon
@@ -25,18 +25,5 @@ object DataSource {
             },
             gameBack = 0.0
         )
-    }
-
-    val games = List(181) { index ->
-        List(6) {
-            GameUiInfo(
-                day = index,
-                homeTeamIcon = R.drawable.team1_icon,
-                homeTeamScore = 0,
-                awayTeamIcon = R.drawable.team1_icon,
-                awayTeamScore = 0,
-                isGameFinished = false
-            )
-        }
     }
 }

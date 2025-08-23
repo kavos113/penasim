@@ -1,25 +1,11 @@
 package com.example.penasim.ui.calender
 
-import com.example.penasim.data.DataSource
-
-data class GameUiInfo(
-    val day: Int,
-    val homeTeamIcon: Int,
-    val homeTeamScore: Int,
-    val awayTeamIcon: Int,
-    val awayTeamScore: Int,
-    val isGameFinished: Boolean
-)
-
-data class RankingUiInfo(
-    val league: Int,
-    val rank: Int,
-    val teamIcon: Int,
-    val gameBack: Double,
-)
+import com.example.penasim.const.DataSource
+import com.example.penasim.const.DateConst
+import java.time.LocalDate
 
 data class CalendarUiState(
-    val games: List<List<GameUiInfo>> = DataSource.games,
+    val games: Map<LocalDate, List<GameUiInfo>> = emptyMap(),
     val rankings: List<RankingUiInfo> = DataSource.rankings,
-    val currentDay: Int = 0
+    val currentDay: LocalDate = DateConst.START
 )

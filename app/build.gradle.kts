@@ -3,16 +3,21 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.devtool.ksp)
+    alias(libs.plugins.hilt.android)
+}
+
+hilt {
+    enableAggregatingTask = false
 }
 
 android {
     namespace = "com.example.penasim"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.penasim"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -40,6 +45,12 @@ android {
     buildFeatures {
         compose = true
     }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/gradle/incremental.annotation.processors"
+        }
+    }
 }
 
 dependencies {
@@ -56,9 +67,12 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.hilt)
+    implementation(libs.hilt.navigation.compose)
     testImplementation(libs.junit)
-    testImplementation(libs.mockito)
+    testImplementation(libs.mockito.kotlin)
     testImplementation(libs.corountine.test)
+    testImplementation(libs.kotlin.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -67,4 +81,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     ksp(libs.androidx.room.compiler)
+    ksp(libs.hilt.compiler)
 }
