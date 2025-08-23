@@ -2,32 +2,20 @@ package com.example.penasim.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.penasim.model.GameMaster
-import com.example.penasim.model.GameMasterDao
+import com.example.penasim.data.dao.GameFixtureDao
+import com.example.penasim.data.dao.GameResultDao
+import com.example.penasim.data.dao.TeamDao
+import com.example.penasim.data.entity.GameFixtureEntity
+import com.example.penasim.data.entity.GameResultEntity
+import com.example.penasim.data.entity.TeamEntity
 
 @Database(
-    entities = [GameMaster::class],
+    entities = [TeamEntity::class, GameFixtureEntity::class, GameResultEntity::class],
     version = 1,
     exportSchema = true
 )
 abstract class PennantDatabase : RoomDatabase() {
-    abstract fun gameMasterDao(): GameMasterDao
-
-    companion object {
-        @Volatile
-        private var INSTANCE: PennantDatabase? = null
-
-        fun getDatabase(context: android.content.Context): PennantDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = androidx.room.Room.databaseBuilder(
-                    context.applicationContext,
-                    PennantDatabase::class.java,
-                    "pennant_database"
-                ).createFromAsset("databases/initial_data.db")
-                    .build()
-                INSTANCE = instance
-                instance
-            }
-        }
-    }
+    abstract fun teamDao(): TeamDao
+    abstract fun gameFixtureDao(): GameFixtureDao
+    abstract fun gameResultDao(): GameResultDao
 }
