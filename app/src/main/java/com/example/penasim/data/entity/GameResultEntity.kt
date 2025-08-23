@@ -1,6 +1,7 @@
 package com.example.penasim.data.entity
 
 import androidx.room.Entity
+import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "games",
@@ -14,7 +15,7 @@ import androidx.room.Entity
     ]
 )
 data class GameResultEntity(
-    val gameFixtureId: Int,
+    @PrimaryKey val gameFixtureId: Int,
     val homeScore: Int,
     val awayScore: Int,
 )

@@ -3,6 +3,11 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.devtool.ksp)
+    alias(libs.plugins.hilt.android)
+}
+
+hilt {
+    enableAggregatingTask = false
 }
 
 android {
@@ -40,6 +45,12 @@ android {
     buildFeatures {
         compose = true
     }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/gradle/incremental.annotation.processors"
+        }
+    }
 }
 
 dependencies {
@@ -57,7 +68,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.hilt)
-    implementation(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
@@ -71,4 +81,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     ksp(libs.androidx.room.compiler)
+    ksp(libs.hilt.compiler)
 }
