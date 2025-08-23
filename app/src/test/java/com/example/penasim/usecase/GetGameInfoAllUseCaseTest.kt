@@ -66,28 +66,26 @@ class GetGameInfoAllUseCaseTest {
         val fixtures = listOf(GameFixture(10, LocalDate.now(), 1, 1, 2))
         val results = listOf(GameResult(10, 1, 1))
 
-        val useCaseMissingTeam = GetGameInfoAllUseCase(
-            FakeGameFixtureRepository(fixtures),
-            FakeGameResultRepository(results),
-            FakeTeamRepository(teams)
-        )
-        try {
-            useCaseMissingTeam.execute()
-            throw AssertionError("Expected IllegalArgumentException")
-        } catch (e: IllegalArgumentException) {
-            // expected
+        // missing team
+        assertThrows(IllegalArgumentException::class.java) {
+            runTest {
+                GetGameInfoAllUseCase(
+                    FakeGameFixtureRepository(fixtures),
+                    FakeGameResultRepository(results),
+                    FakeTeamRepository(teams)
+                ).execute()
+            }
         }
 
-        val useCaseMissingFixture = GetGameInfoAllUseCase(
-            FakeGameFixtureRepository(emptyList()),
-            FakeGameResultRepository(results),
-            FakeTeamRepository(listOf(Team(1, "A", league), Team(2, "B", league)))
-        )
-        try {
-            useCaseMissingFixture.execute()
-            throw AssertionError("Expected IllegalArgumentException")
-        } catch (e: IllegalArgumentException) {
-            // expected
+        // missing fixture
+        assertThrows(IllegalArgumentException::class.java) {
+            runTest {
+                GetGameInfoAllUseCase(
+                    FakeGameFixtureRepository(emptyList()),
+                    FakeGameResultRepository(results),
+                    FakeTeamRepository(listOf(Team(1, "A", league), Team(2, "B", league)))
+                ).execute()
+            }
         }
     }
 }

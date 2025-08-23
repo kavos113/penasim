@@ -63,51 +63,47 @@ class GetGameInfoUseCaseTest {
         val result = GameResult(10, 5, 2)
 
         // Missing fixture
-        try {
-            GetGameInfoUseCase(
-                FakeGameFixtureRepository(emptyList()),
-                FakeGameResultRepository(listOf(result)),
-                FakeTeamRepository(listOf(home, away))
-            ).execute(10)
-            throw AssertionError("Expected IllegalArgumentException")
-        } catch (e: IllegalArgumentException) {
-            // expected
+        assertThrows(IllegalArgumentException::class.java) {
+            runTest {
+                GetGameInfoUseCase(
+                    FakeGameFixtureRepository(emptyList()),
+                    FakeGameResultRepository(listOf(result)),
+                    FakeTeamRepository(listOf(home, away))
+                ).execute(10)
+            }
         }
 
         // Missing home team
-        try {
-            GetGameInfoUseCase(
-                FakeGameFixtureRepository(listOf(fixture)),
-                FakeGameResultRepository(listOf(result)),
-                FakeTeamRepository(listOf(away))
-            ).execute(10)
-            throw AssertionError("Expected IllegalArgumentException")
-        } catch (e: IllegalArgumentException) {
-            // expected
+        assertThrows(IllegalArgumentException::class.java) {
+            runTest {
+                GetGameInfoUseCase(
+                    FakeGameFixtureRepository(listOf(fixture)),
+                    FakeGameResultRepository(listOf(result)),
+                    FakeTeamRepository(listOf(away))
+                ).execute(10)
+            }
         }
 
         // Missing away team
-        try {
-            GetGameInfoUseCase(
-                FakeGameFixtureRepository(listOf(fixture)),
-                FakeGameResultRepository(listOf(result)),
-                FakeTeamRepository(listOf(home))
-            ).execute(10)
-            throw AssertionError("Expected IllegalArgumentException")
-        } catch (e: IllegalArgumentException) {
-            // expected
+        assertThrows(IllegalArgumentException::class.java) {
+            runTest {
+                GetGameInfoUseCase(
+                    FakeGameFixtureRepository(listOf(fixture)),
+                    FakeGameResultRepository(listOf(result)),
+                    FakeTeamRepository(listOf(home))
+                ).execute(10)
+            }
         }
 
         // Missing result
-        try {
-            GetGameInfoUseCase(
-                FakeGameFixtureRepository(listOf(fixture)),
-                FakeGameResultRepository(emptyList()),
-                FakeTeamRepository(listOf(home, away))
-            ).execute(10)
-            throw AssertionError("Expected IllegalArgumentException")
-        } catch (e: IllegalArgumentException) {
-            // expected
+        assertThrows(IllegalArgumentException::class.java) {
+            runTest {
+                GetGameInfoUseCase(
+                    FakeGameFixtureRepository(listOf(fixture)),
+                    FakeGameResultRepository(emptyList()),
+                    FakeTeamRepository(listOf(home, away))
+                ).execute(10)
+            }
         }
     }
 }

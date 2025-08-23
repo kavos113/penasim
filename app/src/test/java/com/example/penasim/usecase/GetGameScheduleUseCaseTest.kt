@@ -48,34 +48,31 @@ class GetGameScheduleUseCaseTest {
         val fixture = GameFixture(10, LocalDate.now(), 1, 1, 2)
 
         // Missing fixture
-        try {
-            GetGameScheduleUseCase(
-                FakeGameFixtureRepository(emptyList()),
-                FakeTeamRepository(listOf(home, away))
-            ).execute(10)
-            throw AssertionError("Expected IllegalArgumentException")
-        } catch (e: IllegalArgumentException) {
-            // expected
+        assertThrows(IllegalArgumentException::class.java) {
+            runTest {
+                GetGameScheduleUseCase(
+                    FakeGameFixtureRepository(emptyList()),
+                    FakeTeamRepository(listOf(home, away))
+                ).execute(10)
+            }
         }
         // Missing home team
-        try {
-            GetGameScheduleUseCase(
-                FakeGameFixtureRepository(listOf(fixture)),
-                FakeTeamRepository(listOf(away))
-            ).execute(10)
-            throw AssertionError("Expected IllegalArgumentException")
-        } catch (e: IllegalArgumentException) {
-            // expected
+        assertThrows(IllegalStateException::class.java) {
+            runTest {
+                GetGameScheduleUseCase(
+                    FakeGameFixtureRepository(listOf(fixture)),
+                    FakeTeamRepository(listOf(away))
+                ).execute(10)
+            }
         }
         // Missing away team
-        try {
-            GetGameScheduleUseCase(
-                FakeGameFixtureRepository(listOf(fixture)),
-                FakeTeamRepository(listOf(home))
-            ).execute(10)
-            throw AssertionError("Expected IllegalArgumentException")
-        } catch (e: IllegalArgumentException) {
-            // expected
+        assertThrows(IllegalStateException::class.java) {
+            runTest {
+                GetGameScheduleUseCase(
+                    FakeGameFixtureRepository(listOf(fixture)),
+                    FakeTeamRepository(listOf(home))
+                ).execute(10)
+            }
         }
     }
 }

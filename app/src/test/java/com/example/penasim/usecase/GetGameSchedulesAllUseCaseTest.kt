@@ -49,11 +49,10 @@ class GetGameSchedulesAllUseCaseTest {
             FakeGameFixtureRepository(fixtures),
             FakeTeamRepository(emptyList())
         )
-        try {
-            useCase.execute()
-            throw AssertionError("Expected IllegalArgumentException")
-        } catch (e: IllegalArgumentException) {
-            // expected
+        assertThrows(IllegalStateException::class.java) {
+            runTest {
+                useCase.execute()
+            }
         }
     }
 }

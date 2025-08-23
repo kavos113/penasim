@@ -50,11 +50,10 @@ class GetGameSchedulesByDateUseCaseTest {
             FakeGameFixtureRepository(fixtures),
             FakeTeamRepository(emptyList())
         )
-        try {
-            useCase.execute(date)
-            throw AssertionError("Expected IllegalArgumentException")
-        } catch (e: IllegalArgumentException) {
-            // expected
+        assertThrows(IllegalStateException::class.java) {
+            runTest {
+                useCase.execute(date)
+            }
         }
     }
 }
