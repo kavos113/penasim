@@ -87,7 +87,7 @@ internal fun OrderPlayerItem(
 }
 
 @Composable
-internal fun SubstitutePlayerItem(
+internal fun SimplePlayerItem(
     displayName: String,
     color: Color,
     modifier: Modifier = Modifier

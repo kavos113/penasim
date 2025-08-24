@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -167,7 +168,7 @@ private fun OrderList(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        Text("オーダー")
+        Text(stringResource(R.string.order))
         repeat(fielders.size) {
             OrderPlayerItem(
                 player = fielders[it],
@@ -188,9 +189,9 @@ private fun BenchList(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        Text("ベンチ")
+        Text(stringResource(R.string.bench))
         repeat(fielders.size) {
-            SubstitutePlayerItem(
+            SimplePlayerItem(
                 displayName = fielders[it].displayName,
                 color = fielders[it].color,
                 modifier = Modifier
@@ -210,10 +211,10 @@ private fun SubstituteList(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        Text("2軍")
+        Text(stringResource(R.string.substitute))
         LazyColumn {
             items(fielders) { fielder ->
-                SubstitutePlayerItem(
+                SimplePlayerItem(
                     displayName = fielder.displayName,
                     color = fielder.color,
                     modifier = Modifier
@@ -236,7 +237,7 @@ private fun FielderDetail(
                 .weight(1f)
                 .padding(12.dp)
         ) {
-            SubstitutePlayerItem(
+            SimplePlayerItem(
                 displayName = playerDetail.player.firstName,
                 color = playerDetail.color,
             )
