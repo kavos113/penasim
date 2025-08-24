@@ -10,8 +10,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.penasim.R
 import com.example.penasim.ui.navigation.NavigationDestination
@@ -25,6 +27,7 @@ object CommandDestination : NavigationDestination {
 @Composable
 fun CommandScreen(
     modifier: Modifier = Modifier,
+    commandViewModel: CommandViewModel = hiltViewModel()
 ) {
     val tabs = listOf(R.string.fielder, R.string.pitcher)
 
@@ -64,9 +67,21 @@ fun CommandScreen(
                 .padding(innerPadding),
         ) { page ->
             when (page) {
-                0 -> FielderScreen(modifier = Modifier.fillMaxSize())
-                1 -> PitcherScreen(modifier = Modifier.fillMaxSize())
+                0 -> FielderScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    commandViewModel = commandViewModel
+                )
+                1 -> PitcherScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    commandViewModel = commandViewModel
+                )
             }
+        }
+    }
+    
+    DisposableEffect(Unit) {
+        onDispose {
+            commandViewModel.save()
         }
     }
 }
