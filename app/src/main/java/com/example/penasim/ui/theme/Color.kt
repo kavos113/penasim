@@ -218,8 +218,9 @@ val surfaceContainerHighDarkHighContrast = Color(0xFF373C3E)
 val surfaceContainerHighestDarkHighContrast = Color(0xFF42484A)
 
 
-
-
-
-
-
+// pennant color
+val playerBorderColor = Color(0xFFAAAAAA)
+val pitcherColor = Color(0xFFFF8787)
+val catcherColor = Color(0xFF87CFFF)
+val infielderColor = Color(0xFFFCED47)
+val outfielderColor = Color(0xFF13D637)

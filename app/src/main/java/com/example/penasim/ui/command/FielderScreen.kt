@@ -1,18 +1,28 @@
 package com.example.penasim.ui.command
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.penasim.R
 import com.example.penasim.domain.League
 import com.example.penasim.domain.Team
 import com.example.penasim.ui.navigation.NavigationDestination
+import com.example.penasim.ui.theme.playerBorderColor
 
 object FielderDestination : NavigationDestination {
     override val route: String = "fielder"
@@ -89,8 +99,10 @@ private fun SubstituteList(
         modifier = modifier
     ) {
         Text("2軍")
-        repeat(fielders.size) {
-            SubstitutePlayerItem(displayName = fielders[it].displayName)
+        LazyColumn {
+            items(fielders) { fielder ->
+                SubstitutePlayerItem(displayName = fielder.displayName)
+            }
         }
     }
 }
@@ -101,11 +113,48 @@ private fun OrderPlayerItem(
     modifier: Modifier = Modifier
 ) {
     Row(
+        verticalAlignment = Alignment.Bottom,
         modifier = modifier
     ) {
-        Text(player.number.toString())
-        Text(player.displayName)
-        Text(player.position)
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .height(24.dp)
+                .border(
+                    width = 1.dp,
+                    color = playerBorderColor,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .padding(horizontal = 4.dp, vertical = 2.dp)
+        ) {
+            Text(player.number.toString())
+        }
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .height(24.dp)
+                .border(
+                    width = 1.dp,
+                    color = playerBorderColor,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .padding(horizontal = 4.dp, vertical = 2.dp)
+        ) {
+            Text(player.displayName)
+        }
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .height(24.dp)
+                .border(
+                    width = 1.dp,
+                    color = playerBorderColor,
+                    shape = RoundedCornerShape(4.dp)
+                )
+                .padding(horizontal = 4.dp, vertical = 2.dp)
+        ) {
+            Text(player.position)
+        }
     }
 }
 
@@ -114,8 +163,16 @@ private fun SubstitutePlayerItem(
     displayName: String,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .height(24.dp)
+            .border(
+                width = 1.dp,
+                color = playerBorderColor,
+                shape = RoundedCornerShape(4.dp)
+            )
+            .padding(horizontal = 4.dp, vertical = 2.dp)
     ) {
         Text(displayName)
     }
