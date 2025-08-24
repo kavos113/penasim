@@ -2,10 +2,26 @@ import csv
 import sys
 import random
 
-players_row = ["id", "firstName", "lastName", "teamId", "meet", "power", "speed", "throwing", "defense", "catching", "ballspeed", "control", "stamina"]
+players_row = ["id", "firstName", "lastName", "teamId", "meet", "power", "speed", "throwing", "defense", "catching", "ballSpeed", "control", "stamina"]
 player_positions_row = ["playerId", "position", "defense"]
 pitcher_appointments_row = ["teamId", "playerId", "isMain", "type", "number"]
 fielder_appointments_row = ["teamId", "playerId", "position", "isMain", "number"]
+
+position_map = {
+    0: "PITCHER",
+    1: "CATCHER",
+    2: "FIRST_BASEMAN",
+    3: "SECOND_BASEMAN",
+    4: "SHORTSTOP",
+    5: "THIRD_BASEMAN",
+    6: "OUTFIELDER"
+}
+
+pitcher_type_map = {
+    0: "STARTER",
+    1: "RELIEVER",
+    2: "CLOSER"
+}
 
 def create_players(teamId, fielder_count, pitcher_count, csv_dir):
     players = []
@@ -37,8 +53,8 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
         position = random.randint(1, 8)
         if position >= 6:
             position = 6
-        player_positions.append([player_id, position, defense])
-        fielder_appointments.append([teamId, player_id, position, 1 if isMain else 0, i + 1])
+        player_positions.append([player_id, position_map[position], defense])
+        fielder_appointments.append([teamId, player_id, position_map[position], 1 if isMain else 0, i + 1])
 
         isMain = len(fielder_appointments) <= 16
 
@@ -64,10 +80,10 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
             random.randint(10, 90)
         ])
 
-        player_positions.append([player_id, 0, defense])
+        player_positions.append([player_id, position_map[0], defense])
 
         pitcher_type = random.randint(0, 2) if closerCount < 5 else random.randint(0, 1)
-        pitcher_appointments.append([teamId, player_id, 1 if isMain else 0, pitcher_type, i + 1])
+        pitcher_appointments.append([teamId, player_id, 1 if isMain else 0, pitcher_type_map[pitcher_type], i + 1])
 
         isMain = len(pitcher_appointments) <= 12
         if pitcher_type == 2:

@@ -3,8 +3,20 @@ package com.example.penasim.data
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.penasim.data.dao.*
-import com.example.penasim.data.entity.*
+import com.example.penasim.data.dao.FielderAppointmentDao
+import com.example.penasim.data.dao.GameFixtureDao
+import com.example.penasim.data.dao.GameResultDao
+import com.example.penasim.data.dao.PitcherAppointmentDao
+import com.example.penasim.data.dao.PlayerDao
+import com.example.penasim.data.dao.PlayerPositionDao
+import com.example.penasim.data.dao.TeamDao
+import com.example.penasim.data.entity.FielderAppointmentEntity
+import com.example.penasim.data.entity.GameFixtureEntity
+import com.example.penasim.data.entity.GameResultEntity
+import com.example.penasim.data.entity.PitcherAppointmentEntity
+import com.example.penasim.data.entity.PlayerEntity
+import com.example.penasim.data.entity.PlayerPositionEntity
+import com.example.penasim.data.entity.TeamEntity
 import com.example.penasim.data.repository.Converters
 
 @Database(
@@ -17,8 +29,8 @@ import com.example.penasim.data.repository.Converters
         FielderAppointmentEntity::class,
         PitcherAppointmentEntity::class,
     ],
-    version = 1,
-    exportSchema = true
+    version = 2,
+    exportSchema = false
 )
 @TypeConverters(Converters::class)
 abstract class PennantDatabase : RoomDatabase() {

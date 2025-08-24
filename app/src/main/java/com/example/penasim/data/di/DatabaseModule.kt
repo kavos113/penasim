@@ -25,6 +25,7 @@ object DatabaseModule {
             "pennant_database"
         )
             .createFromAsset("databases/pennant_database.db")
+            .fallbackToDestructiveMigration(false)
             .build()
     }
 
