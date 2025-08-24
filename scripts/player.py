@@ -38,7 +38,7 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
         if position >= 6:
             position = 6
         player_positions.append([player_id, position, defense])
-        fielder_appointments.append([teamId, player_id, position, isMain, i + 1])
+        fielder_appointments.append([teamId, player_id, position, 1 if isMain else 0, i + 1])
 
         isMain = len(fielder_appointments) <= 16
 
@@ -67,7 +67,7 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
         player_positions.append([player_id, 0, defense])
 
         pitcher_type = random.randint(0, 2) if closerCount < 5 else random.randint(0, 1)
-        pitcher_appointments.append([teamId, player_id, isMain, pitcher_type, i + 1])
+        pitcher_appointments.append([teamId, player_id, 1 if isMain else 0, pitcher_type, i + 1])
 
         isMain = len(pitcher_appointments) <= 12
         if pitcher_type == 2:
