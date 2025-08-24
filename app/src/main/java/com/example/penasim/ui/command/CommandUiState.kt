@@ -12,6 +12,7 @@ data class CommandUiState(
     val players: List<PlayerInfo> = emptyList(),
     val fielderAppointments: List<FielderAppointment> = emptyList(),
     val pitcherAppointments: List<PitcherAppointment> = emptyList(),
+    val selectedPlayer: PlayerInfo? = null,
 ) {
     val orderFielderAppointments: List<FielderAppointment>
         get() = fielderAppointments.filter { it.isMain }.sortedBy { it.number }.take(9)
@@ -44,5 +45,16 @@ data class CommandUiState(
                 color = it.position.color()
             )
         }
+    }
+
+    fun getDisplayPlayerDetails(): List<DisplayPlayerDetail> {
+        return players.map { playerInfo ->
+            val color = playerInfo.primaryPosition.color()
+            DisplayPlayerDetail(
+                player = playerInfo.player,
+                positions = playerInfo.positions,
+                color = color
+            )
+        }.sortedBy { it.player.id }
     }
 }

@@ -21,13 +21,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.penasim.R
 import com.example.penasim.domain.League
+import com.example.penasim.domain.Player
+import com.example.penasim.domain.PlayerPosition
+import com.example.penasim.domain.Position
 import com.example.penasim.domain.Team
+import com.example.penasim.domain.toShortJa
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.catcherColor
 import com.example.penasim.ui.theme.infielderColor
@@ -216,7 +223,7 @@ private fun OrderPlayerItem(
                 .background(color = player.color)
                 .padding(horizontal = 4.dp, vertical = 2.dp)
         ) {
-            Text(
+            SpacedText(
                 text = player.displayName,
                 fontSize = 16.sp
             )
@@ -261,8 +268,187 @@ private fun SubstitutePlayerItem(
             .padding(horizontal = 4.dp, vertical = 2.dp)
             .fillMaxWidth()
     ) {
-        Text(displayName)
+        SpacedText(
+            text = displayName,
+            fontSize = 16.sp,
+        )
     }
+}
+
+@Composable
+private fun PlayerDetail(
+    playerDetail: DisplayPlayerDetail,
+    modifier: Modifier = Modifier
+) {
+    Row {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+            modifier = Modifier
+                .weight(1f)
+                .padding(12.dp)
+        ) {
+            SubstitutePlayerItem(
+                displayName = playerDetail.player.firstName,
+                color = playerDetail.color,
+            )
+            Text(
+                text = ".306",
+                fontSize = 20.sp,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            Text(
+                text = "12本 55点",
+                fontSize = 20.sp,
+            )
+            Text(
+                text = "2盗",
+                fontSize = 20.sp,
+            )
+
+            Row {
+                val (first, second) = playerDetail.positions.withIndex().partition { it.index % 2 == 0 }
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    repeat(first.size) {
+                        DefenseStatus(position = first[it].value)
+                    }
+                }
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    repeat(second.size) {
+                        DefenseStatus(position = second[it].value)
+                    }
+                }
+            }
+        }
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(12.dp)
+        ) {
+            Status(
+                value = playerDetail.player.meet,
+                alphabet = playerDetail.player.meet.statusAlphabet(),
+                color = playerDetail.player.meet.statusColor(),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Status(
+                value = playerDetail.player.power,
+                alphabet = playerDetail.player.power.statusAlphabet(),
+                color = playerDetail.player.power.statusColor(),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Status(
+                value = playerDetail.player.speed,
+                alphabet = playerDetail.player.speed.statusAlphabet(),
+                color = playerDetail.player.speed.statusColor(),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Status(
+                value = playerDetail.player.throwing,
+                alphabet = playerDetail.player.throwing.statusAlphabet(),
+                color = playerDetail.player.throwing.statusColor(),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Status(
+                value = playerDetail.player.defense,
+                alphabet = playerDetail.player.defense.statusAlphabet(),
+                color = playerDetail.player.defense.statusColor(),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Status(
+                value = playerDetail.player.catching,
+                alphabet = playerDetail.player.catching.statusAlphabet(),
+                color = playerDetail.player.catching.statusColor(),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun Status(
+    value: Int,
+    alphabet: String,
+    color: Color,
+    modifier: Modifier = Modifier
+) {
+    Row {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .padding(horizontal = 4.dp, vertical = 2.dp)
+        ) {
+            Text(
+                text = alphabet,
+                fontSize = 24.sp,
+                color = color
+            )
+        }
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .padding(horizontal = 4.dp, vertical = 2.dp)
+        ) {
+            Text(
+                text = value.toString(),
+                fontSize = 24.sp,
+            )
+        }
+    }
+}
+
+@Composable
+private fun DefenseStatus(
+    position: PlayerPosition,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        Text(
+            text = position.position.toShortJa(),
+            fontSize = 20.sp,
+            modifier = Modifier
+                .padding(horizontal = 4.dp, vertical = 2.dp)
+        )
+        Text(
+            text = position.defense.statusAlphabet(),
+            fontSize = 24.sp,
+            color = position.defense.statusColor(),
+            modifier = Modifier
+                .padding(horizontal = 4.dp, vertical = 2.dp)
+        )
+    }
+}
+
+@Composable
+private fun SpacedText(
+    text: String,
+    modifier: Modifier = Modifier,
+    fontSize: TextUnit = 16.sp,
+) {
+    val spacing = when(text.length) {
+        2 -> 1.0.em
+        3 -> 0.5.em
+        4 -> 0.25.em
+        else -> 0.0.em
+    }
+
+    Text(
+        text = text,
+        letterSpacing = spacing,
+        fontSize = fontSize,
+        textAlign = TextAlign.Center,
+        modifier = modifier
+    )
 }
 
 @Preview(showBackground = true)
@@ -321,6 +507,35 @@ fun SubstituteListPreview() {
             DisplayFielder("Player 20", "外", 20, false, outfielderColor),
             DisplayFielder("Player 21", "遊", 21, false, infielderColor),
             DisplayFielder("Player 22", "二", 22, false, infielderColor),
+        )
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PlayerDetailPreview() {
+    PlayerDetail(
+        playerDetail = DisplayPlayerDetail(
+            player = Player(
+                id = 1,
+                firstName = "山田",
+                lastName = "太郎",
+                teamId = 0,
+                meet = 72,
+                power = 51,
+                speed = 68,
+                throwing = 58,
+                defense = 62,
+                catching = 66,
+                ballSpeed = 120,
+                control = 1,
+                stamina = 1
+            ),
+            positions = listOf(
+                PlayerPosition(1, Position.OUTFIELDER, 62),
+                PlayerPosition(1, Position.FIRST_BASEMAN, 58)
+            ),
+            color = outfielderColor
         )
     )
 }
