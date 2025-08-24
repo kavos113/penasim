@@ -2,9 +2,10 @@ package com.example.penasim.usecase
 
 import com.example.penasim.domain.FielderAppointment
 import com.example.penasim.domain.repository.FielderAppointmentRepository
+import javax.inject.Inject
 
 // give full-team appointments
-class UpdateFielderAppointmentsUseCase(
+class UpdateFielderAppointmentsUseCase @Inject constructor(
     private val fielderAppointmentRepository: FielderAppointmentRepository
 ) {
     suspend fun execute(appointments: List<FielderAppointment>) {

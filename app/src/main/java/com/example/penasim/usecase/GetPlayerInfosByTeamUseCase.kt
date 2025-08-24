@@ -4,8 +4,9 @@ import com.example.penasim.domain.PlayerInfo
 import com.example.penasim.domain.repository.PlayerPositionRepository
 import com.example.penasim.domain.repository.PlayerRepository
 import com.example.penasim.domain.repository.TeamRepository
+import javax.inject.Inject
 
-class GetPlayerInfosByTeamUseCase(
+class GetPlayerInfosByTeamUseCase @Inject constructor(
     private val playerRepository: PlayerRepository,
     private val playerPositionRepository: PlayerPositionRepository,
     private val teamRepository: TeamRepository
