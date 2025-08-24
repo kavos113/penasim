@@ -2,10 +2,12 @@ package com.example.penasim.ui.command
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -29,11 +32,9 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.penasim.R
-import com.example.penasim.domain.League
 import com.example.penasim.domain.Player
 import com.example.penasim.domain.PlayerPosition
 import com.example.penasim.domain.Position
-import com.example.penasim.domain.Team
 import com.example.penasim.domain.toShortJa
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.catcherColor
@@ -55,88 +56,123 @@ fun FielderScreen(
     val uiState by commandViewModel.uiState.collectAsState()
     FielderContent(
         uiState = uiState,
+        onPlayerClick = { playerId ->
+            commandViewModel.selectFielder(playerId)
+        },
         modifier = modifier
     )
+
+    DisposableEffect(Unit) {
+        onDispose {
+            commandViewModel.save()
+        }
+    }
 }
 
 @Composable
 private fun FielderContent(
     uiState: CommandUiState,
+    onPlayerClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row (
-        horizontalArrangement = Arrangement.spacedBy(0.dp),
-        modifier = modifier
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
     ) {
-        OrderList(
-            fielders = uiState.getDisplayFielders(uiState.orderFielderAppointments),
-            modifier = Modifier
-                .weight(5f)
-                .drawBehind {
-                    val strokeWidth = 1.dp.toPx()
-                    drawLine(
-                        color = playerBorderColor,
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, size.height),
-                        strokeWidth = strokeWidth
-                    )
+        Row (
+            horizontalArrangement = Arrangement.spacedBy(0.dp),
+            modifier = modifier
+        ) {
+            OrderList(
+                fielders = uiState.getDisplayFielders(uiState.orderFielderAppointments),
+                onItemClick = onPlayerClick,
+                modifier = Modifier
+                    .weight(5f)
+                    .drawBehind {
+                        val strokeWidth = 1.dp.toPx()
+                        drawLine(
+                            color = playerBorderColor,
+                            start = Offset(0f, 0f),
+                            end = Offset(0f, size.height),
+                            strokeWidth = strokeWidth
+                        )
 
-                    drawLine(
-                        color = playerBorderColor,
-                        start = Offset(size.width, 0f),
-                        end = Offset(size.width, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                }
-        )
-        BenchList(
-            fielders = uiState.getDisplayFielders(uiState.benchFielderAppointments),
-            modifier = Modifier
-                .weight(3f)
-                .drawBehind {
-                    val strokeWidth = 1.dp.toPx()
-                    drawLine(
-                        color = playerBorderColor,
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, size.height),
-                        strokeWidth = strokeWidth
-                    )
+                        drawLine(
+                            color = playerBorderColor,
+                            start = Offset(size.width, 0f),
+                            end = Offset(size.width, size.height),
+                            strokeWidth = strokeWidth
+                        )
+                    }
+            )
+            BenchList(
+                fielders = uiState.getDisplayFielders(uiState.benchFielderAppointments),
+                onItemClick = onPlayerClick,
+                modifier = Modifier
+                    .weight(3f)
+                    .drawBehind {
+                        val strokeWidth = 1.dp.toPx()
+                        drawLine(
+                            color = playerBorderColor,
+                            start = Offset(0f, 0f),
+                            end = Offset(0f, size.height),
+                            strokeWidth = strokeWidth
+                        )
 
-                    drawLine(
-                        color = playerBorderColor,
-                        start = Offset(size.width, 0f),
-                        end = Offset(size.width, size.height),
-                        strokeWidth = strokeWidth
-                    )
-                }
-        )
-        SubstituteList(
-            fielders = uiState.getDisplayFielders(uiState.subFielderAppointments),
-            modifier = Modifier
-                .weight(3f)
-                .drawBehind {
-                    val strokeWidth = 1.dp.toPx()
-                    drawLine(
-                        color = playerBorderColor,
-                        start = Offset(0f, 0f),
-                        end = Offset(0f, size.height),
-                        strokeWidth = strokeWidth
-                    )
+                        drawLine(
+                            color = playerBorderColor,
+                            start = Offset(size.width, 0f),
+                            end = Offset(size.width, size.height),
+                            strokeWidth = strokeWidth
+                        )
+                    }
+            )
+            SubstituteList(
+                fielders = uiState.getDisplayFielders(uiState.subFielderAppointments),
+                onItemClick = onPlayerClick,
+                modifier = Modifier
+                    .weight(3f)
+                    .drawBehind {
+                        val strokeWidth = 1.dp.toPx()
+                        drawLine(
+                            color = playerBorderColor,
+                            start = Offset(0f, 0f),
+                            end = Offset(0f, size.height),
+                            strokeWidth = strokeWidth
+                        )
 
-                    drawLine(
-                        color = playerBorderColor,
-                        start = Offset(size.width, 0f),
-                        end = Offset(size.width, size.height),
-                        strokeWidth = strokeWidth
-                    )
+                        drawLine(
+                            color = playerBorderColor,
+                            start = Offset(size.width, 0f),
+                            end = Offset(size.width, size.height),
+                            strokeWidth = strokeWidth
+                        )
+                    }
+            )
+        }
+
+        if (uiState.selectedFielderId != null) {
+            val playerDetail = uiState.getDisplayPlayerDetail(uiState.selectedFielderId)
+            if (playerDetail != null) {
+                Box(
+                    modifier = Modifier
+                        .background(Color.White, shape = RoundedCornerShape(8.dp))
+                        .border(2.dp, Color.Black, shape = RoundedCornerShape(8.dp))
+                        .padding(16.dp)
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth(0.7f)
+                ) {
+                    PlayerDetail(playerDetail = playerDetail)
                 }
-        )
+            }
+        }
     }
 }
 
 @Composable
 private fun OrderList(
     fielders: List<DisplayFielder>,
+    onItemClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -145,7 +181,11 @@ private fun OrderList(
     ) {
         Text("オーダー")
         repeat(fielders.size) {
-            OrderPlayerItem(player = fielders[it])
+            OrderPlayerItem(
+                player = fielders[it],
+                modifier = Modifier
+                    .clickable { onItemClick(fielders[it].id) }
+            )
         }
     }
 }
@@ -153,6 +193,7 @@ private fun OrderList(
 @Composable
 private fun BenchList(
     fielders: List<DisplayFielder>,
+    onItemClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -161,7 +202,12 @@ private fun BenchList(
     ) {
         Text("ベンチ")
         repeat(fielders.size) {
-            SubstitutePlayerItem(displayName = fielders[it].displayName, color = fielders[it].color)
+            SubstitutePlayerItem(
+                displayName = fielders[it].displayName,
+                color = fielders[it].color,
+                modifier = Modifier
+                    .clickable { onItemClick(fielders[it].id) }
+            )
         }
     }
 }
@@ -169,6 +215,7 @@ private fun BenchList(
 @Composable
 private fun SubstituteList(
     fielders: List<DisplayFielder>,
+    onItemClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -178,7 +225,12 @@ private fun SubstituteList(
         Text("2軍")
         LazyColumn {
             items(fielders) { fielder ->
-                SubstitutePlayerItem(displayName = fielder.displayName, color = fielder.color)
+                SubstitutePlayerItem(
+                    displayName = fielder.displayName,
+                    color = fielder.color,
+                    modifier = Modifier
+                        .clickable { onItemClick(fielder.id) }
+                )
             }
         }
     }
@@ -267,6 +319,7 @@ private fun SubstitutePlayerItem(
             .background(color = color)
             .padding(horizontal = 4.dp, vertical = 2.dp)
             .fillMaxWidth()
+            .then(modifier)
     ) {
         SpacedText(
             text = displayName,
@@ -455,10 +508,8 @@ private fun SpacedText(
 @Composable
 fun FielderScreenPreview() {
     FielderContent(
-        uiState = CommandUiState(
-            team = Team(id = 0, name = "Example Team", league = League.L1)
-
-        )
+        uiState = CommandUiState(),
+        onPlayerClick = { }
     )
 }
 
@@ -467,16 +518,17 @@ fun FielderScreenPreview() {
 fun OrderListPreview() {
     OrderList(
         fielders = listOf(
-            DisplayFielder("Player 1", "投", 1, true, pitcherColor),
-            DisplayFielder("Player 2", "捕", 2, true, catcherColor),
-            DisplayFielder("Player 3", "一", 3, true, infielderColor),
-            DisplayFielder("Player 4", "二", 4, true, infielderColor),
-            DisplayFielder("Player 5", "三", 5, true, infielderColor),
-            DisplayFielder("Player 6", "遊", 6, true, infielderColor),
-            DisplayFielder("Player 7", "左", 7, true, outfielderColor),
-            DisplayFielder("Player 8", "中", 8, true, outfielderColor),
-            DisplayFielder("Player 9", "右", 9, true, outfielderColor),
-        )
+            DisplayFielder(0, "Player 1", "投", 1, true, pitcherColor),
+            DisplayFielder(1, "Player 2", "捕", 2, true, catcherColor),
+            DisplayFielder(2, "Player 3", "一", 3, true, infielderColor),
+            DisplayFielder(3, "Player 4", "二", 4, true, infielderColor),
+            DisplayFielder(4, "Player 5", "三", 5, true, infielderColor),
+            DisplayFielder(5, "Player 6", "遊", 6, true, infielderColor),
+            DisplayFielder(6, "Player 7", "左", 7, true, outfielderColor),
+            DisplayFielder(7, "Player 8", "中", 8, true, outfielderColor),
+            DisplayFielder(8, "Player 9", "右", 9, true, outfielderColor),
+        ),
+        onItemClick = { },
     )
 }
 
@@ -485,13 +537,14 @@ fun OrderListPreview() {
 fun BenchListPreview() {
     BenchList(
         fielders = listOf(
-            DisplayFielder("Player 10", "捕", 10, true, catcherColor),
-            DisplayFielder("Player 11", "一", 11, true, infielderColor),
-            DisplayFielder("Player 12", "外", 12, true, outfielderColor),
-            DisplayFielder("Player 13", "三", 13, true, infielderColor),
-            DisplayFielder("Player 14", "外", 14, true, infielderColor),
-            DisplayFielder("Player 15", "遊", 15, true, infielderColor),
-        )
+            DisplayFielder(0, "Player 10", "捕", 10, true, catcherColor),
+            DisplayFielder(0, "Player 11", "一", 11, true, infielderColor),
+            DisplayFielder(0, "Player 12", "外", 12, true, outfielderColor),
+            DisplayFielder(0, "Player 13", "三", 13, true, infielderColor),
+            DisplayFielder(0, "Player 14", "外", 14, true, infielderColor),
+            DisplayFielder(0, "Player 15", "遊", 15, true, infielderColor),
+        ),
+        onItemClick = { }
     )
 }
 
@@ -500,14 +553,15 @@ fun BenchListPreview() {
 fun SubstituteListPreview() {
     SubstituteList(
         fielders = listOf(
-            DisplayFielder("Player 16", "捕", 16, false, catcherColor),
-            DisplayFielder("Player 17", "一", 17, false, infielderColor),
-            DisplayFielder("Player 18", "外", 18, false, outfielderColor),
-            DisplayFielder("Player 19", "三", 19, false, infielderColor),
-            DisplayFielder("Player 20", "外", 20, false, outfielderColor),
-            DisplayFielder("Player 21", "遊", 21, false, infielderColor),
-            DisplayFielder("Player 22", "二", 22, false, infielderColor),
-        )
+            DisplayFielder(0, "Player 16", "捕", 16, false, catcherColor),
+            DisplayFielder(0, "Player 17", "一", 17, false, infielderColor),
+            DisplayFielder(0, "Player 18", "外", 18, false, outfielderColor),
+            DisplayFielder(0, "Player 19", "三", 19, false, infielderColor),
+            DisplayFielder(0, "Player 20", "外", 20, false, outfielderColor),
+            DisplayFielder(0, "Player 21", "遊", 21, false, infielderColor),
+            DisplayFielder(0, "Player 22", "二", 22, false, infielderColor),
+        ),
+        onItemClick = { }
     )
 }
 

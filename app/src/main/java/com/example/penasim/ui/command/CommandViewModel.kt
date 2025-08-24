@@ -57,6 +57,8 @@ class CommandViewModel @Inject constructor(
     }
 
     fun updateFielderAppointment(playerId: Int, position: Position, isMain: Boolean, number: Int) {
+        println("Updating fielder appointment for playerId: $playerId, position: $position, isMain: $isMain, number: $number")
+
         val currentAppointments = _uiState.value.fielderAppointments.toMutableList()
         val currentPlayerAppointment = currentAppointments.find { it.playerId == playerId } ?: return
 
@@ -68,6 +70,10 @@ class CommandViewModel @Inject constructor(
 
         currentAppointments.removeIf { it.playerId == playerId }
         currentAppointments.add(updatedAppointment)
+
+        _uiState.update { currentState ->
+            currentState.copy(fielderAppointments = currentAppointments)
+        }
     }
 
     fun updatePitcherAppointment(playerId: Int, isMain: Boolean, type: PitcherType, number: Int) {
@@ -82,12 +88,88 @@ class CommandViewModel @Inject constructor(
 
         currentAppointments.removeIf { it.playerId == playerId }
         currentAppointments.add(updatedAppointment)
+
+        _uiState.update { currentState ->
+            currentState.copy(pitcherAppointments = currentAppointments)
+        }
     }
 
     fun save() {
         viewModelScope.launch {
             updateFielderAppointmentsUseCase.execute(_uiState.value.fielderAppointments)
             updatePitcherAppointmentsUseCase.execute(_uiState.value.pitcherAppointments)
+        }
+    }
+
+    fun selectFielder(playerId: Int) {
+        if (_uiState.value.selectedFielderId == null) {
+            _uiState.update { currentState ->
+                currentState.copy(selectedFielderId = playerId)
+            }
+        } else {
+            val currentSelected = _uiState.value.selectedFielderId!!
+            if (currentSelected == playerId) {
+                _uiState.update { currentState ->
+                    currentState.copy(selectedFielderId = null)
+                }
+            } else {
+                _uiState.update { currentState ->
+                    currentState.copy(selectedFielderId = null)
+                }
+
+                val currentAppointment = _uiState.value.fielderAppointments.find { it.playerId == currentSelected } ?: return
+                val targetAppointment = _uiState.value.fielderAppointments.find { it.playerId == playerId } ?: return
+
+                updateFielderAppointment(
+                    playerId = currentSelected,
+                    position = currentAppointment.position,
+                    isMain = targetAppointment.isMain,
+                    number = targetAppointment.number
+                )
+
+                updateFielderAppointment(
+                    playerId = playerId,
+                    position = targetAppointment.position,
+                    isMain = currentAppointment.isMain,
+                    number = currentAppointment.number
+                )
+            }
+        }
+    }
+
+    fun selectPitcher(playerId: Int) {
+        if (_uiState.value.selectedPitcherId == null) {
+            _uiState.update { currentState ->
+                currentState.copy(selectedPitcherId = playerId)
+            }
+        } else {
+            val currentSelected = _uiState.value.selectedPitcherId!!
+            if (currentSelected == playerId) {
+                _uiState.update { currentState ->
+                    currentState.copy(selectedPitcherId = null)
+                }
+            } else {
+                _uiState.update { currentState ->
+                    currentState.copy(selectedPitcherId = null)
+                }
+
+                val currentAppointment = _uiState.value.pitcherAppointments.find { it.playerId == currentSelected } ?: return
+                val targetAppointment = _uiState.value.pitcherAppointments.find { it.playerId == playerId } ?: return
+
+                updatePitcherAppointment(
+                    playerId = currentSelected,
+                    isMain = targetAppointment.isMain,
+                    type = targetAppointment.type,
+                    number = targetAppointment.number
+                )
+
+                updatePitcherAppointment(
+                    playerId = playerId,
+                    isMain = currentAppointment.isMain,
+                    type = currentAppointment.type,
+                    number = currentAppointment.number
+                )
+            }
         }
     }
 }
