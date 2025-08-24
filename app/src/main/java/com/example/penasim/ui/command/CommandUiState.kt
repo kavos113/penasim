@@ -5,10 +5,42 @@ import com.example.penasim.domain.League
 import com.example.penasim.domain.PitcherAppointment
 import com.example.penasim.domain.PlayerInfo
 import com.example.penasim.domain.Team
+import com.example.penasim.domain.toShortJa
 
 data class CommandUiState(
     val team: Team = Team(0, "", League.L1),
     val players: List<PlayerInfo> = emptyList(),
     val fielderAppointments: List<FielderAppointment> = emptyList(),
     val pitcherAppointments: List<PitcherAppointment> = emptyList(),
-)
+) {
+    val orderFielderAppointments: List<FielderAppointment>
+        get() = fielderAppointments.filter { it.isMain }.sortedBy { it.number }.take(9)
+
+    val benchFielderAppointments: List<FielderAppointment>
+        get() = fielderAppointments.filter { it.isMain }.sortedBy { it.number }.drop(9)
+
+    val mainPitcherAppointments: List<PitcherAppointment>
+        get() = pitcherAppointments.filter { it.isMain }.sortedBy { it.number }
+
+    val subFielderAppointments: List<FielderAppointment>
+        get() = fielderAppointments.filter { !it.isMain }.sortedBy { it.number }
+
+    val subPitcherAppointments: List<PitcherAppointment>
+        get() = pitcherAppointments.filter { !it.isMain }.sortedBy { it.number }
+
+    fun getPlayerDisplayName(fielderAppointment: FielderAppointment): String {
+        val playerInfo = players.find { it.player.id == fielderAppointment.playerId }
+        return playerInfo?.player?.firstName ?: "Unknown Player"
+    }
+
+    fun getDisplayFielders(fielderAppointments: List<FielderAppointment>): List<DisplayFielder> {
+        return fielderAppointments.map {
+            DisplayFielder(
+                displayName = getPlayerDisplayName(it),
+                position = it.position.toShortJa(),
+                number = it.number,
+                isMain = it.isMain
+            )
+        }
+    }
+}
