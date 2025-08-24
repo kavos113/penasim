@@ -36,4 +36,16 @@ object DatabaseModule {
 
     @Provides
     fun provideGameResultDao(database: PennantDatabase) = database.gameResultDao()
+
+    @Provides
+    fun providePlayerDao(database: PennantDatabase) = database.playerDao()
+
+    @Provides
+    fun providePlayerPositionDao(database: PennantDatabase) = database.playerPositionDao()
+
+    @Provides
+    fun provideFielderAppointmentDao(database: PennantDatabase) = database.fielderAppointmentDao()
+
+    @Provides
+    fun providePitcherAppointmentDao(database: PennantDatabase) = database.pitcherAppointmentDao()
 }

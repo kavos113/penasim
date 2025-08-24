@@ -6,6 +6,14 @@ import com.example.penasim.domain.repository.GameFixtureRepository
 import com.example.penasim.data.repository.GameFixtureRepository as GameFixtureRepositoryImpl
 import com.example.penasim.domain.repository.TeamRepository
 import com.example.penasim.data.repository.TeamRepository as TeamRepositoryImpl
+import com.example.penasim.domain.repository.PlayerRepository
+import com.example.penasim.data.repository.PlayerRepository as PlayerRepositoryImpl
+import com.example.penasim.domain.repository.PlayerPositionRepository
+import com.example.penasim.data.repository.PlayerPositionRepository as PlayerPositionRepositoryImpl
+import com.example.penasim.domain.repository.FielderAppointmentRepository
+import com.example.penasim.data.repository.FielderAppointmentRepository as FielderAppointmentRepositoryImpl
+import com.example.penasim.domain.repository.PitcherAppointmentRepository
+import com.example.penasim.data.repository.PitcherAppointmentRepository as PitcherAppointmentRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -33,4 +41,28 @@ abstract class RepositoryModule {
     abstract fun bindGameResultRepository(
         impl: GameResultRepositoryImpl
     ): GameResultRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPlayerRepository(
+        impl: PlayerRepositoryImpl
+    ): PlayerRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPlayerPositionRepository(
+        impl: PlayerPositionRepositoryImpl
+    ): PlayerPositionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindFielderAppointmentRepository(
+        impl: FielderAppointmentRepositoryImpl
+    ): FielderAppointmentRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindPitcherAppointmentRepository(
+        impl: PitcherAppointmentRepositoryImpl
+    ): PitcherAppointmentRepository
 }
