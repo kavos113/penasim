@@ -1,5 +1,6 @@
 package com.example.penasim.ui.command
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,6 +29,10 @@ import com.example.penasim.R
 import com.example.penasim.domain.League
 import com.example.penasim.domain.Team
 import com.example.penasim.ui.navigation.NavigationDestination
+import com.example.penasim.ui.theme.catcherColor
+import com.example.penasim.ui.theme.infielderColor
+import com.example.penasim.ui.theme.outfielderColor
+import com.example.penasim.ui.theme.pitcherColor
 import com.example.penasim.ui.theme.playerBorderColor
 
 object FielderDestination : NavigationDestination {
@@ -149,7 +154,7 @@ private fun BenchList(
     ) {
         Text("ベンチ")
         repeat(fielders.size) {
-            SubstitutePlayerItem(displayName = fielders[it].displayName)
+            SubstitutePlayerItem(displayName = fielders[it].displayName, color = fielders[it].color)
         }
     }
 }
@@ -166,7 +171,7 @@ private fun SubstituteList(
         Text("2軍")
         LazyColumn {
             items(fielders) { fielder ->
-                SubstitutePlayerItem(displayName = fielder.displayName)
+                SubstitutePlayerItem(displayName = fielder.displayName, color = fielder.color)
             }
         }
     }
@@ -208,6 +213,7 @@ private fun OrderPlayerItem(
                     color = playerBorderColor,
                     shape = RoundedCornerShape(4.dp)
                 )
+                .background(color = player.color)
                 .padding(horizontal = 4.dp, vertical = 2.dp)
         ) {
             Text(
@@ -225,6 +231,7 @@ private fun OrderPlayerItem(
                     color = playerBorderColor,
                     shape = RoundedCornerShape(4.dp)
                 )
+                .background(color = player.color)
                 .padding(horizontal = 4.dp, vertical = 2.dp)
         ) {
             Text(
@@ -238,6 +245,7 @@ private fun OrderPlayerItem(
 @Composable
 private fun SubstitutePlayerItem(
     displayName: String,
+    color: Color,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -249,6 +257,7 @@ private fun SubstitutePlayerItem(
                 color = playerBorderColor,
                 shape = RoundedCornerShape(4.dp)
             )
+            .background(color = color)
             .padding(horizontal = 4.dp, vertical = 2.dp)
             .fillMaxWidth()
     ) {
@@ -272,15 +281,15 @@ fun FielderScreenPreview() {
 fun OrderListPreview() {
     OrderList(
         fielders = listOf(
-            DisplayFielder("Player 1", "投", 1, true),
-            DisplayFielder("Player 2", "捕", 2, true),
-            DisplayFielder("Player 3", "一", 3, true),
-            DisplayFielder("Player 4", "二", 4, true),
-            DisplayFielder("Player 5", "三", 5, true),
-            DisplayFielder("Player 6", "遊", 6, true),
-            DisplayFielder("Player 7", "左", 7, true),
-            DisplayFielder("Player 8", "中", 8, true),
-            DisplayFielder("Player 9", "右", 9, true),
+            DisplayFielder("Player 1", "投", 1, true, pitcherColor),
+            DisplayFielder("Player 2", "捕", 2, true, catcherColor),
+            DisplayFielder("Player 3", "一", 3, true, infielderColor),
+            DisplayFielder("Player 4", "二", 4, true, infielderColor),
+            DisplayFielder("Player 5", "三", 5, true, infielderColor),
+            DisplayFielder("Player 6", "遊", 6, true, infielderColor),
+            DisplayFielder("Player 7", "左", 7, true, outfielderColor),
+            DisplayFielder("Player 8", "中", 8, true, outfielderColor),
+            DisplayFielder("Player 9", "右", 9, true, outfielderColor),
         )
     )
 }
@@ -290,12 +299,12 @@ fun OrderListPreview() {
 fun BenchListPreview() {
     BenchList(
         fielders = listOf(
-            DisplayFielder("Player 10", "捕", 10, true),
-            DisplayFielder("Player 11", "一", 11, true),
-            DisplayFielder("Player 12", "外", 12, true),
-            DisplayFielder("Player 13", "三", 13, true),
-            DisplayFielder("Player 14", "外", 14, true),
-            DisplayFielder("Player 15", "遊", 15, true),
+            DisplayFielder("Player 10", "捕", 10, true, catcherColor),
+            DisplayFielder("Player 11", "一", 11, true, infielderColor),
+            DisplayFielder("Player 12", "外", 12, true, outfielderColor),
+            DisplayFielder("Player 13", "三", 13, true, infielderColor),
+            DisplayFielder("Player 14", "外", 14, true, infielderColor),
+            DisplayFielder("Player 15", "遊", 15, true, infielderColor),
         )
     )
 }
@@ -305,13 +314,13 @@ fun BenchListPreview() {
 fun SubstituteListPreview() {
     SubstituteList(
         fielders = listOf(
-            DisplayFielder("Player 16", "捕", 16, false),
-            DisplayFielder("Player 17", "一", 17, false),
-            DisplayFielder("Player 18", "外", 18, false),
-            DisplayFielder("Player 19", "三", 19, false),
-            DisplayFielder("Player 20", "外", 20, false),
-            DisplayFielder("Player 21", "遊", 21, false),
-            DisplayFielder("Player 22", "二", 22, false),
+            DisplayFielder("Player 16", "捕", 16, false, catcherColor),
+            DisplayFielder("Player 17", "一", 17, false, infielderColor),
+            DisplayFielder("Player 18", "外", 18, false, outfielderColor),
+            DisplayFielder("Player 19", "三", 19, false, infielderColor),
+            DisplayFielder("Player 20", "外", 20, false, outfielderColor),
+            DisplayFielder("Player 21", "遊", 21, false, infielderColor),
+            DisplayFielder("Player 22", "二", 22, false, infielderColor),
         )
     )
 }

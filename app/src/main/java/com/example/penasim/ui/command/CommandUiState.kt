@@ -40,7 +40,8 @@ data class CommandUiState(
                 displayName = getPlayerDisplayName(it),
                 position = it.position.toShortJa(),
                 number = it.number,
-                isMain = it.isMain
+                isMain = it.isMain,
+                color = it.position.color()
             )
         }
     }
