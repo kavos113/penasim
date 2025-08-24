@@ -7,13 +7,13 @@ import androidx.compose.ui.Modifier
 import com.example.penasim.R
 import com.example.penasim.ui.navigation.NavigationDestination
 
-object BatterDestination : NavigationDestination {
-    override val route: String = "natter"
-    override val titleResId: Int = R.string.batter
+object FielderDestination : NavigationDestination {
+    override val route: String = "fielder"
+    override val titleResId: Int = R.string.fielder
 }
 
 @Composable
-fun BatterScreen(
+fun FielderScreen(
     modifier: Modifier = Modifier,
 ) {
     Column {

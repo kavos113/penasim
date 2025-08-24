@@ -25,7 +25,7 @@ object CommandDestination : NavigationDestination {
 fun CommandScreen(
     modifier: Modifier = Modifier,
 ) {
-    val tabs = listOf(R.string.batter, R.string.pitcher)
+    val tabs = listOf(R.string.fielder, R.string.pitcher)
 
     val navController = rememberNavController()
     val selectedTabIndex = rememberPagerState { tabs.size }
@@ -40,7 +40,7 @@ fun CommandScreen(
                 onClick = {
                     navController.navigate(
                         when (index) {
-                            0 -> BatterDestination.route
+                            0 -> FielderDestination.route
                             1 -> PitcherDestination.route
                             else -> throw IndexOutOfBoundsException()
                         }
@@ -57,7 +57,7 @@ fun CommandScreen(
         modifier = Modifier.fillMaxSize()
     ) { page ->
         when (page) {
-            0 -> BatterScreen(modifier = Modifier.fillMaxSize())
+            0 -> FielderScreen(modifier = Modifier.fillMaxSize())
             1 -> PitcherScreen(modifier = Modifier.fillMaxSize())
         }
     }

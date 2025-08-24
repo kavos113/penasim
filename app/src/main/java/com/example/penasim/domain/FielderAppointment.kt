@@ -5,5 +5,5 @@ data class FielderAppointment(
     val playerId: Int,
     val position: Position,
     val isMain: Boolean,
-    val number: Int, // 打順
+    val number: Int, // 打順, 10以降は控え
 )
