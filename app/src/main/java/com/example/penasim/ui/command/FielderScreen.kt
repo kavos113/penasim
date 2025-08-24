@@ -1,11 +1,14 @@
 package com.example.penasim.ui.command
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,8 +18,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.penasim.R
 import com.example.penasim.domain.League
@@ -35,6 +41,10 @@ fun FielderScreen(
     commandViewModel: CommandViewModel = hiltViewModel()
 ) {
     val uiState by commandViewModel.uiState.collectAsState()
+    FielderContent(
+        uiState = uiState,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -43,19 +53,71 @@ private fun FielderContent(
     modifier: Modifier = Modifier
 ) {
     Row (
+        horizontalArrangement = Arrangement.spacedBy(0.dp),
         modifier = modifier
     ) {
         OrderList(
             fielders = uiState.getDisplayFielders(uiState.orderFielderAppointments),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(5f)
+                .drawBehind {
+                    val strokeWidth = 1.dp.toPx()
+                    drawLine(
+                        color = playerBorderColor,
+                        start = Offset(0f, 0f),
+                        end = Offset(0f, size.height),
+                        strokeWidth = strokeWidth
+                    )
+
+                    drawLine(
+                        color = playerBorderColor,
+                        start = Offset(size.width, 0f),
+                        end = Offset(size.width, size.height),
+                        strokeWidth = strokeWidth
+                    )
+                }
         )
         BenchList(
             fielders = uiState.getDisplayFielders(uiState.benchFielderAppointments),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(3f)
+                .drawBehind {
+                    val strokeWidth = 1.dp.toPx()
+                    drawLine(
+                        color = playerBorderColor,
+                        start = Offset(0f, 0f),
+                        end = Offset(0f, size.height),
+                        strokeWidth = strokeWidth
+                    )
+
+                    drawLine(
+                        color = playerBorderColor,
+                        start = Offset(size.width, 0f),
+                        end = Offset(size.width, size.height),
+                        strokeWidth = strokeWidth
+                    )
+                }
         )
         SubstituteList(
             fielders = uiState.getDisplayFielders(uiState.subFielderAppointments),
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(3f)
+                .drawBehind {
+                    val strokeWidth = 1.dp.toPx()
+                    drawLine(
+                        color = playerBorderColor,
+                        start = Offset(0f, 0f),
+                        end = Offset(0f, size.height),
+                        strokeWidth = strokeWidth
+                    )
+
+                    drawLine(
+                        color = playerBorderColor,
+                        start = Offset(size.width, 0f),
+                        end = Offset(size.width, size.height),
+                        strokeWidth = strokeWidth
+                    )
+                }
         )
     }
 }
@@ -66,6 +128,7 @@ private fun OrderList(
     modifier: Modifier = Modifier
 ) {
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
         Text("オーダー")
@@ -81,6 +144,7 @@ private fun BenchList(
     modifier: Modifier = Modifier
 ) {
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
         Text("ベンチ")
@@ -96,6 +160,7 @@ private fun SubstituteList(
     modifier: Modifier = Modifier
 ) {
     Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
         Text("2軍")
@@ -119,7 +184,8 @@ private fun OrderPlayerItem(
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .height(24.dp)
+                .weight(1f)
+                .height(40.dp)
                 .border(
                     width = 1.dp,
                     color = playerBorderColor,
@@ -127,12 +193,16 @@ private fun OrderPlayerItem(
                 )
                 .padding(horizontal = 4.dp, vertical = 2.dp)
         ) {
-            Text(player.number.toString())
+            Text(
+                text = player.number.toString(),
+                fontSize = 16.sp
+            )
         }
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .height(24.dp)
+                .weight(3f)
+                .height(40.dp)
                 .border(
                     width = 1.dp,
                     color = playerBorderColor,
@@ -140,12 +210,16 @@ private fun OrderPlayerItem(
                 )
                 .padding(horizontal = 4.dp, vertical = 2.dp)
         ) {
-            Text(player.displayName)
+            Text(
+                text = player.displayName,
+                fontSize = 16.sp
+            )
         }
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .height(24.dp)
+                .weight(1f)
+                .height(40.dp)
                 .border(
                     width = 1.dp,
                     color = playerBorderColor,
@@ -153,7 +227,10 @@ private fun OrderPlayerItem(
                 )
                 .padding(horizontal = 4.dp, vertical = 2.dp)
         ) {
-            Text(player.position)
+            Text(
+                text = player.position,
+                fontSize = 16.sp
+            )
         }
     }
 }
@@ -166,13 +243,14 @@ private fun SubstitutePlayerItem(
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
-            .height(24.dp)
+            .height(40.dp)
             .border(
                 width = 1.dp,
                 color = playerBorderColor,
                 shape = RoundedCornerShape(4.dp)
             )
             .padding(horizontal = 4.dp, vertical = 2.dp)
+            .fillMaxWidth()
     ) {
         Text(displayName)
     }

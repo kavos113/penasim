@@ -1,16 +1,17 @@
 package com.example.penasim.ui.command
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.example.penasim.R
 import com.example.penasim.ui.navigation.NavigationDestination
@@ -30,41 +31,42 @@ fun CommandScreen(
     val navController = rememberNavController()
     val selectedTabIndex = rememberPagerState { tabs.size }
 
-    PrimaryTabRow(
-        selectedTabIndex = selectedTabIndex.currentPage,
-        modifier = modifier,
-    ) {
-        tabs.forEachIndexed { index, titleResId ->
-            Tab(
-                selected = selectedTabIndex.currentPage == index,
-                onClick = {
-                    navController.navigate(
-                        when (index) {
-                            0 -> FielderDestination.route
-                            1 -> PitcherDestination.route
-                            else -> throw IndexOutOfBoundsException()
+    Scaffold(
+        topBar = {
+            PrimaryTabRow(
+                selectedTabIndex = selectedTabIndex.currentPage,
+                modifier = modifier,
+            ) {
+                tabs.forEachIndexed { index, titleResId ->
+                    Tab(
+                        selected = selectedTabIndex.currentPage == index,
+                        onClick = {
+                            navController.navigate(
+                                when (index) {
+                                    0 -> FielderDestination.route
+                                    1 -> PitcherDestination.route
+                                    else -> throw IndexOutOfBoundsException()
+                                }
+                            )
+                        },
+                        text = {
+                            Text(stringResource(titleResId))
                         }
                     )
-                },
-                text = {
-                    Text(stringResource(titleResId))
                 }
-            )
+            }
+        }
+    ) { innerPadding ->
+        HorizontalPager(
+            state = selectedTabIndex,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+        ) { page ->
+            when (page) {
+                0 -> FielderScreen(modifier = Modifier.fillMaxSize())
+                1 -> PitcherScreen(modifier = Modifier.fillMaxSize())
+            }
         }
     }
-    HorizontalPager(
-        state = selectedTabIndex,
-        modifier = Modifier.fillMaxSize()
-    ) { page ->
-        when (page) {
-            0 -> FielderScreen(modifier = Modifier.fillMaxSize())
-            1 -> PitcherScreen(modifier = Modifier.fillMaxSize())
-        }
-    }
-}
-
-@Preview
-@Composable
-fun CommandScreenPreview() {
-    CommandScreen()
 }

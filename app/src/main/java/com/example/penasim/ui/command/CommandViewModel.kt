@@ -49,6 +49,10 @@ class CommandViewModel @Inject constructor(
                     pitcherAppointments = pitcherAppointments
                 )
             }
+
+            println("Loaded ${players.size} players for team ${team.name}")
+            println("Loaded ${fielderAppointments.size} fielder appointments for team ${team.name}")
+            println("Loaded ${pitcherAppointments.size} pitcher appointments for team ${team.name}")
         }
     }
 

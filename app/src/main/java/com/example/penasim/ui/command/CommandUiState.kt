@@ -35,6 +35,7 @@ data class CommandUiState(
 
     fun getDisplayFielders(fielderAppointments: List<FielderAppointment>): List<DisplayFielder> {
         return fielderAppointments.map {
+            println("position: ${it.position.toShortJa()}")
             DisplayFielder(
                 displayName = getPlayerDisplayName(it),
                 position = it.position.toShortJa(),
