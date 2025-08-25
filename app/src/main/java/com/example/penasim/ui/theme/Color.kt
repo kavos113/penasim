@@ -224,6 +224,7 @@ val pitcherColor = Color(0xFFFF8787)
 val catcherColor = Color(0xFF87CFFF)
 val infielderColor = Color(0xFFFCED47)
 val outfielderColor = Color(0xFF13D637)
+val substituteBackgroundColor = Color(0x33000000)
 
 val sColor = Color(0xFFF294C9)
 val aColor = Color(0xFFFF66DB)

@@ -37,6 +37,7 @@ import com.example.penasim.ui.theme.infielderColor
 import com.example.penasim.ui.theme.outfielderColor
 import com.example.penasim.ui.theme.pitcherColor
 import com.example.penasim.ui.theme.playerBorderColor
+import com.example.penasim.ui.theme.substituteBackgroundColor
 
 object FielderDestination : NavigationDestination {
     override val route: String = "fielder"
@@ -137,6 +138,7 @@ private fun FielderContent(
                             strokeWidth = strokeWidth
                         )
                     }
+                    .background(substituteBackgroundColor)
             )
         }
 
@@ -234,7 +236,7 @@ private fun FielderDetail(
         Column(
             verticalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier
-                .weight(1f)
+                .weight(2f)
                 .padding(12.dp)
         ) {
             SimplePlayerItem(

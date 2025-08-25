@@ -60,9 +60,37 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
 
     # create pitchers
     isMain = True
-    closerCount = 0
+    num_starters = 0
+    num_relievers = 0
+    num_closers = 0
+    num_sub = 0
     for i in range(pitcher_count):
+        pitcher_type = random.randint(0, 1)  
+        if isMain: 
+            if i == 0:
+                pitcher_type = 2
+            elif i < 6:
+                pitcher_type = 0
+            elif i < 13:
+                pitcher_type = 1
+
         player_id = len(players) + 1
+        
+        player_number = 0
+        if isMain:
+            if pitcher_type == 0:
+                player_number = num_starters + 1
+                num_starters += 1
+            elif pitcher_type == 1:
+                player_number = num_relievers + 1
+                num_relievers += 1
+            elif pitcher_type == 2:
+                player_number = num_closers + 1
+                num_closers += 1
+        else:
+            player_number = num_sub + 1
+            num_sub += 1
+
         defense = random.randint(10, 50)
         players.append([
             player_id,
@@ -82,13 +110,10 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
 
         player_positions.append([player_id, position_map[0], defense])
 
-        pitcher_type = random.randint(0, 2) if closerCount < 5 else random.randint(0, 1)
-        pitcher_appointments.append([teamId, player_id, 1 if isMain else 0, pitcher_type_map[pitcher_type], i + 1])
+        pitcher_appointments.append([teamId, player_id, 1 if isMain else 0, pitcher_type_map[pitcher_type], player_number])
 
-        isMain = len(pitcher_appointments) <= 12
-        if pitcher_type == 2:
-            closerCount += 1
-        
+        if len(pitcher_appointments) >= 12:
+            isMain = False
 
     # write csv
     with open(f"{csv_dir}/players.csv", "w", newline="") as f:
