@@ -12,7 +12,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -26,7 +31,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import com.example.penasim.R
+import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.Player
 import com.example.penasim.domain.PlayerPosition
 import com.example.penasim.domain.Position
@@ -44,25 +51,102 @@ object FielderDestination : NavigationDestination {
     override val titleResId: Int = R.string.fielder
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FielderScreen(
     modifier: Modifier = Modifier,
     commandViewModel: CommandViewModel
 ) {
     val uiState by commandViewModel.uiState.collectAsState()
-    FielderContent(
-        uiState = uiState,
-        onPlayerClick = { playerId ->
-            commandViewModel.selectFielder(playerId)
-        },
-        modifier = modifier
+
+    val tabs = listOf(
+        FielderOrderDestination.titleResId,
+        FielderOrderLeftDestination.titleResId,
+        FielderOrderDhDestination.titleResId,
+        FielderOrderDhLeftDestination.titleResId,
     )
+    
+    val navController = rememberNavController()
+    val selectedTabIndex = rememberPagerState { tabs.size }
+
+    Scaffold(
+        topBar = {
+            PrimaryTabRow(
+                selectedTabIndex = selectedTabIndex.currentPage,
+                modifier = modifier,
+            ) {
+                tabs.forEachIndexed { index, titleResId ->
+                    Tab(
+                        selected = selectedTabIndex.currentPage == index,
+                        onClick = {
+                            navController.navigate(
+                                when (index) {
+                                    0 -> FielderOrderDestination.route
+                                    1 -> FielderOrderLeftDestination.route
+                                    2 -> FielderOrderDhDestination.route
+                                    3 -> FielderOrderDhLeftDestination.route
+                                    else -> throw IndexOutOfBoundsException()
+                                }
+                            )
+                        },
+                        text = {
+                            Text(stringResource(titleResId))
+                        }
+                    )
+                }
+            }
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            FielderContent(
+                uiState = uiState,
+                onPlayerClick = { playerId ->
+                    commandViewModel.selectFielder(playerId)
+                },
+                modifier = Modifier.fillMaxSize(),
+                orderType = getOrderType(selectedTabIndex.currentPage)
+            )
+        }
+    }
+}
+
+object FielderOrderDestination : NavigationDestination {
+    override val route: String = "fielder_order"
+    override val titleResId: Int = R.string.fielder_order
+}
+
+object FielderOrderLeftDestination : NavigationDestination {
+    override val route: String = "fielder_order_left"
+    override val titleResId: Int = R.string.fielder_order_left
+}
+
+object FielderOrderDhDestination : NavigationDestination {
+    override val route: String = "fielder_order_dh"
+    override val titleResId: Int = R.string.fielder_order_dh
+}
+
+object FielderOrderDhLeftDestination : NavigationDestination {
+    override val route: String = "fielder_order_dh_left"
+    override val titleResId: Int = R.string.fielder_order_dh_left
+}
+
+private fun getOrderType(tabIndex: Int): OrderType = when(tabIndex) {
+    0 -> OrderType.NORMAL
+    1 -> OrderType.LEFT
+    2 -> OrderType.DH
+    3 -> OrderType.LEFT_DH
+    else -> OrderType.NORMAL
 }
 
 @Composable
 private fun FielderContent(
     uiState: CommandUiState,
     onPlayerClick: (Int) -> Unit,
+    orderType: OrderType,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -74,7 +158,7 @@ private fun FielderContent(
             modifier = modifier
         ) {
             OrderList(
-                fielders = uiState.getDisplayFielders(uiState.orderFielderAppointments),
+                fielders = uiState.getDisplayFielders(uiState.getOrderFielderAppointments(orderType)),
                 onItemClick = onPlayerClick,
                 modifier = Modifier
                     .weight(5f)
@@ -96,7 +180,7 @@ private fun FielderContent(
                     }
             )
             BenchList(
-                fielders = uiState.getDisplayFielders(uiState.benchFielderAppointments),
+                fielders = uiState.getDisplayFielders(uiState.getBenchFielderAppointments(orderType)),
                 onItemClick = onPlayerClick,
                 modifier = Modifier
                     .weight(3f)
@@ -118,7 +202,7 @@ private fun FielderContent(
                     }
             )
             SubstituteList(
-                fielders = uiState.getDisplayFielders(uiState.subFielderAppointments),
+                fielders = uiState.getDisplayFielders(uiState.getSubFielderAppointments(orderType)),
                 onItemClick = onPlayerClick,
                 modifier = Modifier
                     .weight(3f)
@@ -354,7 +438,8 @@ private fun DefenseStatus(
 fun FielderScreenPreview() {
     FielderContent(
         uiState = CommandUiState(),
-        onPlayerClick = { }
+        onPlayerClick = { },
+        orderType = OrderType.NORMAL,
     )
 }
 
@@ -363,7 +448,7 @@ fun FielderScreenPreview() {
 fun OrderListPreview() {
     OrderList(
         fielders = listOf(
-            DisplayFielder(0, "Player 1", "投", 1, true, pitcherColor),
+            DisplayFielder(0, "Pitcher", "投", 1, true, pitcherColor),
             DisplayFielder(1, "Player 2", "捕", 2, true, catcherColor),
             DisplayFielder(2, "Player 3", "一", 3, true, infielderColor),
             DisplayFielder(3, "Player 4", "二", 4, true, infielderColor),

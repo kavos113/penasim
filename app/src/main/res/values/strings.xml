@@ -13,4 +13,8 @@
     <string name="bench">ベンチ</string>
     <string name="order">オーダー</string>
     <string name="substitute">2軍</string>
+    <string name="fielder_order">DHなし・対右</string>
+    <string name="fielder_order_left">DHなし・対左</string>
+    <string name="fielder_order_dh">DHあり・対右</string>
+    <string name="fielder_order_dh_left">DHあり・対左</string>
 </resources>

@@ -2,6 +2,7 @@ package com.example.penasim.ui.command
 
 import com.example.penasim.domain.FielderAppointment
 import com.example.penasim.domain.League
+import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.PitcherAppointment
 import com.example.penasim.domain.PitcherType
 import com.example.penasim.domain.PlayerInfo
@@ -16,14 +17,14 @@ data class CommandUiState(
     val selectedFielderId: Int? = null,
     val selectedPitcherId: Int? = null,
 ) {
-    val orderFielderAppointments: List<FielderAppointment>
-        get() = fielderAppointments.filter { it.isMain }.sortedBy { it.number }.take(9)
+    fun getOrderFielderAppointments(orderType: OrderType): List<FielderAppointment>
+        = fielderAppointments.filter { it.orderType == orderType }.filter { it.isMain }.sortedBy { it.number }.take(9)
 
-    val benchFielderAppointments: List<FielderAppointment>
-        get() = fielderAppointments.filter { it.isMain }.sortedBy { it.number }.drop(9)
+    fun getBenchFielderAppointments(orderType: OrderType): List<FielderAppointment>
+        = fielderAppointments.filter { it.orderType == orderType }.filter { it.isMain }.sortedBy { it.number }.drop(9)
 
-    val subFielderAppointments: List<FielderAppointment>
-        get() = fielderAppointments.filter { !it.isMain }.sortedBy { it.number }
+    fun getSubFielderAppointments(orderType: OrderType): List<FielderAppointment>
+        = fielderAppointments.filter { it.orderType == orderType }.filter { !it.isMain }.sortedBy { it.number }
 
     val mainStarterPitcherAppointments: List<PitcherAppointment>
         get() = pitcherAppointments.filter { it.isMain }.filter { it.type == PitcherType.STARTER }.sortedBy { it.number }

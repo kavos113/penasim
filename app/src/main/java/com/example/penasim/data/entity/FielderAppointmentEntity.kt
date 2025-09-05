@@ -3,6 +3,7 @@ package com.example.penasim.data.entity
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.Position
 
 @Entity(
@@ -28,4 +29,5 @@ data class FielderAppointmentEntity(
     val position: Position,
     val isMain: Boolean,
     val number: Int,
+    val orderType: OrderType
 )

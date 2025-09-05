@@ -9,6 +9,7 @@ fun FielderAppointmentEntity.toDomain(): FielderAppointment = FielderAppointment
     position = position,
     isMain = isMain,
     number = number,
+    orderType = orderType,
 )
 
 fun FielderAppointment.toEntity(): FielderAppointmentEntity = FielderAppointmentEntity(
@@ -17,4 +18,5 @@ fun FielderAppointment.toEntity(): FielderAppointmentEntity = FielderAppointment
     position = position,
     isMain = isMain,
     number = number,
+    orderType = orderType,
 )
