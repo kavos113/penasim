@@ -29,7 +29,7 @@ import com.example.penasim.data.repository.Converters
         FielderAppointmentEntity::class,
         PitcherAppointmentEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
