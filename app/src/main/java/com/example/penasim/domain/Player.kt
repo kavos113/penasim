@@ -2,7 +2,7 @@ package com.example.penasim.domain
 
 data class Player(
     val id: Int,
-    val firstName: String,
+    val firstName: String, // "Pitcher"は野手オーダー用
     val lastName: String,
     val teamId: Int,
 

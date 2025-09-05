@@ -14,7 +14,10 @@ position_map = {
     3: "SECOND_BASEMAN",
     4: "SHORTSTOP",
     5: "THIRD_BASEMAN",
-    6: "OUTFIELDER"
+    6: "OUTFIELDER",
+    7: "LEFT_FIELDER",
+    8: "CENTER_FIELDER",
+    9: "RIGHT_FIELDER"
 }
 
 pitcher_type_map = {
@@ -30,8 +33,36 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
     fielder_appointments = []
 
     # create fielders
+    # starting members
+    for i in range(1, 9):
+        player_id = len(players) + 1
+        defense = random.randint(10, 90)
+        players.append([
+            player_id, 
+            f"First{i}",
+            f"Last{i}", 
+            teamId,
+            random.randint(10, 90),
+            random.randint(10, 90),
+            random.randint(10, 90),
+            random.randint(10, 90),
+            defense,
+            random.randint(10, 90),
+            120,
+            1,
+            1
+        ])
+        position = i if i != 6 else 9
+        player_positions.append([player_id, position_map[position], defense])
+        fielder_appointments.append([teamId, player_id, position_map[position], 1, i])
+    # pitcher as fielder
+    player_id = len(players) + 1
+    players.append([player_id, f"Pitcher", "", teamId, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    player_positions.append([player_id, position_map[0], 0])
+    fielder_appointments.append([teamId, player_id, position_map[0], 1, 9])
+    # substitute members
     isMain = True
-    for i in range(fielder_count):
+    for i in range(9, fielder_count):
         player_id = len(players) + 1
         defense = random.randint(10, 90)
         players.append([
