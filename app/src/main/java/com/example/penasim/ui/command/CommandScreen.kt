@@ -11,12 +11,13 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.rememberNavController
 import com.example.penasim.R
 import com.example.penasim.ui.navigation.NavigationDestination
+import kotlinx.coroutines.launch
 
 object CommandDestination : NavigationDestination {
     override val route: String = "command"
@@ -31,8 +32,8 @@ fun CommandScreen(
 ) {
     val tabs = listOf(R.string.fielder, R.string.pitcher)
 
-    val navController = rememberNavController()
     val selectedTabIndex = rememberPagerState { tabs.size }
+    val tabScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
@@ -44,13 +45,9 @@ fun CommandScreen(
                     Tab(
                         selected = selectedTabIndex.currentPage == index,
                         onClick = {
-                            navController.navigate(
-                                when (index) {
-                                    0 -> FielderDestination.route
-                                    1 -> PitcherDestination.route
-                                    else -> throw IndexOutOfBoundsException()
-                                }
-                            )
+                            tabScope.launch {
+                                selectedTabIndex.animateScrollToPage(index)
+                            }
                         },
                         text = {
                             Text(stringResource(titleResId))

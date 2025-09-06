@@ -2,12 +2,12 @@ package com.example.penasim.data.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
 import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.Position
 
 @Entity(
     tableName = "fielder_appointments",
+    primaryKeys = ["playerId", "orderType"],
     foreignKeys = [
         ForeignKey(
             entity = TeamEntity::class,
@@ -25,7 +25,7 @@ import com.example.penasim.domain.Position
 )
 data class FielderAppointmentEntity(
     val teamId: Int,
-    @PrimaryKey val playerId: Int,
+    val playerId: Int,
     val position: Position,
     val isMain: Boolean,
     val number: Int,

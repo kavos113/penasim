@@ -12,16 +12,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -31,7 +32,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import com.example.penasim.R
 import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.Player
@@ -45,6 +45,7 @@ import com.example.penasim.ui.theme.outfielderColor
 import com.example.penasim.ui.theme.pitcherColor
 import com.example.penasim.ui.theme.playerBorderColor
 import com.example.penasim.ui.theme.substituteBackgroundColor
+import kotlinx.coroutines.launch
 
 object FielderDestination : NavigationDestination {
     override val route: String = "fielder"
@@ -60,78 +61,53 @@ fun FielderScreen(
     val uiState by commandViewModel.uiState.collectAsState()
 
     val tabs = listOf(
-        FielderOrderDestination.titleResId,
-        FielderOrderLeftDestination.titleResId,
-        FielderOrderDhDestination.titleResId,
-        FielderOrderDhLeftDestination.titleResId,
+        R.string.fielder_order,
+        R.string.fielder_order_left,
+        R.string.fielder_order_dh,
+        R.string.fielder_order_dh_left
     )
     
-    val navController = rememberNavController()
     val selectedTabIndex = rememberPagerState { tabs.size }
+    val tabScope = rememberCoroutineScope()
 
-    Scaffold(
-        topBar = {
-            PrimaryTabRow(
-                selectedTabIndex = selectedTabIndex.currentPage,
-                modifier = modifier,
-            ) {
-                tabs.forEachIndexed { index, titleResId ->
-                    Tab(
-                        selected = selectedTabIndex.currentPage == index,
-                        onClick = {
-                            navController.navigate(
-                                when (index) {
-                                    0 -> FielderOrderDestination.route
-                                    1 -> FielderOrderLeftDestination.route
-                                    2 -> FielderOrderDhDestination.route
-                                    3 -> FielderOrderDhLeftDestination.route
-                                    else -> throw IndexOutOfBoundsException()
-                                }
-                            )
-                        },
-                        text = {
-                            Text(stringResource(titleResId))
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        SecondaryTabRow(
+            selectedTabIndex = selectedTabIndex.currentPage,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            tabs.forEachIndexed { index, titleResId ->
+                Tab(
+                    selected = selectedTabIndex.currentPage == index,
+                    onClick = {
+                        tabScope.launch {
+                            selectedTabIndex.animateScrollToPage(index)
                         }
-                    )
-                }
+                    },
+                    text = {
+                        Text(stringResource(titleResId))
+                    }
+                )
             }
         }
-    ) { innerPadding ->
-        Box(
+
+        HorizontalPager(
+            state = selectedTabIndex,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-        ) {
+        ) { page ->
             FielderContent(
                 uiState = uiState,
                 onPlayerClick = { playerId ->
                     commandViewModel.selectFielder(playerId)
                 },
                 modifier = Modifier.fillMaxSize(),
-                orderType = getOrderType(selectedTabIndex.currentPage)
+                orderType = getOrderType(page)
             )
         }
     }
-}
-
-object FielderOrderDestination : NavigationDestination {
-    override val route: String = "fielder_order"
-    override val titleResId: Int = R.string.fielder_order
-}
-
-object FielderOrderLeftDestination : NavigationDestination {
-    override val route: String = "fielder_order_left"
-    override val titleResId: Int = R.string.fielder_order_left
-}
-
-object FielderOrderDhDestination : NavigationDestination {
-    override val route: String = "fielder_order_dh"
-    override val titleResId: Int = R.string.fielder_order_dh
-}
-
-object FielderOrderDhLeftDestination : NavigationDestination {
-    override val route: String = "fielder_order_dh_left"
-    override val titleResId: Int = R.string.fielder_order_dh_left
 }
 
 private fun getOrderType(tabIndex: Int): OrderType = when(tabIndex) {
