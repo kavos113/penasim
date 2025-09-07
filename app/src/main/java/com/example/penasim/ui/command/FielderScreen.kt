@@ -92,6 +92,7 @@ fun FielderScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) { page ->
+            commandViewModel.changeOrderType(getOrderType(page))
             FielderContent(
                 uiState = uiState,
                 onPlayerClick = { playerId ->
@@ -128,7 +129,7 @@ private fun FielderContent(
             modifier = modifier
         ) {
             OrderList(
-                fielders = uiState.getDisplayFielders(uiState.getOrderFielderAppointments(orderType)),
+                fielders = uiState.getDisplayFielders(uiState.orderFielderAppointments),
                 onItemClick = onPlayerClick,
                 modifier = Modifier
                     .weight(5f)
@@ -150,7 +151,7 @@ private fun FielderContent(
                     }
             )
             BenchList(
-                fielders = uiState.getDisplayFielders(uiState.getBenchFielderAppointments(orderType)),
+                fielders = uiState.getDisplayFielders(uiState.benchFielderAppointments),
                 onItemClick = onPlayerClick,
                 modifier = Modifier
                     .weight(3f)
@@ -172,7 +173,7 @@ private fun FielderContent(
                     }
             )
             SubstituteList(
-                fielders = uiState.getDisplayFielders(uiState.getSubFielderAppointments(orderType)),
+                fielders = uiState.getDisplayFielders(uiState.subFielderAppointments),
                 onItemClick = onPlayerClick,
                 modifier = Modifier
                     .weight(3f)
@@ -418,15 +419,15 @@ fun FielderScreenPreview() {
 fun OrderListPreview() {
     OrderList(
         fielders = listOf(
-            DisplayFielder(0, "Pitcher", "投", 1, true, pitcherColor),
-            DisplayFielder(1, "Player 2", "捕", 2, true, catcherColor),
-            DisplayFielder(2, "Player 3", "一", 3, true, infielderColor),
-            DisplayFielder(3, "Player 4", "二", 4, true, infielderColor),
-            DisplayFielder(4, "Player 5", "三", 5, true, infielderColor),
-            DisplayFielder(5, "Player 6", "遊", 6, true, infielderColor),
-            DisplayFielder(6, "Player 7", "左", 7, true, outfielderColor),
-            DisplayFielder(7, "Player 8", "中", 8, true, outfielderColor),
-            DisplayFielder(8, "Player 9", "右", 9, true, outfielderColor),
+            DisplayFielder(0, "Pitcher", "投", 1, pitcherColor),
+            DisplayFielder(1, "Player 2", "捕", 2, catcherColor),
+            DisplayFielder(2, "Player 3", "一", 3, infielderColor),
+            DisplayFielder(3, "Player 4", "二", 4, infielderColor),
+            DisplayFielder(4, "Player 5", "三", 5, infielderColor),
+            DisplayFielder(5, "Player 6", "遊", 6, infielderColor),
+            DisplayFielder(6, "Player 7", "左", 7, outfielderColor),
+            DisplayFielder(7, "Player 8", "中", 8, outfielderColor),
+            DisplayFielder(8, "Player 9", "右", 9, outfielderColor),
         ),
         onItemClick = { },
     )
@@ -437,12 +438,12 @@ fun OrderListPreview() {
 fun BenchListPreview() {
     BenchList(
         fielders = listOf(
-            DisplayFielder(0, "Player 10", "捕", 10, true, catcherColor),
-            DisplayFielder(0, "Player 11", "一", 11, true, infielderColor),
-            DisplayFielder(0, "Player 12", "外", 12, true, outfielderColor),
-            DisplayFielder(0, "Player 13", "三", 13, true, infielderColor),
-            DisplayFielder(0, "Player 14", "外", 14, true, infielderColor),
-            DisplayFielder(0, "Player 15", "遊", 15, true, infielderColor),
+            DisplayFielder(0, "Player 10", "捕", 10, catcherColor),
+            DisplayFielder(0, "Player 11", "一", 11, infielderColor),
+            DisplayFielder(0, "Player 12", "外", 12, outfielderColor),
+            DisplayFielder(0, "Player 13", "三", 13, infielderColor),
+            DisplayFielder(0, "Player 14", "外", 14, infielderColor),
+            DisplayFielder(0, "Player 15", "遊", 15, infielderColor),
         ),
         onItemClick = { }
     )
@@ -453,13 +454,13 @@ fun BenchListPreview() {
 fun SubstituteListPreview() {
     SubstituteList(
         fielders = listOf(
-            DisplayFielder(0, "Player 16", "捕", 16, false, catcherColor),
-            DisplayFielder(0, "Player 17", "一", 17, false, infielderColor),
-            DisplayFielder(0, "Player 18", "外", 18, false, outfielderColor),
-            DisplayFielder(0, "Player 19", "三", 19, false, infielderColor),
-            DisplayFielder(0, "Player 20", "外", 20, false, outfielderColor),
-            DisplayFielder(0, "Player 21", "遊", 21, false, infielderColor),
-            DisplayFielder(0, "Player 22", "二", 22, false, infielderColor),
+            DisplayFielder(0, "Player 16", "捕", 16, catcherColor),
+            DisplayFielder(0, "Player 17", "一", 17, infielderColor),
+            DisplayFielder(0, "Player 18", "外", 18, outfielderColor),
+            DisplayFielder(0, "Player 19", "三", 19, infielderColor),
+            DisplayFielder(0, "Player 20", "外", 20, outfielderColor),
+            DisplayFielder(0, "Player 21", "遊", 21, infielderColor),
+            DisplayFielder(0, "Player 22", "二", 22, infielderColor),
         ),
         onItemClick = { }
     )

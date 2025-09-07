@@ -4,7 +4,7 @@ data class FielderAppointment(
     val teamId: Int,
     val playerId: Int,
     val position: Position,
-    val number: Int, // 打順, 10以降は控え
+    val number: Int,
     val orderType: OrderType,
 )
 
@@ -14,3 +14,5 @@ enum class OrderType {
     DH,
     LEFT_DH,
 }
+
+fun FielderAppointment.isStarting(): Boolean = position != Position.BENCH && position != Position.SUBSTITUTE

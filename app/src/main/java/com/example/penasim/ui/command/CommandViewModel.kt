@@ -2,8 +2,10 @@ package com.example.penasim.ui.command
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.PitcherType
 import com.example.penasim.domain.Position
+import com.example.penasim.domain.isStarting
 import com.example.penasim.usecase.GetFielderAppointmentByTeamUseCase
 import com.example.penasim.usecase.GetPitcherAppointmentByTeamUseCase
 import com.example.penasim.usecase.GetPlayerInfosByTeamUseCase
@@ -56,15 +58,14 @@ class CommandViewModel @Inject constructor(
         }
     }
 
-    fun updateFielderAppointment(playerId: Int, position: Position, isMain: Boolean, number: Int) {
-        println("Updating fielder appointment for playerId: $playerId, position: $position, isMain: $isMain, number: $number")
+    fun updateFielderAppointment(playerId: Int, position: Position, number: Int) {
+        println("Updating fielder appointment for playerId: $playerId, position: $position, number: $number")
 
-        val currentAppointments = _uiState.value.fielderAppointments.toMutableList()
+        val currentAppointments = _uiState.value.currentFielderAppointments.toMutableList()
         val currentPlayerAppointment = currentAppointments.find { it.playerId == playerId } ?: return
 
         val updatedAppointment = currentPlayerAppointment.copy(
             position = position,
-            isMain = isMain,
             number = number
         )
 
@@ -117,22 +118,36 @@ class CommandViewModel @Inject constructor(
                     currentState.copy(selectedFielderId = null)
                 }
 
-                val currentAppointment = _uiState.value.fielderAppointments.find { it.playerId == currentSelected } ?: return
-                val targetAppointment = _uiState.value.fielderAppointments.find { it.playerId == playerId } ?: return
+                val currentAppointment = _uiState.value.currentFielderAppointments.find { it.playerId == currentSelected } ?: return
+                val targetAppointment = _uiState.value.currentFielderAppointments.find { it.playerId == playerId } ?: return
 
-                updateFielderAppointment(
-                    playerId = currentSelected,
-                    position = currentAppointment.position,
-                    isMain = targetAppointment.isMain,
-                    number = targetAppointment.number
-                )
+                if (currentAppointment.isStarting() && targetAppointment.isStarting()) {
+                    // positionは入れ替えない
+                    updateFielderAppointment(
+                        playerId = currentSelected,
+                        position = currentAppointment.position,
+                        number = targetAppointment.number
+                    )
 
-                updateFielderAppointment(
-                    playerId = playerId,
-                    position = targetAppointment.position,
-                    isMain = currentAppointment.isMain,
-                    number = currentAppointment.number
-                )
+                    updateFielderAppointment(
+                        playerId = playerId,
+                        position = targetAppointment.position,
+                        number = currentAppointment.number
+                    )
+                } else {
+                    // positionも入れ替える
+                    updateFielderAppointment(
+                        playerId = currentSelected,
+                        position = targetAppointment.position,
+                        number = targetAppointment.number
+                    )
+
+                    updateFielderAppointment(
+                        playerId = playerId,
+                        position = currentAppointment.position,
+                        number = currentAppointment.number
+                    )
+                }
             }
         }
     }
@@ -170,6 +185,12 @@ class CommandViewModel @Inject constructor(
                     number = currentAppointment.number
                 )
             }
+        }
+    }
+
+    fun changeOrderType(orderType: OrderType) {
+        _uiState.update { currentState ->
+            currentState.copy(currentFielderOrderType = orderType)
         }
     }
 }
