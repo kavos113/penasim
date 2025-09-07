@@ -12,6 +12,8 @@ enum class Position {
     CENTER_FIELDER,
     RIGHT_FIELDER,
     DH,
+    BENCH,
+    SUBSTITUTE,
 }
 
 fun Position.toJa(): String {
@@ -27,6 +29,8 @@ fun Position.toJa(): String {
         Position.CENTER_FIELDER -> "中堅手"
         Position.RIGHT_FIELDER -> "右翼手"
         Position.DH -> "指名打者"
+        Position.BENCH -> "控え"
+        Position.SUBSTITUTE -> "二軍"
     }
 }
 
@@ -43,6 +47,8 @@ fun Position.toShortJa(): String {
         Position.CENTER_FIELDER -> "中"
         Position.RIGHT_FIELDER -> "右"
         Position.DH -> "指"
+        Position.BENCH -> "控"
+        Position.SUBSTITUTE -> "二"
     }
 }
 

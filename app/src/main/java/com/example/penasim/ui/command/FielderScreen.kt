@@ -38,7 +38,6 @@ import com.example.penasim.domain.Player
 import com.example.penasim.domain.PlayerPosition
 import com.example.penasim.domain.Position
 import com.example.penasim.domain.toShortJa
-import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.catcherColor
 import com.example.penasim.ui.theme.infielderColor
 import com.example.penasim.ui.theme.outfielderColor
@@ -46,11 +45,6 @@ import com.example.penasim.ui.theme.pitcherColor
 import com.example.penasim.ui.theme.playerBorderColor
 import com.example.penasim.ui.theme.substituteBackgroundColor
 import kotlinx.coroutines.launch
-
-object FielderDestination : NavigationDestination {
-    override val route: String = "fielder"
-    override val titleResId: Int = R.string.fielder
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
