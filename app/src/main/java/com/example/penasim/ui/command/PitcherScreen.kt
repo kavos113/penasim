@@ -28,7 +28,13 @@ import com.example.penasim.domain.PitcherType
 import com.example.penasim.domain.Player
 import com.example.penasim.domain.PlayerPosition
 import com.example.penasim.domain.Position
+import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.pitcherColor
+
+object PitcherDestination : NavigationDestination {
+    override val route: String = "pitcher"
+    override val titleResId: Int = R.string.pitcher
+}
 
 @Composable
 fun PitcherScreen(

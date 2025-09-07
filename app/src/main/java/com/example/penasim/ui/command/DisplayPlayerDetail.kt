@@ -35,8 +35,6 @@ fun Position.color(): Color = when(this) {
     Position.CENTER_FIELDER -> outfielderColor
     Position.RIGHT_FIELDER -> outfielderColor
     Position.DH -> outfielderColor
-    Position.BENCH -> Color.Gray
-    Position.SUBSTITUTE -> Color.Gray
 }
 
 fun Int.statusAlphabet(): String = if (this >= 90) {
