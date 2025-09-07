@@ -6,9 +6,7 @@ import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.PitcherAppointment
 import com.example.penasim.domain.PitcherType
 import com.example.penasim.domain.PlayerInfo
-import com.example.penasim.domain.Position
 import com.example.penasim.domain.Team
-import com.example.penasim.domain.isStarting
 import com.example.penasim.domain.toShortJa
 
 data class CommandUiState(
@@ -18,20 +16,15 @@ data class CommandUiState(
     val pitcherAppointments: List<PitcherAppointment> = emptyList(),
     val selectedFielderId: Int? = null,
     val selectedPitcherId: Int? = null,
-    val currentFielderOrderType: OrderType = OrderType.NORMAL,
 ) {
+    fun getOrderFielderAppointments(orderType: OrderType): List<FielderAppointment>
+        = fielderAppointments.filter { it.orderType == orderType }.filter { it.isMain }.sortedBy { it.number }.take(9)
 
-    val orderFielderAppointments: List<FielderAppointment>
-        get() = fielderAppointments.filter { it.orderType == currentFielderOrderType }.filter { it.isStarting() }.sortedBy { it.number }
+    fun getBenchFielderAppointments(orderType: OrderType): List<FielderAppointment>
+        = fielderAppointments.filter { it.orderType == orderType }.filter { it.isMain }.sortedBy { it.number }.drop(9)
 
-    val benchFielderAppointments: List<FielderAppointment>
-        get() = fielderAppointments.filter { it.orderType == currentFielderOrderType }.filter { it.position == Position.BENCH }.sortedBy { it.number }
-
-    val subFielderAppointments: List<FielderAppointment>
-        get() = fielderAppointments.filter { it.orderType == currentFielderOrderType }.filter { it.position == Position.SUBSTITUTE }.sortedBy { it.number }
-
-    val currentFielderAppointments: List<FielderAppointment>
-        get() = fielderAppointments.filter { it.orderType == currentFielderOrderType }.sortedBy { it.number }
+    fun getSubFielderAppointments(orderType: OrderType): List<FielderAppointment>
+        = fielderAppointments.filter { it.orderType == orderType }.filter { !it.isMain }.sortedBy { it.number }
 
     val mainStarterPitcherAppointments: List<PitcherAppointment>
         get() = pitcherAppointments.filter { it.isMain }.filter { it.type == PitcherType.STARTER }.sortedBy { it.number }
@@ -62,6 +55,7 @@ data class CommandUiState(
                 displayName = getFielderDisplayName(it),
                 position = it.position.toShortJa(),
                 number = it.number,
+                isMain = it.isMain,
                 color = it.position.color()
             )
         }
