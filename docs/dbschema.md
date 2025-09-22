@@ -39,6 +39,8 @@
 | ballSpeed | int    |             |
 | control   | int    |             |
 | stamina   | int    |             |
+| starter   | int    | 0-2         |
+| reliever  | int    | 0-2         |
 
 ### player_positions
 
@@ -50,23 +52,32 @@ player's ability
 | position | string | enum: PITCHER, CATCHER, ,..., OUTFIELDER |
 | defense  | int    |                                          |
 
+### main_members
+
+1軍/2軍
+
+| name      | type   | description     |
+| --------- | ------ | --------------- |
+| teamId    | int    | foreign key     |
+| playerId  | int    | foreign key     |
+| main      | string | enum: MAIN, SUB |
+| isFielder | int    | bool            |
+
 ### fielder_appointments
 
-| name      | type   | description                     |
-| --------- | ------ | ------------------------------- |
-| teamId    | int    | foreign key                     |
-| playerId  | int    | foreign key                     |
-| position  | string | enum:                           |
-| isMain    | int    | 1: true. 0: false               |
-| number    | int    |                                 |
-| orderType | string | enum: NORMAL, LEFT, DH, LEFT_DH |
+| name      | type   | description                         |
+| --------- | ------ | ----------------------------------- |
+| teamId    | int    | foreign key                         |
+| playerId  | int    | foreign key                         |
+| position  | string | enum: P,C,1,2,3,S,L,C,R,D,BENCH,SUB |
+| number    | int    | main/bench/subで1から               |
+| orderType | string | enum: NORMAL, LEFT, DH, LEFT_DH     |
 
 ### pitcher_appointments 
 
-| name     | type   | description                     |
-| -------- | ------ | ------------------------------- |
-| teamId   | int    | foreign key                     |
-| playerId | int    | foreign key                     |
-| isMain   | int    | 1: true, 0: false               |
-| type     | string | enum: STARTER, RELIEVER, CLOSER |
-| number   | int    |                                 |
+| name     | type   | description                          |
+| -------- | ------ | ------------------------------------ |
+| teamId   | int    | foreign key                          |
+| playerId | int    | foreign key                          |
+| type     | string | enum: STARTER, RELIEVER, CLOSER, SUB |
+| number   | int    |                                      |
