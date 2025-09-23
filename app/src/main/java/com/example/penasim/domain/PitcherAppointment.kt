@@ -3,7 +3,6 @@ package com.example.penasim.domain
 data class PitcherAppointment(
     val teamId: Int,
     val playerId: Int,
-    val isMain: Boolean,
     val type: PitcherType,
     val number: Int, // 登板順
 )
