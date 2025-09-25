@@ -56,12 +56,12 @@ player's ability
 
 1軍/2軍
 
-| name      | type   | description     |
-| --------- | ------ | --------------- |
-| teamId    | int    | foreign key     |
-| playerId  | int    | foreign key     |
-| main      | string | enum: MAIN, SUB |
-| isFielder | int    | bool            |
+| name       | type   | description     |
+| ---------- | ------ | --------------- |
+| teamId     | int    | foreign key     |
+| playerId   | int    | foreign key     |
+| memberType | string | enum: MAIN, SUB |
+| isFielder  | int    | bool            |
 
 ### fielder_appointments
 

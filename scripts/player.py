@@ -4,8 +4,9 @@ import random
 
 players_row = ["id", "firstName", "lastName", "teamId", "meet", "power", "speed", "throwing", "defense", "catching", "ballSpeed", "control", "stamina"]
 player_positions_row = ["playerId", "position", "defense"]
-pitcher_appointments_row = ["teamId", "playerId", "isMain", "type", "number"]
-fielder_appointments_row = ["teamId", "playerId", "position", "isMain", "number", "orderType"]
+pitcher_appointments_row = ["teamId", "playerId", "type", "number"]
+fielder_appointments_row = ["teamId", "playerId", "position", "number", "orderType"]
+main_members_row = ["teamId", "playerId", "memberType", "isFielder"]
 
 position_map = {
     0: "PITCHER",
@@ -18,13 +19,16 @@ position_map = {
     7: "LEFT_FIELDER",
     8: "CENTER_FIELDER",
     9: "RIGHT_FIELDER",
-    10: "DH"
+    10: "DH",
+    11: "BENCH",
+    12: "SUBSTITUTE"
 }
 
 pitcher_type_map = {
     0: "STARTER",
     1: "RELIEVER",
-    2: "CLOSER"
+    2: "CLOSER",
+    3: "SUB"
 }
 
 order_type_map = {
@@ -34,11 +38,17 @@ order_type_map = {
     3: "LEFT_DH"
 }
 
+member_type_map = {
+    0: "MAIN",
+    1: "SUB"
+}
+
 def create_players(teamId, fielder_count, pitcher_count, csv_dir):
     players = []
     player_positions = []
     pitcher_appointments = []
     fielder_appointments = []
+    main_members = []
 
     # create fielders
     # starting members
@@ -61,26 +71,31 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
             1
         ])
         position = i if i < 6 else i + 1
-        player_positions.append([player_id, position_map[position], defense])
+        player_position = position
+        if player_position >= 6:
+            player_position = 6
+
+        player_positions.append([player_id, position_map[player_position], defense])
+        main_members.append([teamId, player_id, member_type_map[0], 1])  # main member, fielder
+        # order type
         for j in range(4):
             if i == 9:
                 if j >= 2:
-                    fielder_appointments.append([teamId, player_id, position_map[10], 1, i, order_type_map[j]])
+                    fielder_appointments.append([teamId, player_id, position_map[10], i, order_type_map[j]])
                 else:
-                    position = random.randint(2, 5)
-                    fielder_appointments.append([teamId, player_id, position_map[position], 0, fielder_count + 1, order_type_map[j]])
+                    fielder_appointments.append([teamId, player_id, position_map[11], 17 - 8, order_type_map[j]])
             else:
-                fielder_appointments.append([teamId, player_id, position_map[position], 1, i, order_type_map[j]])
+                fielder_appointments.append([teamId, player_id, position_map[position], i, order_type_map[j]])
+
     # pitcher as fielder
     player_id = len(players) + 1
     players.append([player_id, f"Pitcher", "Pitcher", teamId, 0, 0, 0, 0, 0, 0, 0, 0, 0])
     player_positions.append([player_id, position_map[0], 0])
-    fielder_appointments.append([teamId, player_id, position_map[0], 1, 9, order_type_map[0]])
-    fielder_appointments.append([teamId, player_id, position_map[0], 1, 9, order_type_map[1]])
-    # dh
-    # substitute members
-    isMain = True
-    for i in range(9, fielder_count):
+    fielder_appointments.append([teamId, player_id, position_map[0], 9, order_type_map[0]])
+    fielder_appointments.append([teamId, player_id, position_map[0], 9, order_type_map[1]])
+
+    # bench fielder
+    for i in range(9, 17):
         player_id = len(players) + 1
         defense = random.randint(10, 90)
         players.append([
@@ -103,43 +118,65 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
         if position >= 6:
             position = 6
         player_positions.append([player_id, position_map[position], defense])
+        main_members.append([teamId, player_id, member_type_map[0], 1])  # main member, fielder
         for j in range(4):
-            fielder_appointments.append([teamId, player_id, position_map[position], 1 if isMain else 0, i + 1, order_type_map[j]])
+            fielder_appointments.append([teamId, player_id, position_map[11], i - 8, order_type_map[j]])
 
-        isMain = len(fielder_appointments) <= 16
+    # sub fielder
+    for i in range(17, fielder_count):
+        player_id = len(players) + 1
+        defense = random.randint(10, 90)
+        players.append([
+            player_id, 
+            f"First{i}",
+            f"Last{i}", 
+            teamId,
+            random.randint(10, 90),
+            random.randint(10, 90),
+            random.randint(10, 90),
+            random.randint(10, 90),
+            defense,
+            random.randint(10, 90),
+            120,
+            1,
+            1
+        ])
+
+        position = random.randint(1, 8)
+        if position >= 6:
+            position = 6
+        player_positions.append([player_id, position_map[position], defense])
+        main_members.append([teamId, player_id, member_type_map[1], 1])  # sub member, fielder
+        for j in range(4):
+            fielder_appointments.append([teamId, player_id, position_map[12], i - 16, order_type_map[j]])
 
     # create pitchers
-    isMain = True
     num_starters = 0
     num_relievers = 0
     num_closers = 0
     num_sub = 0
-    for i in range(pitcher_count):
-        pitcher_type = random.randint(0, 1)  
-        if isMain: 
-            if i == 0:
-                pitcher_type = 2
-            elif i < 6:
-                pitcher_type = 0
-            elif i < 13:
-                pitcher_type = 1
+    # main
+    for i in range(12):
+        pitcher_type = 0
+        if i == 0:
+            pitcher_type = 2
+        elif i < 6:
+            pitcher_type = 0
+        elif i < 13:
+            pitcher_type = 1
 
         player_id = len(players) + 1
         
         player_number = 0
-        if isMain:
-            if pitcher_type == 0:
-                player_number = num_starters + 1
-                num_starters += 1
-            elif pitcher_type == 1:
-                player_number = num_relievers + 1
-                num_relievers += 1
-            elif pitcher_type == 2:
-                player_number = num_closers + 1
-                num_closers += 1
-        else:
-            player_number = num_sub + 1
-            num_sub += 1
+        if pitcher_type == 0:
+            player_number = num_starters + 1
+            num_starters += 1
+        elif pitcher_type == 1:
+            player_number = num_relievers + 1
+            num_relievers += 1
+        elif pitcher_type == 2:
+            player_number = num_closers + 1
+            num_closers += 1
 
         defense = random.randint(10, 50)
         players.append([
@@ -160,10 +197,36 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
 
         player_positions.append([player_id, position_map[0], defense])
 
-        pitcher_appointments.append([teamId, player_id, 1 if isMain else 0, pitcher_type_map[pitcher_type], player_number])
+        pitcher_appointments.append([teamId, player_id, pitcher_type_map[pitcher_type], player_number])
+        main_members.append([teamId, player_id, member_type_map[0], 0])  # main member, pitcher
 
-        if len(pitcher_appointments) >= 12:
-            isMain = False
+    # sub
+    for i in range(12, pitcher_count):
+        player_id = len(players) + 1
+        player_number = num_sub + 1
+        num_sub += 1
+
+        defense = random.randint(10, 50)
+        players.append([
+            player_id,
+            f"PFirst{i}",
+            f"PLast{i}",
+            teamId,
+            random.randint(10, 30),
+            random.randint(10, 30),
+            random.randint(10, 60),
+            random.randint(50, 90),
+            defense,
+            random.randint(10, 50),
+            random.randint(140, 160),
+            random.randint(10, 90),
+            random.randint(10, 90)
+        ])
+
+        player_positions.append([player_id, position_map[0], defense])
+
+        pitcher_appointments.append([teamId, player_id, pitcher_type_map[3], player_number])
+        main_members.append([teamId, player_id, member_type_map[1], 0])  # sub member, pitcher
 
     # write csv
     with open(f"{csv_dir}/players.csv", "w", newline="") as f:
@@ -185,6 +248,11 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
         writer = csv.writer(f)
         writer.writerow(fielder_appointments_row)
         writer.writerows(fielder_appointments)
+
+    with open(f"{csv_dir}/main_members.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(main_members_row)
+        writer.writerows(main_members)
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
