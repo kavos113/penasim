@@ -14,6 +14,8 @@ import com.example.penasim.domain.repository.FielderAppointmentRepository
 import com.example.penasim.data.repository.FielderAppointmentRepository as FielderAppointmentRepositoryImpl
 import com.example.penasim.domain.repository.PitcherAppointmentRepository
 import com.example.penasim.data.repository.PitcherAppointmentRepository as PitcherAppointmentRepositoryImpl
+import com.example.penasim.domain.repository.MainMembersRepository
+import com.example.penasim.data.repository.MainMembersRepository as MainMembersRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -65,4 +67,10 @@ abstract class RepositoryModule {
     abstract fun bindPitcherAppointmentRepository(
         impl: PitcherAppointmentRepositoryImpl
     ): PitcherAppointmentRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindMainMembersRepository(
+        impl: MainMembersRepositoryImpl
+    ): MainMembersRepository
 }

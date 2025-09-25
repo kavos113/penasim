@@ -49,4 +49,7 @@ object DatabaseModule {
 
     @Provides
     fun providePitcherAppointmentDao(database: PennantDatabase) = database.pitcherAppointmentDao()
+
+    @Provides
+    fun provideMainMemberDao(database: PennantDatabase) = database.mainMemberDao()
 }

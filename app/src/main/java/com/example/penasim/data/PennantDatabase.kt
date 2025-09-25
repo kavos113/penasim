@@ -10,6 +10,7 @@ import com.example.penasim.data.dao.PitcherAppointmentDao
 import com.example.penasim.data.dao.PlayerDao
 import com.example.penasim.data.dao.PlayerPositionDao
 import com.example.penasim.data.dao.TeamDao
+import com.example.penasim.data.dao.MainMemberDao
 import com.example.penasim.data.entity.FielderAppointmentEntity
 import com.example.penasim.data.entity.GameFixtureEntity
 import com.example.penasim.data.entity.GameResultEntity
@@ -17,6 +18,7 @@ import com.example.penasim.data.entity.PitcherAppointmentEntity
 import com.example.penasim.data.entity.PlayerEntity
 import com.example.penasim.data.entity.PlayerPositionEntity
 import com.example.penasim.data.entity.TeamEntity
+import com.example.penasim.data.entity.MainMemberEntity
 import com.example.penasim.data.repository.Converters
 
 @Database(
@@ -28,8 +30,9 @@ import com.example.penasim.data.repository.Converters
         PlayerPositionEntity::class,
         FielderAppointmentEntity::class,
         PitcherAppointmentEntity::class,
+        MainMemberEntity::class,
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -41,4 +44,5 @@ abstract class PennantDatabase : RoomDatabase() {
     abstract fun playerPositionDao(): PlayerPositionDao
     abstract fun fielderAppointmentDao(): FielderAppointmentDao
     abstract fun pitcherAppointmentDao(): PitcherAppointmentDao
+    abstract fun mainMemberDao(): MainMemberDao
 }
