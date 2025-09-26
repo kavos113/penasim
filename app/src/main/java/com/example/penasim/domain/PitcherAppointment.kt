@@ -11,4 +11,5 @@ enum class PitcherType {
     STARTER,
     RELIEVER,
     CLOSER,
+    SUB
 }

@@ -2,6 +2,7 @@ package com.example.penasim.ui.command
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.PitcherType
 import com.example.penasim.domain.Position
 import com.example.penasim.usecase.GetFielderAppointmentByTeamUseCase
@@ -56,19 +57,18 @@ class CommandViewModel @Inject constructor(
         }
     }
 
-    fun updateFielderAppointment(playerId: Int, position: Position, isMain: Boolean, number: Int) {
-        println("Updating fielder appointment for playerId: $playerId, position: $position, isMain: $isMain, number: $number")
+    fun updateFielderAppointment(playerId: Int, position: Position, number: Int, orderType: OrderType) {
+        println("Updating fielder appointment for playerId: $playerId, position: $position, number: $number")
 
         val currentAppointments = _uiState.value.fielderAppointments.toMutableList()
-        val currentPlayerAppointment = currentAppointments.find { it.playerId == playerId } ?: return
+        val currentPlayerAppointment = currentAppointments.find { it.playerId == playerId && it.orderType == orderType } ?: return
 
         val updatedAppointment = currentPlayerAppointment.copy(
             position = position,
-            isMain = isMain,
             number = number
         )
 
-        currentAppointments.removeIf { it.playerId == playerId }
+        currentAppointments.removeIf { it.playerId == playerId && it.orderType == orderType }
         currentAppointments.add(updatedAppointment)
 
         _uiState.update { currentState ->
@@ -76,12 +76,11 @@ class CommandViewModel @Inject constructor(
         }
     }
 
-    fun updatePitcherAppointment(playerId: Int, isMain: Boolean, type: PitcherType, number: Int) {
+    fun updatePitcherAppointment(playerId: Int, type: PitcherType, number: Int) {
         val currentAppointments = _uiState.value.pitcherAppointments.toMutableList()
         val currentPlayerAppointment = currentAppointments.find { it.playerId == playerId } ?: return
 
         val updatedAppointment = currentPlayerAppointment.copy(
-            isMain = isMain,
             type = type,
             number = number
         )
@@ -101,37 +100,37 @@ class CommandViewModel @Inject constructor(
         }
     }
 
-    fun selectFielder(playerId: Int) {
-        if (_uiState.value.selectedFielderId == null) {
+    fun selectFielder(playerId: Int, orderType: OrderType) {
+        if (_uiState.value.selectedFielder[orderType] == null) {
             _uiState.update { currentState ->
-                currentState.copy(selectedFielderId = playerId)
+                currentState.copy(selectedFielder = currentState.selectedFielder.toMutableMap().apply { this[orderType] = playerId })
             }
         } else {
-            val currentSelected = _uiState.value.selectedFielderId!!
+            val currentSelected = _uiState.value.selectedFielder[orderType]!!
             if (currentSelected == playerId) {
                 _uiState.update { currentState ->
-                    currentState.copy(selectedFielderId = null)
+                    currentState.copy(selectedFielder = currentState.selectedFielder.toMutableMap().apply { this[orderType] = null } )
                 }
             } else {
                 _uiState.update { currentState ->
-                    currentState.copy(selectedFielderId = null)
+                    currentState.copy(selectedFielder = currentState.selectedFielder.toMutableMap().apply { this[orderType] = null } )
                 }
 
-                val currentAppointment = _uiState.value.fielderAppointments.find { it.playerId == currentSelected } ?: return
-                val targetAppointment = _uiState.value.fielderAppointments.find { it.playerId == playerId } ?: return
+                val currentAppointment = _uiState.value.fielderAppointments.find { it.playerId == currentSelected && it.orderType == orderType } ?: return
+                val targetAppointment = _uiState.value.fielderAppointments.find { it.playerId == playerId && it.orderType == orderType } ?: return
 
                 updateFielderAppointment(
                     playerId = currentSelected,
                     position = currentAppointment.position,
-                    isMain = targetAppointment.isMain,
-                    number = targetAppointment.number
+                    number = targetAppointment.number,
+                    orderType = orderType
                 )
 
                 updateFielderAppointment(
                     playerId = playerId,
                     position = targetAppointment.position,
-                    isMain = currentAppointment.isMain,
-                    number = currentAppointment.number
+                    number = currentAppointment.number,
+                    orderType = orderType
                 )
             }
         }
@@ -158,14 +157,12 @@ class CommandViewModel @Inject constructor(
 
                 updatePitcherAppointment(
                     playerId = currentSelected,
-                    isMain = targetAppointment.isMain,
                     type = targetAppointment.type,
                     number = targetAppointment.number
                 )
 
                 updatePitcherAppointment(
                     playerId = playerId,
-                    isMain = currentAppointment.isMain,
                     type = currentAppointment.type,
                     number = currentAppointment.number
                 )

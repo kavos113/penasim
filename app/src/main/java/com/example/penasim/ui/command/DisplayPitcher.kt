@@ -7,5 +7,4 @@ data class DisplayPitcher(
     val displayName: String,
     val type: PitcherType,
     val number: Int,
-    val isMain: Boolean,
 )
