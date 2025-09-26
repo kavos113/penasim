@@ -61,7 +61,7 @@ data class CommandUiState(
                 displayName = getFielderDisplayName(it),
                 position = it.position.toShortJa(),
                 number = it.number,
-                color = it.position.color()
+                color = players.find { playerInfo -> playerInfo.player.id == it.playerId }?.primaryPosition?.color() ?: Position.OUTFIELDER.color()
             )
         }
     }
