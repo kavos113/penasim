@@ -2,6 +2,7 @@ package com.example.penasim.ui.command
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.penasim.domain.MemberType
 import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.PitcherType
 import com.example.penasim.domain.Position
@@ -54,6 +55,22 @@ class CommandViewModel @Inject constructor(
             println("Loaded ${players.size} players for team ${team.name}")
             println("Loaded ${fielderAppointments.size} fielder appointments for team ${team.name}")
             println("Loaded ${pitcherAppointments.size} pitcher appointments for team ${team.name}")
+        }
+    }
+
+    fun updateMainFielder(playerId: Int, memberType: MemberType) {
+        val currentMainMembers = _uiState.value.mainMembers.toMutableList()
+        val currentPlayerMember = currentMainMembers.find { it.playerId == playerId } ?: return
+
+        val updatedMember = currentPlayerMember.copy(
+            memberType = memberType
+        )
+
+        currentMainMembers.removeIf { it.playerId == playerId }
+        currentMainMembers.add(updatedMember)
+
+        _uiState.update { currentState ->
+            currentState.copy(mainMembers = currentMainMembers)
         }
     }
 
@@ -132,6 +149,64 @@ class CommandViewModel @Inject constructor(
                     number = currentAppointment.number,
                     orderType = orderType
                 )
+            }
+        }
+    }
+
+    fun selectMainFielder(playerId: Int) {
+        if (_uiState.value.mainViewSelectedFielderId == null) {
+            _uiState.update { currentState ->
+                currentState.copy(mainViewSelectedFielderId = playerId)
+            }
+        } else {
+            val currentSelected = _uiState.value.mainViewSelectedFielderId!!
+            if (currentSelected == playerId) {
+                _uiState.update { currentState ->
+                    currentState.copy(mainViewSelectedFielderId = null)
+                }
+            } else {
+                _uiState.update { currentState ->
+                    currentState.copy(mainViewSelectedFielderId = null)
+                }
+
+                val currentMember =
+                    _uiState.value.mainMembers.find { it.playerId == currentSelected } ?: return
+                val targetMember =
+                    _uiState.value.mainMembers.find { it.playerId == playerId } ?: return
+
+                updateMainFielder(
+                    playerId = currentSelected,
+                    memberType = targetMember.memberType
+                )
+
+                updateMainFielder(
+                    playerId = playerId,
+                    memberType = currentMember.memberType
+                )
+
+                // update appointments
+                for (orderType in OrderType.entries) {
+                    val currentAppointment =
+                        _uiState.value.fielderAppointments.find { it.playerId == currentSelected && it.orderType == orderType }
+                    val targetAppointment =
+                        _uiState.value.fielderAppointments.find { it.playerId == playerId && it.orderType == orderType }
+
+                    if (currentAppointment != null && targetAppointment != null) {
+                        updateFielderAppointment(
+                            playerId = currentSelected,
+                            position = targetAppointment.position,
+                            number = targetAppointment.number,
+                            orderType = orderType
+                        )
+
+                        updateFielderAppointment(
+                            playerId = playerId,
+                            position = currentAppointment.position,
+                            number = currentAppointment.number,
+                            orderType = orderType
+                        )
+                    }
+                }
             }
         }
     }

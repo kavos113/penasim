@@ -55,6 +55,7 @@ fun FielderScreen(
     val uiState by commandViewModel.uiState.collectAsState()
 
     val tabs = listOf(
+        R.string.main_member_registration,
         R.string.fielder_order,
         R.string.fielder_order_left,
         R.string.fielder_order_dh,
@@ -92,27 +93,117 @@ fun FielderScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) { page ->
-            FielderContent(
-                uiState = uiState,
-                onPlayerClick = { playerId ->
-                    commandViewModel.selectFielder(
-                        playerId = playerId,
-                        orderType = getOrderType(page)
-                    )
-                },
-                modifier = Modifier.fillMaxSize(),
-                orderType = getOrderType(page)
-            )
+            if (page == 0) {
+                MainMemberContent(
+                    uiState = uiState,
+                    onPlayerClick = { playerId ->
+                        commandViewModel.selectMainFielder(playerId = playerId)
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                FielderContent(
+                    uiState = uiState,
+                    onPlayerClick = { playerId ->
+                        commandViewModel.selectFielder(
+                            playerId = playerId,
+                            orderType = getOrderType(page)
+                        )
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                    orderType = getOrderType(page)
+                )
+            }
         }
     }
 }
 
 private fun getOrderType(tabIndex: Int): OrderType = when(tabIndex) {
-    0 -> OrderType.NORMAL
-    1 -> OrderType.LEFT
-    2 -> OrderType.DH
-    3 -> OrderType.LEFT_DH
+    0 -> OrderType.NORMAL // Main Member Registration
+    1 -> OrderType.NORMAL
+    2 -> OrderType.LEFT
+    3 -> OrderType.DH
+    4 -> OrderType.LEFT_DH
     else -> OrderType.NORMAL
+}
+
+@Composable
+private fun MainMemberContent(
+    uiState: CommandUiState,
+    onPlayerClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Row (
+            horizontalArrangement = Arrangement.spacedBy(0.dp),
+            modifier = modifier
+        ) {
+            OrderList(
+                fielders = uiState.mainFielders,
+                onItemClick = onPlayerClick,
+                modifier = Modifier
+                    .weight(5f)
+                    .drawBehind {
+                        val strokeWidth = 1.dp.toPx()
+                        drawLine(
+                            color = playerBorderColor,
+                            start = Offset(0f, 0f),
+                            end = Offset(0f, size.height),
+                            strokeWidth = strokeWidth
+                        )
+
+                        drawLine(
+                            color = playerBorderColor,
+                            start = Offset(size.width, 0f),
+                            end = Offset(size.width, size.height),
+                            strokeWidth = strokeWidth
+                        )
+                    }
+            )
+            SubstituteList(
+                fielders = uiState.subFielders,
+                onItemClick = onPlayerClick,
+                modifier = Modifier
+                    .weight(3f)
+                    .drawBehind {
+                        val strokeWidth = 1.dp.toPx()
+                        drawLine(
+                            color = playerBorderColor,
+                            start = Offset(0f, 0f),
+                            end = Offset(0f, size.height),
+                            strokeWidth = strokeWidth
+                        )
+
+                        drawLine(
+                            color = playerBorderColor,
+                            start = Offset(size.width, 0f),
+                            end = Offset(size.width, size.height),
+                            strokeWidth = strokeWidth
+                        )
+                    }
+                    .background(substituteBackgroundColor)
+            )
+        }
+
+        if (uiState.mainViewSelectedFielderId != null) {
+            val playerDetail = uiState.getDisplayPlayerDetail(uiState.mainViewSelectedFielderId!!)
+            if (playerDetail != null) {
+                Box(
+                    modifier = Modifier
+                        .background(Color.White, shape = RoundedCornerShape(8.dp))
+                        .border(2.dp, Color.Black, shape = RoundedCornerShape(8.dp))
+                        .padding(16.dp)
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth(0.7f)
+                ) {
+                    FielderDetail(playerDetail = playerDetail)
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -127,7 +218,7 @@ private fun FielderContent(
             .fillMaxSize()
     ) {
         Row (
-            horizontalArrangement = Arrangement.spacedBy(0.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = modifier
         ) {
             OrderList(
@@ -174,29 +265,6 @@ private fun FielderContent(
                         )
                     }
             )
-            SubstituteList(
-                fielders = uiState.getDisplayFielders(uiState.getSubFielderAppointments(orderType)),
-                onItemClick = onPlayerClick,
-                modifier = Modifier
-                    .weight(3f)
-                    .drawBehind {
-                        val strokeWidth = 1.dp.toPx()
-                        drawLine(
-                            color = playerBorderColor,
-                            start = Offset(0f, 0f),
-                            end = Offset(0f, size.height),
-                            strokeWidth = strokeWidth
-                        )
-
-                        drawLine(
-                            color = playerBorderColor,
-                            start = Offset(size.width, 0f),
-                            end = Offset(size.width, size.height),
-                            strokeWidth = strokeWidth
-                        )
-                    }
-                    .background(substituteBackgroundColor)
-            )
         }
 
         if (uiState.selectedFielder[orderType] != null) {
@@ -211,6 +279,53 @@ private fun FielderContent(
                         .fillMaxWidth(0.7f)
                 ) {
                     FielderDetail(playerDetail = playerDetail)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MainList(
+    fielders: List<DisplayFielder>,
+    onItemClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column {
+        Text(
+            text = stringResource(R.string.order)
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(4.dp)
+        ) {
+            val (first, second) = fielders.withIndex().partition { it.index % 2 == 0 }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.weight(1f)
+            ) {
+                repeat(first.size) { index ->
+                    SimplePlayerItem(
+                        displayName = first[index].value.displayName,
+                        color = pitcherColor,
+                        modifier = Modifier
+                            .clickable { onItemClick(first[index].value.id) }
+                    )
+                }
+            }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.weight(1f)
+            ) {
+                repeat(second.size) { index ->
+                    SimplePlayerItem(
+                        displayName = second[index].value.displayName,
+                        color = pitcherColor,
+                        modifier = Modifier
+                            .clickable { onItemClick(second[index].value.id) }
+                    )
                 }
             }
         }
