@@ -606,7 +606,9 @@ fun PlayerDetailPreview() {
                 catching = 66,
                 ballSpeed = 120,
                 control = 1,
-                stamina = 1
+                stamina = 1,
+                starter = 0,
+                reliever = 0,
             ),
             positions = listOf(
                 PlayerPosition(1, Position.OUTFIELDER, 62),

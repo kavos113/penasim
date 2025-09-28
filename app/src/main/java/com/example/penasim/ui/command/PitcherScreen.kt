@@ -268,6 +268,13 @@ private fun SubstituteList(
     }
 }
 
+private fun pitcherTypeAppropriate(appropriate: Int): String = when (appropriate) {
+    0 -> "△"
+    1 -> "〇"
+    2 -> "◎"
+    else -> "-"
+}
+
 @Composable
 private fun PitcherDetail(
     playerDetail: DisplayPlayerDetail,
@@ -315,6 +322,14 @@ private fun PitcherDetail(
                 alphabet = playerDetail.player.stamina.statusAlphabet(),
                 color = playerDetail.player.stamina.statusColor(),
                 modifier = Modifier.fillMaxWidth()
+            )
+            Text(
+                text = "先発 ${pitcherTypeAppropriate(playerDetail.player.starter)}",
+                fontSize = 16.sp,
+            )
+            Text(
+                text = "救援 ${pitcherTypeAppropriate(playerDetail.player.reliever)}",
+                fontSize = 16.sp,
             )
         }
     }
@@ -469,6 +484,8 @@ fun PitcherDetailPreview() {
                 ballSpeed = 148,
                 control = 61,
                 stamina = 70,
+                starter = 0,
+                reliever = 0,
             ),
             positions = listOf(
                 PlayerPosition(1, Position.PITCHER, 51)

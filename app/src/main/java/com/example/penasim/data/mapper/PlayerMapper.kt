@@ -17,6 +17,8 @@ fun PlayerEntity.toDomain(): Player = Player(
     ballSpeed = ballSpeed,
     control = control,
     stamina = stamina,
+    starter = starter,
+    reliever = reliever,
 )
 
 fun Player.toEntity(): PlayerEntity = PlayerEntity(
@@ -33,4 +35,6 @@ fun Player.toEntity(): PlayerEntity = PlayerEntity(
     ballSpeed = ballSpeed,
     control = control,
     stamina = stamina,
+    starter = starter,
+    reliever = reliever,
 )

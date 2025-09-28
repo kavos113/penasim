@@ -2,7 +2,7 @@ import csv
 import sys
 import random
 
-players_row = ["id", "firstName", "lastName", "teamId", "meet", "power", "speed", "throwing", "defense", "catching", "ballSpeed", "control", "stamina"]
+players_row = ["id", "firstName", "lastName", "teamId", "meet", "power", "speed", "throwing", "defense", "catching", "ballSpeed", "control", "stamina", "starter", "reliever"]
 player_positions_row = ["playerId", "position", "defense"]
 pitcher_appointments_row = ["teamId", "playerId", "type", "number"]
 fielder_appointments_row = ["teamId", "playerId", "position", "number", "orderType"]
@@ -68,7 +68,9 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
             random.randint(10, 90),
             120,
             1,
-            1
+            1,
+            0,
+            0
         ])
         position = i if i < 6 else i + 1
         player_position = position
@@ -100,8 +102,8 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
         defense = random.randint(10, 90)
         players.append([
             player_id, 
-            f"First{i}",
-            f"Last{i}", 
+            f"First{i + 1}",
+            f"Last{i + 1}",
             teamId,
             random.randint(10, 90),
             random.randint(10, 90),
@@ -111,7 +113,9 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
             random.randint(10, 90),
             120,
             1,
-            1
+            1,
+            0,
+            0
         ])
 
         position = random.randint(1, 8)
@@ -128,8 +132,8 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
         defense = random.randint(10, 90)
         players.append([
             player_id, 
-            f"First{i}",
-            f"Last{i}", 
+            f"First{i + 1}",
+            f"Last{i + 1}", 
             teamId,
             random.randint(10, 90),
             random.randint(10, 90),
@@ -139,7 +143,9 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
             random.randint(10, 90),
             120,
             1,
-            1
+            1,
+            0,
+            0
         ])
 
         position = random.randint(1, 8)
@@ -168,15 +174,23 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
         player_id = len(players) + 1
         
         player_number = 0
+        starter = 0
+        reliever = 0
         if pitcher_type == 0:
             player_number = num_starters + 1
             num_starters += 1
+            starter = 2
+            reliever = random.randint(0, 2)
         elif pitcher_type == 1:
             player_number = num_relievers + 1
             num_relievers += 1
+            reliever = 2
+            starter = random.randint(0, 2)
         elif pitcher_type == 2:
             player_number = num_closers + 1
             num_closers += 1
+            reliever = 2
+            starter = random.randint(0, 1)
 
         defense = random.randint(10, 50)
         players.append([
@@ -192,7 +206,9 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
             random.randint(10, 50),
             random.randint(140, 160),
             random.randint(10, 90),
-            random.randint(10, 90)
+            random.randint(10, 90),
+            starter,
+            reliever
         ])
 
         player_positions.append([player_id, position_map[0], defense])
@@ -220,7 +236,9 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
             random.randint(10, 50),
             random.randint(140, 160),
             random.randint(10, 90),
-            random.randint(10, 90)
+            random.randint(10, 90),
+            random.randint(0, 2),
+            random.randint(0, 2)
         ])
 
         player_positions.append([player_id, position_map[0], defense])
