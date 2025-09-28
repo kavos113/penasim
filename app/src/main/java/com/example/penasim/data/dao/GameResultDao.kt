@@ -16,6 +16,9 @@ interface GameResultDao {
     @Query("SELECT * FROM games WHERE gameFixtureId IN (:gameFixtureIds)")
     suspend fun getByGameFixtureIds(gameFixtureIds: List<Int>): List<GameResultEntity>
 
+    @Query("DELETE FROM games")
+    suspend fun deleteAll()
+
     @Insert
     suspend fun insert(game: GameResultEntity): Long
 }

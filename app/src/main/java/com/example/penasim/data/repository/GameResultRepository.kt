@@ -19,6 +19,10 @@ class GameResultRepository @Inject constructor(
     override suspend fun getAllGames(): List<GameResult>
         = gameResultDao.getAll().map { it.toDomain() }
 
+    override suspend fun deleteAllGames() {
+        gameResultDao.deleteAll()
+    }
+
     override suspend fun createGame(
         fixtureId: Int,
         homeScore: Int,

@@ -91,7 +91,7 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
 
     # pitcher as fielder
     player_id = len(players) + 1
-    players.append([player_id, f"Pitcher", "Pitcher", teamId, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    players.append([player_id, f"Pitcher", "Pitcher", teamId, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
     player_positions.append([player_id, position_map[0], 0])
     fielder_appointments.append([teamId, player_id, position_map[0], 9, order_type_map[0]])
     fielder_appointments.append([teamId, player_id, position_map[0], 9, order_type_map[1]])

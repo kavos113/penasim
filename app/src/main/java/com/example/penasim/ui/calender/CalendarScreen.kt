@@ -72,7 +72,7 @@ private fun CalendarContent(
     LaunchedEffect(uiState.currentDay) {
         if (uiState.currentDay >= DateConst.START.plusDays(4)) {
             listState.animateScrollToItem(
-                index = (ChronoUnit.DAYS.between(DateConst.START, uiState.currentDay) - 4).toInt(),
+                index = (ChronoUnit.DAYS.between(DateConst.START, uiState.currentDay) - 2).toInt(),
                 scrollOffset = 0
             )
         }

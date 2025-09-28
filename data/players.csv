@@ -8,7 +8,7 @@ id,firstName,lastName,teamId,meet,power,speed,throwing,defense,catching,ballSpee
 7,First7,Last7,0,88,34,33,36,68,19,120,1,1,0,0
 8,First8,Last8,0,19,54,63,31,83,18,120,1,1,0,0
 9,First9,Last9,0,88,19,45,23,10,68,120,1,1,0,0
-10,Pitcher,Pitcher,0,0,0,0,0,0,0,0,0,0
+10,Pitcher,Pitcher,0,0,0,0,0,0,0,0,0,0,0,0
 11,First10,Last10,0,42,32,62,88,64,60,120,1,1,0,0
 12,First11,Last11,0,20,17,39,12,55,76,120,1,1,0,0
 13,First12,Last12,0,22,28,17,77,68,70,120,1,1,0,0
