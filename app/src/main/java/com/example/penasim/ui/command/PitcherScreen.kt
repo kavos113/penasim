@@ -31,6 +31,8 @@ import com.example.penasim.domain.Position
 import com.example.penasim.domain.TotalBattingStats
 import com.example.penasim.domain.TotalPitchingStats
 import com.example.penasim.ui.common.DisplayPitcher
+import com.example.penasim.ui.common.SimplePlayerItem
+import com.example.penasim.ui.common.Status
 import com.example.penasim.ui.theme.pitcherColor
 
 @Composable

@@ -1,4 +1,4 @@
-package com.example.penasim.ui.command
+package com.example.penasim.ui.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.example.penasim.domain.toShortJa
-import com.example.penasim.ui.common.DisplayFielder
+import com.example.penasim.ui.command.color
 import com.example.penasim.ui.theme.playerBorderColor
 
 
