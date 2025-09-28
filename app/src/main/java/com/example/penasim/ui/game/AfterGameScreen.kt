@@ -19,8 +19,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.penasim.domain.InningScore
+import com.example.penasim.ui.theme.errorContainerLight
 import com.example.penasim.ui.theme.onPrimaryLight
 import com.example.penasim.ui.theme.playerBorderColor
+import com.example.penasim.ui.theme.primaryContainerLight
 import com.example.penasim.ui.theme.primaryLight
 import com.example.penasim.ui.theme.substituteBackgroundColor
 
@@ -163,6 +165,141 @@ private fun InningHeaderItem(
     }
 }
 
+@Composable
+private fun SingleTeamPitcherResults(
+    pitcherResults: List<PitcherResult>,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .border(
+                width = 1.dp,
+                color = playerBorderColor
+            )
+    ) {
+        pitcherResults.forEach { pitcherResult ->
+            PitcherResultItem(
+                pitcherResult = pitcherResult,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
+    }
+}
+
+private fun displayPitcherResults(pitcherResult: PitcherResult): String {
+    val sb = StringBuilder()
+    sb.append(pitcherResult.displayName)
+    if (pitcherResult.wins > 0) {
+        sb.append(" ${pitcherResult.wins}勝")
+    }
+    if (pitcherResult.losses > 0) {
+        sb.append(" ${pitcherResult.losses}敗")
+    }
+    if (pitcherResult.holds > 0) {
+        sb.append(" ${pitcherResult.holds}H")
+    }
+    if (pitcherResult.saves > 0) {
+        sb.append(" ${pitcherResult.saves}S")
+    }
+    return sb.toString()
+}
+
+@Composable
+private fun PitcherResultItem(
+    pitcherResult: PitcherResult,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .border(
+                width = 1.dp,
+                color = playerBorderColor
+            )
+    ) {
+        if (pitcherResult.isWin) {
+            Text(
+                text = "勝",
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .background(errorContainerLight)
+                    .padding(horizontal = 4.dp)
+            )
+        }
+        if (pitcherResult.isLoss) {
+            Text(
+                text = "敗",
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .background(primaryContainerLight)
+                    .padding(horizontal = 4.dp)
+            )
+        }
+        if (pitcherResult.isHold) {
+            Text(
+                text = "Ｈ",
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+            )
+        }
+        if (pitcherResult.isSave) {
+            Text(
+                text = "Ｓ",
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+            )
+        }
+        Text(
+            text = displayPitcherResults(pitcherResult),
+            fontSize = 16.sp,
+            modifier = Modifier
+                .weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun SingleTeamFielderResults(
+    fielderResults: List<FielderResult>,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .border(
+                width = 1.dp,
+                color = playerBorderColor
+            )
+    ) {
+        fielderResults.forEach { fielderResult ->
+            FielderResultItem(
+                fielderResult = fielderResult,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun FielderResultItem(
+    fielderResult: FielderResult,
+    modifier: Modifier = Modifier
+) {
+    Text(
+        text = "${fielderResult.displayName} ${fielderResult.inning}回 ${fielderResult.numberOfHomeRuns}号",
+        fontSize = 16.sp,
+        modifier = modifier
+            .border(
+                width = 1.dp,
+                color = playerBorderColor
+            )
+            .padding(horizontal = 4.dp, vertical = 2.dp)
+    )
+}
+
 private val SAMPLE_INNING_SCORES = listOf(
     InningScore(fixtureId = 0, teamId = 0, inning = 1, score = 0),
     InningScore(fixtureId = 0, teamId = 0, inning = 2, score = 1),
@@ -202,7 +339,7 @@ private val SAMPLE_WIN_PITCHER_RESULTS = listOf(
         number = 2,
         wins = 5,
         losses = 2,
-        holds = 0,
+        holds = 14,
         saves = 0,
         isWin = false,
         isLoss = false,
@@ -215,7 +352,7 @@ private val SAMPLE_WIN_PITCHER_RESULTS = listOf(
         wins = 3,
         losses = 4,
         holds = 0,
-        saves = 0,
+        saves = 25,
         isWin = false,
         isLoss = false,
         isHold = false,
@@ -276,6 +413,26 @@ fun InningScoreRowPreview() {
         teamName = "A",
         inningScores = SAMPLE_INNING_SCORES.take(9),
         modifier = Modifier
+    )
+}
+
+@Preview
+@Composable
+fun SingleTeamPitcherResultsPreview() {
+    SingleTeamPitcherResults(
+        pitcherResults = SAMPLE_WIN_PITCHER_RESULTS,
+        modifier = Modifier
+            .fillMaxWidth()
+    )
+}
+
+@Preview
+@Composable
+fun SingleTeamFielderResultsPreview() {
+    SingleTeamFielderResults(
+        fielderResults = SAMPLE_FIELDER_RESULTS,
+        modifier = Modifier
+            .fillMaxWidth()
     )
 }
 
