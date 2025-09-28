@@ -50,7 +50,7 @@ class ExecuteGamesByDateUseCaseTest {
             GameFixture(11, date, 1, home2.id, away2.id)
         )
         val resultRepo = FakeGameResultRepository { f, h, a -> GameResult(f, h, a) }
-        val useCase = ExecuteGamesByDateUseCase(
+        val useCase = ExecuteRandomGamesByDateUseCase(
             resultRepo,
             FakeGameFixtureRepository(fixtures),
             FakeTeamRepository(listOf(home1, away1, home2, away2))
@@ -74,7 +74,7 @@ class ExecuteGamesByDateUseCaseTest {
 
         // team missing
         assertFailsWith<IllegalArgumentException> {
-            ExecuteGamesByDateUseCase(
+            ExecuteRandomGamesByDateUseCase(
                 FakeGameResultRepository { f, h, a -> GameResult(f, h, a) },
                 FakeGameFixtureRepository(fixtures),
                 FakeTeamRepository(emptyList())
@@ -83,7 +83,7 @@ class ExecuteGamesByDateUseCaseTest {
 
         // result missing for fixture
         assertFailsWith<IllegalArgumentException> {
-            ExecuteGamesByDateUseCase(
+            ExecuteRandomGamesByDateUseCase(
                 FakeGameResultRepository { f, h, a -> if (f == 10) null else GameResult(f, h, a) },
                 FakeGameFixtureRepository(fixtures),
                 FakeTeamRepository(listOf(home, away))

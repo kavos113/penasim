@@ -52,6 +52,8 @@ fun Position.toShortJa(): String {
     }
 }
 
+fun Position.isStarting(): Boolean = this != Position.BENCH && this != Position.SUBSTITUTE
+
 data class PlayerPosition(
     val playerId: Int,
     val position: Position,

@@ -43,7 +43,7 @@ member_type_map = {
     1: "SUB"
 }
 
-def create_players(teamId, fielder_count, pitcher_count, csv_dir):
+def create_players(teamId, fielder_count, pitcher_count, csv_dir, player_start_id=1):
     players = []
     player_positions = []
     pitcher_appointments = []
@@ -53,7 +53,7 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
     # create fielders
     # starting members
     for i in range(1, 10):
-        player_id = len(players) + 1
+        player_id = player_start_id + len(players)
         defense = random.randint(10, 90)
         players.append([
             player_id, 
@@ -90,7 +90,7 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
                 fielder_appointments.append([teamId, player_id, position_map[position], i, order_type_map[j]])
 
     # pitcher as fielder
-    player_id = len(players) + 1
+    player_id = player_start_id + len(players)
     players.append([player_id, f"Pitcher", "Pitcher", teamId, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
     player_positions.append([player_id, position_map[0], 0])
     fielder_appointments.append([teamId, player_id, position_map[0], 9, order_type_map[0]])
@@ -98,7 +98,7 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
 
     # bench fielder
     for i in range(9, 17):
-        player_id = len(players) + 1
+        player_id = player_start_id + len(players)
         defense = random.randint(10, 90)
         players.append([
             player_id, 
@@ -128,7 +128,7 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
 
     # sub fielder
     for i in range(17, fielder_count):
-        player_id = len(players) + 1
+        player_id = player_start_id + len(players)
         defense = random.randint(10, 90)
         players.append([
             player_id, 
@@ -171,7 +171,7 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
         elif i < 13:
             pitcher_type = 1
 
-        player_id = len(players) + 1
+        player_id = player_start_id + len(players)
         
         player_number = 0
         starter = 0
@@ -218,7 +218,7 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
 
     # sub
     for i in range(12, pitcher_count):
-        player_id = len(players) + 1
+        player_id = player_start_id + len(players)
         player_number = num_sub + 1
         num_sub += 1
 
@@ -247,39 +247,55 @@ def create_players(teamId, fielder_count, pitcher_count, csv_dir):
         main_members.append([teamId, player_id, member_type_map[1], 0])  # sub member, pitcher
 
     # write csv
+    with open(f"{csv_dir}/players.csv", "a", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerows(players)
+
+    with open(f"{csv_dir}/player_positions.csv", "a", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerows(player_positions)
+
+    with open(f"{csv_dir}/pitcher_appointments.csv", "a", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerows(pitcher_appointments)
+
+    with open(f"{csv_dir}/fielder_appointments.csv", "a", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerows(fielder_appointments)
+
+    with open(f"{csv_dir}/main_members.csv", "a", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerows(main_members)
+
+    return len(players)
+
+if __name__ == "__main__":
+    if len(sys.argv) != 4:
+        print("Usage: python player.py <fielder_count> <pitcher_count> <csv_dir>")
+        sys.exit(1)
+
+    fielder_count = int(sys.argv[1])
+    pitcher_count = int(sys.argv[2])
+    csv_dir = sys.argv[3]
+
+    # clear csv & write row
     with open(f"{csv_dir}/players.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(players_row)
-        writer.writerows(players)
-
     with open(f"{csv_dir}/player_positions.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(player_positions_row)
-        writer.writerows(player_positions)
-
     with open(f"{csv_dir}/pitcher_appointments.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(pitcher_appointments_row)
-        writer.writerows(pitcher_appointments)
-
     with open(f"{csv_dir}/fielder_appointments.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(fielder_appointments_row)
-        writer.writerows(fielder_appointments)
-
     with open(f"{csv_dir}/main_members.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(main_members_row)
-        writer.writerows(main_members)
 
-if __name__ == "__main__":
-    if len(sys.argv) != 5:
-        print("Usage: python player.py <teamId> <fielder_count> <pitcher_count> <csv_dir>")
-        sys.exit(1)
-
-    teamId = int(sys.argv[1])
-    fielder_count = int(sys.argv[2])
-    pitcher_count = int(sys.argv[3])
-    csv_dir = sys.argv[4]
-
-    create_players(teamId, fielder_count, pitcher_count, csv_dir)
+    start_id = 1
+    for teamId in range(0, 12):
+        len_players = create_players(teamId, fielder_count, pitcher_count, csv_dir, start_id)
+        start_id += len_players

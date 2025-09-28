@@ -8,7 +8,7 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 // TODO: remove random score generation
-class ExecuteGamesByDateUseCase @Inject constructor(
+class ExecuteRandomGamesByDateUseCase @Inject constructor(
     private val gameResultRepository: GameResultRepository,
     private val gameFixtureRepository: GameFixtureRepository,
     private val teamRepository: TeamRepository

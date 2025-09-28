@@ -10,6 +10,7 @@ import com.example.penasim.domain.PitcherType
 import com.example.penasim.domain.PlayerInfo
 import com.example.penasim.domain.Position
 import com.example.penasim.domain.Team
+import com.example.penasim.domain.isStarting
 import com.example.penasim.domain.toShortJa
 
 data class CommandUiState(
@@ -52,7 +53,7 @@ data class CommandUiState(
         }
 
     fun getOrderFielderAppointments(orderType: OrderType): List<FielderAppointment>
-        = fielderAppointments.filter { it.orderType == orderType }.filter { it.position != Position.BENCH && it.position != Position.SUBSTITUTE }.sortedBy { it.number }
+        = fielderAppointments.filter { it.orderType == orderType }.filter { it.position.isStarting() }.sortedBy { it.number }
 
     fun getBenchFielderAppointments(orderType: OrderType): List<FielderAppointment>
         = fielderAppointments.filter { it.orderType == orderType }.filter { it.position == Position.BENCH }.sortedBy { it.number }

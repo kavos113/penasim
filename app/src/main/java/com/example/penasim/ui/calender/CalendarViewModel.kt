@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.penasim.const.Constants
 import com.example.penasim.domain.League
-import com.example.penasim.usecase.ExecuteGamesByDateUseCase
+import com.example.penasim.game.ExecuteGamesByDate
 import com.example.penasim.usecase.GetGameInfoAllUseCase
 import com.example.penasim.usecase.GetGameSchedulesAllUseCase
 import com.example.penasim.usecase.GetRankingUseCase
@@ -22,7 +22,7 @@ class CalendarViewModel @Inject constructor(
     private val getGameSchedulesAllUseCase: GetGameSchedulesAllUseCase,
     private val getGameInfoAllUseCase: GetGameInfoAllUseCase,
     private val getRankingUseCase: GetRankingUseCase,
-    private val executeGamesByDateUseCase: ExecuteGamesByDateUseCase
+    private val executeGamesByDate: ExecuteGamesByDate
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CalendarUiState())
     val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
@@ -76,7 +76,7 @@ class CalendarViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val recentGames = executeGamesByDateUseCase.execute(currentDate)
+            val recentGames = executeGamesByDate.execute(currentDate)
 
             _uiState.update { currentState ->
                 val newGames = currentState.games.toMutableMap()
