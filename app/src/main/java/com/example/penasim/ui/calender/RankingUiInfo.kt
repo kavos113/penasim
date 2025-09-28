@@ -1,5 +1,6 @@
 package com.example.penasim.ui.calender
 
+import com.example.penasim.const.Constants
 import com.example.penasim.const.icon
 import com.example.penasim.domain.League
 import com.example.penasim.domain.TeamStanding
@@ -9,6 +10,7 @@ data class RankingUiInfo(
     val rank: Int,
     val teamIcon: Int,
     val gameBack: Double,
+    val isMyTeam: Boolean,
 )
 
 fun TeamStanding.toRankingUiInfo(): RankingUiInfo = RankingUiInfo(
@@ -16,4 +18,5 @@ fun TeamStanding.toRankingUiInfo(): RankingUiInfo = RankingUiInfo(
     rank = rank,
     teamIcon = team.icon(),
     gameBack = gameBack,
+    isMyTeam = team.id == Constants.TEAM_ID
 )

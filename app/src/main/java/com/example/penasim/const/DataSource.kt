@@ -23,7 +23,8 @@ object DataSource {
                 10 -> R.drawable.team11_icon
                 else -> R.drawable.team12_icon
             },
-            gameBack = 0.0
+            gameBack = 0.0,
+            isMyTeam = it == Constants.TEAM_ID
         )
     }
 }

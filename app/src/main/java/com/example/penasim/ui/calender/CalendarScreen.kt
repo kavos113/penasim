@@ -3,6 +3,8 @@ package com.example.penasim.ui.calender
 import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.penasim.R
-import com.example.penasim.const.DateConst
+import com.example.penasim.const.Constants
 import com.example.penasim.domain.toLeague
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.PenasimTheme
@@ -70,9 +72,9 @@ private fun CalendarContent(
     val listState = rememberLazyListState()
 
     LaunchedEffect(uiState.currentDay) {
-        if (uiState.currentDay >= DateConst.START.plusDays(4)) {
+        if (uiState.currentDay >= Constants.START.plusDays(4)) {
             listState.animateScrollToItem(
-                index = (ChronoUnit.DAYS.between(DateConst.START, uiState.currentDay) - 2).toInt(),
+                index = (ChronoUnit.DAYS.between(Constants.START, uiState.currentDay) - 2).toInt(),
                 scrollOffset = 0
             )
         }
@@ -139,6 +141,7 @@ private fun LeagueRanking(
             RankingTeam(
                 teamLogo = rankings[it].teamIcon,
                 gamesBack = rankings[it].gameBack,
+                isMyTeam = rankings[it].isMyTeam,
                 modifier = Modifier
             )
         }
@@ -149,10 +152,23 @@ private fun LeagueRanking(
 private fun RankingTeam(
     @DrawableRes teamLogo: Int,
     gamesBack: Double,
+    isMyTeam: Boolean,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
+            .then(
+                if (isMyTeam) {
+                    Modifier.border(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = MaterialTheme.shapes.small
+                    )
+                } else {
+                    Modifier
+                }
+            )
+            .padding(4.dp)
     ) {
         Image(
             painter = painterResource(id = teamLogo),

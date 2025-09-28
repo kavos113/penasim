@@ -3,7 +3,7 @@ package com.example.penasim.ui.calender
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.penasim.const.DateConst
+import com.example.penasim.const.Constants
 import com.example.penasim.domain.League
 import com.example.penasim.usecase.ExecuteGamesByDateUseCase
 import com.example.penasim.usecase.GetGameInfoAllUseCase
@@ -28,7 +28,7 @@ class CalendarViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(CalendarUiState())
     val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
 
-    private var currentDate = DateConst.START
+    private var currentDate = Constants.START
 
     init {
         viewModelScope.launch {
@@ -36,8 +36,8 @@ class CalendarViewModel @Inject constructor(
             val gameInfos = getGameInfoAllUseCase.execute()
             val map = gameSchedules.groupBy { it.fixture.date }
             val clauses: Map<LocalDate, List<GameUiInfo>>
-                = generateSequence(DateConst.START) { it.plusDays(1) }
-                    .takeWhile { !it.isAfter(DateConst.END) }
+                = generateSequence(Constants.START) { it.plusDays(1) }
+                    .takeWhile { !it.isAfter(Constants.END) }
                     .associateWith { date ->
                         map[date]?.map {
                             val info = gameInfos.find { info -> info.fixture.id == it.fixture.id }
@@ -54,7 +54,7 @@ class CalendarViewModel @Inject constructor(
                 .map { it.toRankingUiInfo() }
 
             val currentDay = gameInfos.maxOfOrNull { it.fixture.date }?.plusDays(1)
-                ?: DateConst.START
+                ?: Constants.START
 
             println("Initial currentDay: $currentDay")
             currentDate = currentDay
@@ -71,7 +71,7 @@ class CalendarViewModel @Inject constructor(
     }
 
     fun nextGame() {
-        if (currentDate > DateConst.END) {
+        if (currentDate > Constants.END) {
             Log.d("CalendarViewModel", "All games have been processed.")
             return
         }

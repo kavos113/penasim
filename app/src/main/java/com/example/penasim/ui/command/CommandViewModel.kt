@@ -2,6 +2,7 @@ package com.example.penasim.ui.command
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.penasim.const.Constants.TEAM_ID
 import com.example.penasim.domain.MemberType
 import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.PitcherType
@@ -22,8 +23,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-const val TEAM_ID = 0 // Example team ID, replace with actual logic to get the team ID
 
 @HiltViewModel
 class CommandViewModel @Inject constructor(
