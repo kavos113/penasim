@@ -1,9 +1,9 @@
 package com.example.penasim.domain
 
 data class Team(
-    val id: Int,
-    val name: String,
-    val league: League,
+    val id: Int = 0,
+    val name: String = "",
+    val league: League = League.L1,
 )
 
 enum class League {

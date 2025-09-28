@@ -1,17 +1,20 @@
 package com.example.penasim.ui.game
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -39,11 +42,30 @@ object GameDestination : NavigationDestination {
 }
 
 @Composable
-fun BeforeGameScreen(modifier: Modifier = Modifier) {
+fun BeforeGameScreen(
+    modifier: Modifier = Modifier,
+    onClickStartGame: () -> Unit = {},
+    gameViewModel: GameViewModel
+) {
+    val uiState by gameViewModel.uiState.collectAsState()
+
     Column(
-
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-
+        BeforeGameContent(
+            beforeGameInfo = uiState.beforeGameInfo,
+            modifier = modifier
+        )
+        Button(
+            onClick = onClickStartGame,
+            modifier = Modifier
+                .padding(24.dp)
+                .align(Alignment.CenterHorizontally)
+        ) {
+            Text(text = "試合開始")
+        }
     }
 }
 
