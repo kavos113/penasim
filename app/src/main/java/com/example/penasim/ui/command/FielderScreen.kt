@@ -141,11 +141,9 @@ private fun MainMemberContent(
             horizontalArrangement = Arrangement.spacedBy(0.dp),
             modifier = modifier
         ) {
-            OrderList(
-                fielders = uiState.mainFielders,
-                onItemClick = onPlayerClick,
+            Column(
                 modifier = Modifier
-                    .weight(5f)
+                    .weight(8f)
                     .drawBehind {
                         val strokeWidth = 1.dp.toPx()
                         drawLine(
@@ -162,7 +160,14 @@ private fun MainMemberContent(
                             strokeWidth = strokeWidth
                         )
                     }
-            )
+            ) {
+                MainList(
+                    fielders = uiState.mainFielders,
+                    onItemClick = onPlayerClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
             SubstituteList(
                 fielders = uiState.subFielders,
                 onItemClick = onPlayerClick,
@@ -309,7 +314,7 @@ private fun MainList(
                 repeat(first.size) { index ->
                     SimplePlayerItem(
                         displayName = first[index].value.displayName,
-                        color = pitcherColor,
+                        color = first[index].value.color,
                         modifier = Modifier
                             .clickable { onItemClick(first[index].value.id) }
                     )
@@ -322,7 +327,7 @@ private fun MainList(
                 repeat(second.size) { index ->
                     SimplePlayerItem(
                         displayName = second[index].value.displayName,
-                        color = pitcherColor,
+                        color = second[index].value.color,
                         modifier = Modifier
                             .clickable { onItemClick(second[index].value.id) }
                     )

@@ -7,12 +7,15 @@ import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.PitcherType
 import com.example.penasim.domain.Position
 import com.example.penasim.usecase.GetFielderAppointmentByTeamUseCase
+import com.example.penasim.usecase.GetMainMembersByTeamUseCase
 import com.example.penasim.usecase.GetPitcherAppointmentByTeamUseCase
 import com.example.penasim.usecase.GetPlayerInfosByTeamUseCase
 import com.example.penasim.usecase.GetTeamUseCase
 import com.example.penasim.usecase.UpdateFielderAppointmentsUseCase
+import com.example.penasim.usecase.UpdateMainMembersUseCase
 import com.example.penasim.usecase.UpdatePitcherAppointmentsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,7 +32,9 @@ class CommandViewModel @Inject constructor(
     private val getFielderAppointmentByTeamUseCase: GetFielderAppointmentByTeamUseCase,
     private val getPitcherAppointmentByTeamUseCase: GetPitcherAppointmentByTeamUseCase,
     private val updateFielderAppointmentsUseCase: UpdateFielderAppointmentsUseCase,
-    private val updatePitcherAppointmentsUseCase: UpdatePitcherAppointmentsUseCase
+    private val updatePitcherAppointmentsUseCase: UpdatePitcherAppointmentsUseCase,
+    private val getMainMembersByTeamUseCase: GetMainMembersByTeamUseCase,
+    private val updateMainMembersUseCase: UpdateMainMembersUseCase
 ): ViewModel() {
     private val _uiState = MutableStateFlow(CommandUiState())
     val uiState: StateFlow<CommandUiState> = _uiState.asStateFlow()
@@ -43,12 +48,15 @@ class CommandViewModel @Inject constructor(
             val fielderAppointments = getFielderAppointmentByTeamUseCase.execute(team)
             val pitcherAppointments = getPitcherAppointmentByTeamUseCase.execute(team)
 
+            val mainMembers = getMainMembersByTeamUseCase.execute(team.id)
+
             _uiState.update { currentState ->
                 currentState.copy(
                     team = team,
                     players = players,
                     fielderAppointments = fielderAppointments,
-                    pitcherAppointments = pitcherAppointments
+                    pitcherAppointments = pitcherAppointments,
+                    mainMembers = mainMembers,
                 )
             }
 
@@ -111,9 +119,10 @@ class CommandViewModel @Inject constructor(
     }
 
     fun save() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             updateFielderAppointmentsUseCase.execute(_uiState.value.fielderAppointments)
             updatePitcherAppointmentsUseCase.execute(_uiState.value.pitcherAppointments)
+            updateMainMembersUseCase.execute(_uiState.value.mainMembers)
         }
     }
 
@@ -136,19 +145,35 @@ class CommandViewModel @Inject constructor(
                 val currentAppointment = _uiState.value.fielderAppointments.find { it.playerId == currentSelected && it.orderType == orderType } ?: return
                 val targetAppointment = _uiState.value.fielderAppointments.find { it.playerId == playerId && it.orderType == orderType } ?: return
 
-                updateFielderAppointment(
-                    playerId = currentSelected,
-                    position = currentAppointment.position,
-                    number = targetAppointment.number,
-                    orderType = orderType
-                )
+                if (currentAppointment.position == Position.BENCH || targetAppointment.position == Position.BENCH) {
+                    updateFielderAppointment(
+                        playerId = currentSelected,
+                        position = targetAppointment.position,
+                        number = targetAppointment.number,
+                        orderType = orderType
+                    )
 
-                updateFielderAppointment(
-                    playerId = playerId,
-                    position = targetAppointment.position,
-                    number = currentAppointment.number,
-                    orderType = orderType
-                )
+                    updateFielderAppointment(
+                        playerId = playerId,
+                        position = currentAppointment.position,
+                        number = currentAppointment.number,
+                        orderType = orderType
+                    )
+                } else {
+                    updateFielderAppointment(
+                        playerId = currentSelected,
+                        position = currentAppointment.position,
+                        number = targetAppointment.number,
+                        orderType = orderType
+                    )
+
+                    updateFielderAppointment(
+                        playerId = playerId,
+                        position = targetAppointment.position,
+                        number = currentAppointment.number,
+                        orderType = orderType
+                    )
+                }
             }
         }
     }

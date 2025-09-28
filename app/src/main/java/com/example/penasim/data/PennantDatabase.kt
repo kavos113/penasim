@@ -32,7 +32,7 @@ import com.example.penasim.data.repository.Converters
         PitcherAppointmentEntity::class,
         MainMemberEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
