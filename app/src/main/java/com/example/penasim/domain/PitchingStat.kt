@@ -3,7 +3,7 @@ package com.example.penasim.domain
 data class PitchingStat(
     val gameFixtureId: Int,
     val playerId: Int,
-    val inningPitched: Float = 0f,
+    val inningPitched: Int = 0,
     val hit: Int = 0,
     val run: Int = 0,
     val earnedRun: Int = 0,
@@ -14,4 +14,15 @@ data class PitchingStat(
     val lose: Boolean = false,
     val hold: Boolean = false,
     val save: Boolean = false,
-)
+) {
+    val displayInningPitched: String
+        get() {
+            val wholeInnings = inningPitched / 3
+            val partialInnings = inningPitched % 3
+            return if (partialInnings == 0) {
+                wholeInnings.toString()
+            } else {
+                "$wholeInnings.${partialInnings}"
+            }
+        }
+}

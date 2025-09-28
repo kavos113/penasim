@@ -41,7 +41,7 @@ import com.example.penasim.data.repository.Converters
         BattingStatEntity::class,
         PitchingStatEntity::class,
     ],
-    version = 9,
+    version = 10,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

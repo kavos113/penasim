@@ -206,18 +206,13 @@ class Match(
 
         if (pitcher in pitchingStats) {
             pitchingStats[pitcher] = pitchingStats[pitcher]!!.copy(
-                inningPitched = pitchingStats[pitcher]!!.inningPitched + 0.1f,
+                inningPitched = pitchingStats[pitcher]!!.inningPitched + 1
             )
-            if (pitchingStats[pitcher]!!.inningPitched % 1.0f == 0.3f) {
-                pitchingStats[pitcher] = pitchingStats[pitcher]!!.copy(
-                    inningPitched = pitchingStats[pitcher]!!.inningPitched + 0.7f
-                )
-            }
         } else {
             pitchingStats[pitcher] = PitchingStat(
                 gameFixtureId = schedule.fixture.id,
                 playerId = pitcher,
-                inningPitched = 0.1f,
+                inningPitched = 1,
             )
         }
 

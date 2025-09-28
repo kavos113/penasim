@@ -24,7 +24,7 @@ import androidx.room.ForeignKey
 data class PitchingStatEntity(
     val gameFixtureId: Int,
     val playerId: Int,
-    val inningPitched: Float,
+    val inningPitched: Int,
     val hit: Int,
     val run: Int,
     val earnedRun: Int,
