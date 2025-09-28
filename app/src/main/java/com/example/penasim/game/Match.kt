@@ -39,10 +39,16 @@ class Match(
         = awayPlayers.fielderAppointments.filter { it.position.isStarting() }.find { it.number == number }?.playerId
             ?: throw IllegalArgumentException("no away batter for number $number")
 
+    private fun Boolean.toStr() = if (this) "X" else " "
+    private fun Half.toStr() = if (this == Half.INNING_TOP) "表" else "裏"
+
     fun play(): GameResult {
+        println("------- ${schedule.awayTeam.name} @ ${schedule.homeTeam.name} -------")
         while (inning <= MAX_INNINGS || homeScore == awayScore) {
             batting()
         }
+        println("Final Score: $awayScore - $homeScore")
+        println("-----------------------------------")
 
         return GameResult(
             fixtureId = schedule.fixture.id,
@@ -57,16 +63,17 @@ class Match(
             Half.INNING_BOTTOM -> homeBatter(homeBatterIndex)
         }
 
+        println("$awayScore - $homeScore ${inning}回${half.toStr()} Out $outs, Bases: [${firstBaseOccupied.toStr()}, ${secondBaseOccupied.toStr()}, ${thirdBaseOccupied.toStr()}], Batter: $batter")
+
         // Simplified batting logic
         val outcome = (1..100).random()
+        nextBatter()
         when {
             outcome <= 70 -> out() // 70% chance of out
             outcome <= 85 -> single() // 15% chance of single
             outcome <= 95 -> double() // 10% chance of double
             else -> triple() // 5% chance of triple
         }
-
-        nextBatter()
     }
 
     private fun nextBatter() {
