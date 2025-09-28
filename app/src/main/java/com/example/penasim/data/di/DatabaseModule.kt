@@ -52,4 +52,13 @@ object DatabaseModule {
 
     @Provides
     fun provideMainMemberDao(database: PennantDatabase) = database.mainMemberDao()
+
+    @Provides
+    fun provideInningScoreDao(database: PennantDatabase) = database.inningScoreDao()
+
+    @Provides
+    fun provideBattingStatDao(database: PennantDatabase) = database.battingStatDao()
+
+    @Provides
+    fun providePitchingStatDao(database: PennantDatabase) = database.pitchingStatDao()
 }
