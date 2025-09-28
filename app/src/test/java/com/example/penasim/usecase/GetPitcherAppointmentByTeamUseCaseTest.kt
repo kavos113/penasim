@@ -29,8 +29,8 @@ class GetPitcherAppointmentByTeamUseCaseTest {
     fun execute_returnsAppointmentsForTeam() = runTest {
         val team = Team(2, "B", com.example.penasim.domain.League.L2)
         val apps = listOf(
-            PitcherAppointment(teamId = 2, playerId = 20, isMain = true, type = PitcherType.STARTER, number = 1),
-            PitcherAppointment(teamId = 2, playerId = 21, isMain = false, type = PitcherType.CLOSER, number = 2)
+            PitcherAppointment(teamId = 2, playerId = 20, type = PitcherType.STARTER, number = 1),
+            PitcherAppointment(teamId = 2, playerId = 21, type = PitcherType.CLOSER, number = 2)
         )
         val repo = FakePitcherAppointmentRepository(mapOf(2 to apps))
         val useCase = GetPitcherAppointmentByTeamUseCase(repo)

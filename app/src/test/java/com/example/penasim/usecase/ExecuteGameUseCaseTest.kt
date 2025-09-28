@@ -31,6 +31,8 @@ class ExecuteGameUseCaseTest {
         override suspend fun getGameByFixtureId(fixtureId: Int): GameResult? = null
         override suspend fun getGamesByFixtureIds(fixtureIds: List<Int>): List<GameResult> = emptyList()
         override suspend fun getAllGames(): List<GameResult> = emptyList()
+        override suspend fun deleteAllGames() {}
+
         override suspend fun createGame(fixtureId: Int, homeScore: Int, awayScore: Int): GameResult? = createBehavior(fixtureId, homeScore, awayScore)
     }
 
