@@ -11,6 +11,9 @@ import com.example.penasim.data.dao.PlayerDao
 import com.example.penasim.data.dao.PlayerPositionDao
 import com.example.penasim.data.dao.TeamDao
 import com.example.penasim.data.dao.MainMemberDao
+import com.example.penasim.data.dao.InningScoreDao
+import com.example.penasim.data.dao.BattingStatDao
+import com.example.penasim.data.dao.PitchingStatDao
 import com.example.penasim.data.entity.FielderAppointmentEntity
 import com.example.penasim.data.entity.GameFixtureEntity
 import com.example.penasim.data.entity.GameResultEntity
@@ -19,6 +22,9 @@ import com.example.penasim.data.entity.PlayerEntity
 import com.example.penasim.data.entity.PlayerPositionEntity
 import com.example.penasim.data.entity.TeamEntity
 import com.example.penasim.data.entity.MainMemberEntity
+import com.example.penasim.data.entity.InningScoreEntity
+import com.example.penasim.data.entity.BattingStatEntity
+import com.example.penasim.data.entity.PitchingStatEntity
 import com.example.penasim.data.repository.Converters
 
 @Database(
@@ -31,8 +37,11 @@ import com.example.penasim.data.repository.Converters
         FielderAppointmentEntity::class,
         PitcherAppointmentEntity::class,
         MainMemberEntity::class,
+        InningScoreEntity::class,
+        BattingStatEntity::class,
+        PitchingStatEntity::class,
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -45,4 +54,7 @@ abstract class PennantDatabase : RoomDatabase() {
     abstract fun fielderAppointmentDao(): FielderAppointmentDao
     abstract fun pitcherAppointmentDao(): PitcherAppointmentDao
     abstract fun mainMemberDao(): MainMemberDao
+    abstract fun inningScoreDao(): InningScoreDao
+    abstract fun battingStatDao(): BattingStatDao
+    abstract fun pitchingStatDao(): PitchingStatDao
 }

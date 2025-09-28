@@ -56,21 +56,21 @@
 
 ### pitching_stats
 
-| name           | type  | description |
-| -------------- | ----- | ----------- |
-| gameFixtureId  | int   | foreign key |
-| playerId       | int   | foreign key |
-| inningPitched  | float | e.g. 4.2    |
-| hitAllowed     | int   |             |
-| runAllowed     | int   |             |
-| earnedRun      | int   |             |
-| walkAllowed    | int   |             |
-| strikeOut      | int   |             |
-| homeRunAllowed | int   |             |
-| win            | int   | bool        |
-| loss           | int   | bool        |
-| hold           | int   | bool        |
-| save           | int   | bool        |
+| name          | type  | description |
+| ------------- | ----- | ----------- |
+| gameFixtureId | int   | foreign key |
+| playerId      | int   | foreign key |
+| inningPitched | float | e.g. 4.2    |
+| hit           | int   | 被安打      |
+| run           | int   | 失点        |
+| earnedRun     | int   | 自責点      |
+| walk          | int   | 与四球      |
+| strikeOut     | int   |             |
+| homeRun       | int   |             |
+| win           | int   | bool        |
+| loss          | int   | bool        |
+| hold          | int   | bool        |
+| save          | int   | bool        |
 
 
 ## Player Info Table
