@@ -7,7 +7,7 @@ import javax.inject.Inject
 class InsertInningScoreUseCase @Inject constructor(
     private val inningScoreRepository: InningScoreRepository
 ) {
-    suspend fun execute(item: InningScore) {
-        inningScoreRepository.insertAll(listOf(item))
+    suspend fun execute(item: List<InningScore>) {
+        inningScoreRepository.insertAll(item)
     }
 }

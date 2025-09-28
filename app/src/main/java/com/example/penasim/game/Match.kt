@@ -1,7 +1,11 @@
 package com.example.penasim.game
 
+import com.example.penasim.domain.BattingStat
 import com.example.penasim.domain.GameResult
 import com.example.penasim.domain.GameSchedule
+import com.example.penasim.domain.InningScore
+import com.example.penasim.domain.PitcherType
+import com.example.penasim.domain.PitchingStat
 import com.example.penasim.domain.TeamPlayers
 import com.example.penasim.domain.isStarting
 
@@ -35,17 +39,33 @@ class Match(
     private val homeScores: MutableList<Int> = mutableListOf()
     private val awayScores: MutableList<Int> = mutableListOf(0)
 
+    private val battingStats: MutableMap<Int, BattingStat> = mutableMapOf()
+    private val pitchingStats: MutableMap<Int, PitchingStat> = mutableMapOf()
+
     private fun homeBatter(number: Int)
         = homePlayers.fielderAppointments.filter { it.position.isStarting() }.find { it.number == number }?.playerId
             ?: throw IllegalArgumentException("no home batter for number $number")
     private fun awayBatter(number: Int)
         = awayPlayers.fielderAppointments.filter { it.position.isStarting() }.find { it.number == number }?.playerId
             ?: throw IllegalArgumentException("no away batter for number $number")
+    private fun homePitcher() = homePlayers.pitcherAppointments.find { it.type == PitcherType.STARTER && it.number == 1 }?.playerId
+        ?: throw IllegalArgumentException("no home pitcher")
+    private fun awayPitcher() = awayPlayers.pitcherAppointments.find { it.type == PitcherType.STARTER && it.number == 1 }?.playerId
+        ?: throw IllegalArgumentException("no away pitcher")
+
+    private fun currentBatter() = when (half) {
+        Half.INNING_TOP -> awayBatter(awayBatterIndex)
+        Half.INNING_BOTTOM -> homeBatter(homeBatterIndex)
+    }
+    private fun currentPitcher() = when (half) {
+        Half.INNING_TOP -> homePitcher()
+        Half.INNING_BOTTOM -> awayPitcher()
+    }
 
     private fun Boolean.toStr() = if (this) "X" else " "
     private fun Half.toStr() = if (this == Half.INNING_TOP) "表" else "裏"
 
-    fun play(): GameResult {
+    fun play() {
         println("------- ${schedule.awayTeam.name} @ ${schedule.homeTeam.name} -------")
         while (inning <= MAX_INNINGS) {
             batting()
@@ -58,30 +78,53 @@ class Match(
         println("${schedule.homeTeam.name} ${homeScores.joinToString(" ")} | $homeScore")
 
         println("Final Score: $awayScore - $homeScore")
-
-        return GameResult(
-            fixtureId = schedule.fixture.id,
-            homeScore = homeScore,
-            awayScore = awayScore
-        )
     }
 
-    private fun batting() {
-        val batter = when (half) {
-            Half.INNING_TOP -> awayBatter(awayBatterIndex)
-            Half.INNING_BOTTOM -> homeBatter(homeBatterIndex)
-        }
+    fun result(): GameResult = GameResult(
+        fixtureId = schedule.fixture.id,
+        homeScore = homeScore,
+        awayScore = awayScore,
+    )
 
+    fun inningScores(): List<InningScore> {
+        val scores = mutableListOf<InningScore>()
+        for (i in 1..homeScores.size) {
+            scores.add(
+                InningScore(
+                    fixtureId = schedule.fixture.id,
+                    teamId = schedule.homeTeam.id,
+                    inning = i,
+                    score = homeScores[i - 1]
+                )
+            )
+        }
+        for (i in 1..awayScores.size) {
+            scores.add(
+                InningScore(
+                    fixtureId = schedule.fixture.id,
+                    teamId = schedule.awayTeam.id,
+                    inning = i,
+                    score = awayScores[i - 1]
+                )
+            )
+        }
+        return scores
+    }
+
+    fun battingStats(): List<BattingStat> = battingStats.values.toList()
+    fun pitchingStats(): List<PitchingStat> = pitchingStats.values.toList()
+
+    private fun batting() {
 //        println("$awayScore - $homeScore ${inning}回${half.toStr()} Out $outs, Bases: [${firstBaseOccupied.toStr()}, ${secondBaseOccupied.toStr()}, ${thirdBaseOccupied.toStr()}], Batter: $batter")
 
         // Simplified batting logic
         val outcome = (1..100).random()
         nextBatter()
         when {
-            outcome <= 70 -> out() // 70% chance of out
-            outcome <= 85 -> single() // 15% chance of single
-            outcome <= 95 -> double() // 10% chance of double
-            else -> triple() // 5% chance of triple
+            outcome <= 70 -> out()
+            outcome <= 85 -> single()
+            outcome <= 95 -> double()
+            else -> triple()
         }
     }
 
@@ -110,20 +153,74 @@ class Match(
     }
 
     private fun score() {
+        val batter = currentBatter()
+        val pitcher = currentPitcher()
+
         when (half) {
             Half.INNING_TOP -> {
                 awayScore++
                 awayScores[awayScores.lastIndex]++
+
+                battingStats[batter] = battingStats[batter]!!.copy(
+                    hit = battingStats[batter]!!.rbi + 1,
+                )
+
+                pitchingStats[pitcher] = pitchingStats[pitcher]!!.copy(
+                    run = pitchingStats[pitcher]!!.run + 1,
+                    earnedRun = pitchingStats[pitcher]!!.earnedRun + 1,
+                )
             }
             Half.INNING_BOTTOM -> {
                 homeScore++
                 homeScores[homeScores.lastIndex]++
+
+                battingStats[batter] = battingStats[batter]!!.copy(
+                    hit = battingStats[batter]!!.rbi + 1,
+                )
+
+                pitchingStats[pitcher] = pitchingStats[pitcher]!!.copy(
+                    run = pitchingStats[pitcher]!!.run + 1,
+                    earnedRun = pitchingStats[pitcher]!!.earnedRun + 1,
+                )
             }
         }
     }
 
     private fun out() {
         outs++
+
+        val batter = currentBatter()
+        val pitcher = currentPitcher()
+
+        if (batter in battingStats) {
+            battingStats[batter] = battingStats[batter]!!.copy(
+                atBat = battingStats[batter]!!.atBat + 1
+            )
+        } else {
+            battingStats[batter] = BattingStat(
+                gameFixtureId = schedule.fixture.id,
+                playerId = batter,
+                atBat = 1,
+            )
+        }
+
+        if (pitcher in pitchingStats) {
+            pitchingStats[pitcher] = pitchingStats[pitcher]!!.copy(
+                inningPitched = pitchingStats[pitcher]!!.inningPitched + 0.1f,
+            )
+            if (pitchingStats[pitcher]!!.inningPitched % 1.0f == 0.3f) {
+                pitchingStats[pitcher] = pitchingStats[pitcher]!!.copy(
+                    inningPitched = pitchingStats[pitcher]!!.inningPitched + 0.7f
+                )
+            }
+        } else {
+            pitchingStats[pitcher] = PitchingStat(
+                gameFixtureId = schedule.fixture.id,
+                playerId = pitcher,
+                inningPitched = 0.1f,
+            )
+        }
+
         if (outs >= 3) {
             when (half) {
                 Half.INNING_TOP -> {
@@ -141,6 +238,35 @@ class Match(
     }
 
     private fun single() {
+        val batter = currentBatter()
+        val pitcher = currentPitcher()
+
+        if (batter in battingStats) {
+            battingStats[batter] = battingStats[batter]!!.copy(
+                atBat = battingStats[batter]!!.atBat + 1,
+                hit = battingStats[batter]!!.hit + 1
+            )
+        } else {
+            battingStats[batter] = BattingStat(
+                gameFixtureId = schedule.fixture.id,
+                playerId = batter,
+                atBat = 1,
+                hit = 1,
+            )
+        }
+
+        if (pitcher in pitchingStats) {
+            pitchingStats[pitcher] = pitchingStats[pitcher]!!.copy(
+                hit = pitchingStats[pitcher]!!.hit + 1
+            )
+        } else {
+            pitchingStats[pitcher] = PitchingStat(
+                gameFixtureId = schedule.fixture.id,
+                playerId = pitcher,
+                hit = 1,
+            )
+        }
+
         if (thirdBaseOccupied) {
             score()
             thirdBaseOccupied = false
@@ -157,6 +283,37 @@ class Match(
     }
 
     private fun double() {
+        val batter = currentBatter()
+        val pitcher = currentPitcher()
+
+        if (batter in battingStats) {
+            battingStats[batter] = battingStats[batter]!!.copy(
+                atBat = battingStats[batter]!!.atBat + 1,
+                hit = battingStats[batter]!!.hit + 1,
+                doubleHit = battingStats[batter]!!.doubleHit + 1
+            )
+        } else {
+            battingStats[batter] = BattingStat(
+                gameFixtureId = schedule.fixture.id,
+                playerId = batter,
+                atBat = 1,
+                hit = 1,
+                doubleHit = 1,
+            )
+        }
+
+        if (pitcher in pitchingStats) {
+            pitchingStats[pitcher] = pitchingStats[pitcher]!!.copy(
+                hit = pitchingStats[pitcher]!!.hit + 1
+            )
+        } else {
+            pitchingStats[pitcher] = PitchingStat(
+                gameFixtureId = schedule.fixture.id,
+                playerId = pitcher,
+                hit = 1,
+            )
+        }
+
         if (thirdBaseOccupied) {
             score()
             thirdBaseOccupied = false
@@ -173,6 +330,37 @@ class Match(
     }
 
     private fun triple() {
+        val batter = currentBatter()
+        val pitcher = currentPitcher()
+
+        if (batter in battingStats) {
+            battingStats[batter] = battingStats[batter]!!.copy(
+                atBat = battingStats[batter]!!.atBat + 1,
+                hit = battingStats[batter]!!.hit + 1,
+                tripleHit = battingStats[batter]!!.tripleHit + 1
+            )
+        } else {
+            battingStats[batter] = BattingStat(
+                gameFixtureId = schedule.fixture.id,
+                playerId = batter,
+                atBat = 1,
+                hit = 1,
+                tripleHit = 1,
+            )
+        }
+
+        if (pitcher in pitchingStats) {
+            pitchingStats[pitcher] = pitchingStats[pitcher]!!.copy(
+                hit = pitchingStats[pitcher]!!.hit + 1
+            )
+        } else {
+            pitchingStats[pitcher] = PitchingStat(
+                gameFixtureId = schedule.fixture.id,
+                playerId = pitcher,
+                hit = 1,
+            )
+        }
+
         if (thirdBaseOccupied) {
             score()
             thirdBaseOccupied = false

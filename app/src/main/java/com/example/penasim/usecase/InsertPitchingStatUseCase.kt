@@ -7,7 +7,7 @@ import javax.inject.Inject
 class InsertPitchingStatUseCase @Inject constructor(
     private val pitchingStatRepository: PitchingStatRepository
 ) {
-    suspend fun execute(item: PitchingStat) {
-        pitchingStatRepository.insertAll(listOf(item))
+    suspend fun execute(item: List<PitchingStat>) {
+        pitchingStatRepository.insertAll(item)
     }
 }
