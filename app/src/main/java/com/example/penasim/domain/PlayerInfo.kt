@@ -4,6 +4,8 @@ data class PlayerInfo(
     val player: Player,
     val positions: List<PlayerPosition>,
     val team: Team?,
+    val battingStat: TotalBattingStats,
+    val pitchingStat: TotalPitchingStats,
 ) {
     val fullName: String
         get() = "${player.firstName} ${player.lastName}"
