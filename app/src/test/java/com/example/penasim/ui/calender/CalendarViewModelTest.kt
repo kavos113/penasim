@@ -6,7 +6,7 @@ import com.example.penasim.domain.repository.GameFixtureRepository
 import com.example.penasim.domain.repository.GameResultRepository
 import com.example.penasim.domain.repository.TeamRepository
 import com.example.penasim.testing.MainDispatcherRule
-import com.example.penasim.usecase.ExecuteGamesByDateUseCase
+import com.example.penasim.usecase.ExecuteRandomGamesByDateUseCase
 import com.example.penasim.usecase.GetGameInfoAllUseCase
 import com.example.penasim.usecase.GetGameSchedulesAllUseCase
 import com.example.penasim.usecase.GetRankingUseCase
@@ -75,7 +75,7 @@ class CalendarViewModelTest {
             getGameSchedulesAllUseCase = GetGameSchedulesAllUseCase(fixtureRepo, teamRepo),
             getGameInfoAllUseCase = GetGameInfoAllUseCase(fixtureRepo, resultRepo, teamRepo),
             getRankingUseCase = GetRankingUseCase(teamRepo, fixtureRepo, resultRepo),
-            executeGamesByDateUseCase = ExecuteGamesByDateUseCase(resultRepo, fixtureRepo, teamRepo)
+            executeGamesByDateUseCase = ExecuteRandomGamesByDateUseCase(resultRepo, fixtureRepo, teamRepo)
         )
 
         val state = vm.uiState.value
@@ -117,7 +117,7 @@ class CalendarViewModelTest {
             getGameSchedulesAllUseCase = GetGameSchedulesAllUseCase(fixtureRepo, teamRepo),
             getGameInfoAllUseCase = GetGameInfoAllUseCase(fixtureRepo, resultRepo, teamRepo),
             getRankingUseCase = GetRankingUseCase(teamRepo, fixtureRepo, resultRepo),
-            executeGamesByDateUseCase = ExecuteGamesByDateUseCase(resultRepo, fixtureRepo, teamRepo)
+            executeGamesByDateUseCase = ExecuteRandomGamesByDateUseCase(resultRepo, fixtureRepo, teamRepo)
         )
 
         // Initial current day should be day2 (start + 1), so nextGame will process day2
