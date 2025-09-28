@@ -40,8 +40,10 @@ class Match(
             ?: throw IllegalArgumentException("no away batter for number $number")
 
     fun play(): GameResult {
-        homeScore = (0..10).random()
-        awayScore = (0..10).random()
+        while (inning <= MAX_INNINGS || homeScore == awayScore) {
+            batting()
+        }
+
         return GameResult(
             fixtureId = schedule.fixture.id,
             homeScore = homeScore,
