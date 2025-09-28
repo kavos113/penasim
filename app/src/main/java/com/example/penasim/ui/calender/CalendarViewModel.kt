@@ -1,6 +1,5 @@
 package com.example.penasim.ui.calender
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.penasim.const.Constants
@@ -66,13 +65,13 @@ class CalendarViewModel @Inject constructor(
                     currentDay = currentDay
                 )
             }
-            Log.d("CalendarViewModel", "Initial data loaded, total days: ${clauses.size}")
+            println("[CalendarViewModel] Initial data loaded, total days: ${clauses.size}")
         }
     }
 
     fun nextGame() {
         if (currentDate > Constants.END) {
-            Log.d("CalendarViewModel", "All games have been processed.")
+            println("[CalendarViewModel] All games have been processed.")
             return
         }
 
@@ -94,10 +93,10 @@ class CalendarViewModel @Inject constructor(
                 )
             }
 
-            Log.d("CalendarViewModel", "Current Game: $currentDate ======================")
+            println("[CalendarViewModel] Current Game: $currentDate ======================")
             val league1Rankings = getRankingUseCase.execute(League.L1)
             league1Rankings.forEach {
-                Log.d("CalendarViewModel", "L1 Ranking - Rank: ${it.rank}, Team: ${it.team.name}, Wins: ${it.wins}, Losses: ${it.losses}, GB: ${"%.1f".format(it.gameBack)}")
+                println("[CalendarViewModel] L1 Ranking - Rank: ${it.rank}, Team: ${it.team.name}, Wins: ${it.wins}, Losses: ${it.losses}, GB: ${"%.1f".format(it.gameBack)}")
             }
 
             currentDate = currentDate.plusDays(1)
