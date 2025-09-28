@@ -32,6 +32,9 @@ class Match(
     private var homeBatterIndex = 1
     private var awayBatterIndex = 1
 
+    private val homeScores: MutableList<Int> = mutableListOf()
+    private val awayScores: MutableList<Int> = mutableListOf(0)
+
     private fun homeBatter(number: Int)
         = homePlayers.fielderAppointments.filter { it.position.isStarting() }.find { it.number == number }?.playerId
             ?: throw IllegalArgumentException("no home batter for number $number")
@@ -44,11 +47,17 @@ class Match(
 
     fun play(): GameResult {
         println("------- ${schedule.awayTeam.name} @ ${schedule.homeTeam.name} -------")
-        while (inning <= MAX_INNINGS || homeScore == awayScore) {
+        while (inning <= MAX_INNINGS) {
             batting()
         }
+
+        awayScores.removeAt(awayScores.lastIndex)
+
+        println("  1 2 3 4 5 6 7 8 9 | R")
+        println("${schedule.awayTeam.name} ${awayScores.joinToString(" ")} | $awayScore")
+        println("${schedule.homeTeam.name} ${homeScores.joinToString(" ")} | $homeScore")
+
         println("Final Score: $awayScore - $homeScore")
-        println("-----------------------------------")
 
         return GameResult(
             fixtureId = schedule.fixture.id,
@@ -63,7 +72,7 @@ class Match(
             Half.INNING_BOTTOM -> homeBatter(homeBatterIndex)
         }
 
-        println("$awayScore - $homeScore ${inning}回${half.toStr()} Out $outs, Bases: [${firstBaseOccupied.toStr()}, ${secondBaseOccupied.toStr()}, ${thirdBaseOccupied.toStr()}], Batter: $batter")
+//        println("$awayScore - $homeScore ${inning}回${half.toStr()} Out $outs, Bases: [${firstBaseOccupied.toStr()}, ${secondBaseOccupied.toStr()}, ${thirdBaseOccupied.toStr()}], Batter: $batter")
 
         // Simplified batting logic
         val outcome = (1..100).random()
@@ -104,9 +113,11 @@ class Match(
         when (half) {
             Half.INNING_TOP -> {
                 awayScore++
+                awayScores[awayScores.lastIndex]++
             }
             Half.INNING_BOTTOM -> {
                 homeScore++
+                homeScores[homeScores.lastIndex]++
             }
         }
     }
@@ -117,10 +128,12 @@ class Match(
             when (half) {
                 Half.INNING_TOP -> {
                     half = Half.INNING_BOTTOM
+                    homeScores.add(0)
                 }
                 Half.INNING_BOTTOM -> {
                     half = Half.INNING_TOP
                     inning++
+                    awayScores.add(0)
                 }
             }
             resetInning()

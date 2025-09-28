@@ -211,21 +211,6 @@ private fun Game(
                     bottom = 8.dp
                 )
         ) {
-            Image(
-                painter = painterResource(id = homeTeamLogo),
-                contentDescription = "home team icon",
-                modifier = Modifier
-                    .size(18.dp)
-                    .align(Alignment.CenterVertically)
-            )
-            Text(
-                text = if (isGameFinished) homeTeamScore.toString() else " ",
-                modifier = Modifier
-            )
-            Text(
-                text = "-",
-                modifier = Modifier
-            )
             Text(
                 text = if (isGameFinished) awayTeamScore.toString() else " ",
                 modifier = Modifier
@@ -236,6 +221,21 @@ private fun Game(
                 modifier = Modifier
                     .size(18.dp)
                     .align(Alignment.CenterVertically)
+            )
+            Text(
+                text = "-",
+                modifier = Modifier
+            )
+            Image(
+                painter = painterResource(id = homeTeamLogo),
+                contentDescription = "home team icon",
+                modifier = Modifier
+                    .size(18.dp)
+                    .align(Alignment.CenterVertically)
+            )
+            Text(
+                text = if (isGameFinished) homeTeamScore.toString() else " ",
+                modifier = Modifier
             )
         }
     }
