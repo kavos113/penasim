@@ -14,6 +14,12 @@ interface InningScoreDao {
     @Query("SELECT * FROM inning_scores WHERE gameFixtureId IN (:fixtureIds)")
     suspend fun getByFixtureIds(fixtureIds: List<Int>): List<InningScoreEntity>
 
+    @Query("SELECT * FROM inning_scores WHERE teamId = :teamId")
+    suspend fun getByTeamId(teamId: Int): List<InningScoreEntity>
+
+    @Query("SELECT * FROM inning_scores WHERE teamId IN (:teamIds)")
+    suspend fun getByTeamIds(teamIds: List<Int>): List<InningScoreEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<InningScoreEntity>)
 

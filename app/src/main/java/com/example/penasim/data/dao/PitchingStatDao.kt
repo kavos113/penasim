@@ -14,6 +14,12 @@ interface PitchingStatDao {
     @Query("SELECT * FROM pitching_stats WHERE gameFixtureId IN (:fixtureIds)")
     suspend fun getByFixtureIds(fixtureIds: List<Int>): List<PitchingStatEntity>
 
+    @Query("SELECT * FROM pitching_stats WHERE playerId = :playerId")
+    suspend fun getByPlayerId(playerId: Int): List<PitchingStatEntity>
+
+    @Query("SELECT * FROM pitching_stats WHERE playerId IN (:playerIds)")
+    suspend fun getByPlayerIds(playerIds: List<Int>): List<PitchingStatEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(items: List<PitchingStatEntity>)
 

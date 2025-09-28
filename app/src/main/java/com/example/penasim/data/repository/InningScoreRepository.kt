@@ -16,6 +16,12 @@ class InningScoreRepository @Inject constructor(
     override suspend fun getByFixtureIds(fixtureIds: List<Int>): List<InningScore>
         = dao.getByFixtureIds(fixtureIds).map { it.toDomain() }
 
+    override suspend fun getByTeamId(teamId: Int): List<InningScore>
+        = dao.getByTeamId(teamId).map { it.toDomain() }
+
+    override suspend fun getByTeamIds(teamIds: List<Int>): List<InningScore>
+        = dao.getByTeamIds(teamIds).map { it.toDomain() }
+
     override suspend fun insertAll(items: List<InningScore>) {
         dao.insertAll(items.map { it.toEntity() })
     }

@@ -16,6 +16,12 @@ class BattingStatRepository @Inject constructor(
     override suspend fun getByFixtureIds(fixtureIds: List<Int>): List<BattingStat>
         = dao.getByFixtureIds(fixtureIds).map { it.toDomain() }
 
+    override suspend fun getByPlayerId(playerId: Int): List<BattingStat>
+        = dao.getByPlayerId(playerId).map { it.toDomain() }
+
+    override suspend fun getByPlayerIds(playerIds: List<Int>): List<BattingStat>
+        = dao.getByPlayerIds(playerIds).map { it.toDomain() }
+
     override suspend fun insertAll(items: List<BattingStat>) {
         dao.insertAll(items.map { it.toEntity() })
     }
