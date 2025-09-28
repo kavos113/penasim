@@ -33,7 +33,7 @@ data class CommandUiState(
             DisplayFielder(
                 id = member.playerId,
                 displayName = player?.player?.firstName ?: "Unknown Player",
-                position = "",
+                position = Position.BENCH,
                 number = 0,
                 color = player?.primaryPosition?.color() ?: Position.OUTFIELDER.color()
             )
@@ -45,7 +45,7 @@ data class CommandUiState(
             DisplayFielder(
                 id = member.playerId,
                 displayName = player?.player?.firstName ?: "Unknown Player",
-                position = "",
+                position = Position.BENCH,
                 number = 0,
                 color = player?.primaryPosition?.color() ?: Position.OUTFIELDER.color()
             )
@@ -84,7 +84,7 @@ data class CommandUiState(
             DisplayFielder(
                 id = it.playerId,
                 displayName = getFielderDisplayName(it),
-                position = it.position.toShortJa(),
+                position = it.position,
                 number = it.number,
                 color = players.find { playerInfo -> playerInfo.player.id == it.playerId }?.primaryPosition?.color() ?: Position.OUTFIELDER.color()
             )
