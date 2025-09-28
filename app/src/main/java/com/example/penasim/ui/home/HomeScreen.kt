@@ -11,14 +11,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.penasim.R
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.PenasimTheme
+import java.time.LocalDate
 
 object HomeDestination : NavigationDestination {
     override val route: String = "home"
@@ -30,13 +39,33 @@ fun HomeScreen(
     onGameClick: () -> Unit = {},
     onCalenderClick: () -> Unit = {},
     onCommandClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 ) {
+    val uiState by homeViewModel.uiState.collectAsState()
+
+    DisposableEffect(lifeCycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                homeViewModel.update()
+            }
+        }
+
+        lifeCycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifeCycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     Column(
         modifier = modifier
             .padding(30.dp)
     ) {
         HomeInformation(
+            date = uiState.currentDay,
+            rank = uiState.rank,
             modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)
         )
@@ -50,13 +79,17 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeInformation(modifier: Modifier = Modifier) {
+fun HomeInformation(
+    date: LocalDate,
+    rank: Int,
+    modifier: Modifier = Modifier,
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
     ) {
-        Text(stringResource(R.string.date, 100))
-        Text(stringResource(R.string.rank, 2))
+        Text(stringResource(R.string.date, date.month.value, date.dayOfMonth))
+        Text(stringResource(R.string.rank, rank))
     }
 }
 
