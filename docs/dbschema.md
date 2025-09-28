@@ -20,6 +20,59 @@
 | homeTeamId    | int  | foreign key             |
 | awayTeamId    | int  | foreign key             |
 
+## Game Result Table
+
+### games
+
+| name          | type | description |
+| ------------- | ---- | ----------- |
+| gameFixtureId | int  | foreign key |
+| homeScore     | int  |             |
+| awayScore     | int  |             |
+
+### inning_scores
+
+| name          | type | description |
+| ------------- | ---- | ----------- |
+| gameFixtureId | int  | foreign key |
+| teamId        | int  | foreign key |
+| inning        | int  | 1-9,extra   |
+| score         | int  |             |
+
+### batting_stats
+
+| name          | type | description   |
+| ------------- | ---- | ------------- |
+| gameFixtureId | int  | foreign key   |
+| playerId      | int  | foreign key   |
+| atBat         | int  | exclude walks |
+| hit           | int  | include 2,3B  |
+| doubleHit     | int  |               |
+| tripleHit     | int  |               |
+| homeRun       | int  |               |
+| walk          | int  |               |
+| rbi           | int  |               |
+| strikeOut     | int  |               |
+
+### pitching_stats
+
+| name           | type  | description |
+| -------------- | ----- | ----------- |
+| gameFixtureId  | int   | foreign key |
+| playerId       | int   | foreign key |
+| inningPitched  | float | e.g. 4.2    |
+| hitAllowed     | int   |             |
+| runAllowed     | int   |             |
+| earnedRun      | int   |             |
+| walkAllowed    | int   |             |
+| strikeOut      | int   |             |
+| homeRunAllowed | int   |             |
+| win            | int   | bool        |
+| loss           | int   | bool        |
+| hold           | int   | bool        |
+| save           | int   | bool        |
+
+
 ## Player Info Table
 
 ### players
