@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.example.penasim.domain.toShortJa
+import com.example.penasim.ui.common.DisplayFielder
 import com.example.penasim.ui.theme.playerBorderColor
 
 

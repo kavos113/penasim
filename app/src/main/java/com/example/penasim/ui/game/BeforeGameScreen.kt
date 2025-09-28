@@ -11,6 +11,6 @@ object GameDestination : NavigationDestination {
 }
 
 @Composable
-fun GameScreen(modifier: Modifier = Modifier) {
+fun BeforeGameScreen(modifier: Modifier = Modifier) {
 
 }

@@ -11,7 +11,7 @@ import com.example.penasim.ui.calender.CalenderDestination
 import com.example.penasim.ui.command.CommandDestination
 import com.example.penasim.ui.command.CommandScreen
 import com.example.penasim.ui.game.GameDestination
-import com.example.penasim.ui.game.GameScreen
+import com.example.penasim.ui.game.BeforeGameScreen
 import com.example.penasim.ui.home.HomeDestination
 import com.example.penasim.ui.home.HomeScreen
 
@@ -34,7 +34,7 @@ fun PenasimNavHost(
             )
         }
         composable(route = GameDestination.route) {
-            GameScreen()
+            BeforeGameScreen()
         }
         composable(route = CalenderDestination.route) {
             CalendarScreen()

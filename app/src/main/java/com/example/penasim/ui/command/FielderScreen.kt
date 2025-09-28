@@ -40,6 +40,7 @@ import com.example.penasim.domain.Position
 import com.example.penasim.domain.TotalBattingStats
 import com.example.penasim.domain.TotalPitchingStats
 import com.example.penasim.domain.toShortJa
+import com.example.penasim.ui.common.DisplayFielder
 import com.example.penasim.ui.theme.catcherColor
 import com.example.penasim.ui.theme.infielderColor
 import com.example.penasim.ui.theme.outfielderColor

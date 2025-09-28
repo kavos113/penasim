@@ -11,7 +11,8 @@ import com.example.penasim.domain.PlayerInfo
 import com.example.penasim.domain.Position
 import com.example.penasim.domain.Team
 import com.example.penasim.domain.isStarting
-import com.example.penasim.domain.toShortJa
+import com.example.penasim.ui.common.DisplayFielder
+import com.example.penasim.ui.common.DisplayPitcher
 
 data class CommandUiState(
     val team: Team = Team(0, "", League.L1),
@@ -87,7 +88,8 @@ data class CommandUiState(
                 displayName = getFielderDisplayName(it),
                 position = it.position,
                 number = it.number,
-                color = players.find { playerInfo -> playerInfo.player.id == it.playerId }?.primaryPosition?.color() ?: Position.OUTFIELDER.color()
+                color = players.find { playerInfo -> playerInfo.player.id == it.playerId }?.primaryPosition?.color()
+                    ?: Position.OUTFIELDER.color()
             )
         }
     }
