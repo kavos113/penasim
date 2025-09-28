@@ -16,4 +16,7 @@ data class Player(
     val ballSpeed: Int,
     val control: Int,
     val stamina: Int,
+
+    val starter: Int,
+    val reliever: Int,
 )

@@ -34,6 +34,7 @@ class ExecuteGamesByDateUseCaseTest {
         override suspend fun getAllGames(): List<GameResult> = created
         override suspend fun createGame(fixtureId: Int, homeScore: Int, awayScore: Int): GameResult? =
             createBehavior(fixtureId, homeScore, awayScore)?.also { created.add(it) }
+        override suspend fun deleteAllGames() { created.clear() }
     }
 
     @Test

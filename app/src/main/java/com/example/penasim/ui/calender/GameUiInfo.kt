@@ -27,3 +27,11 @@ fun GameSchedule.toGameUiInfo(): GameUiInfo = GameUiInfo(
     awayTeamScore = 0,
     isGameFinished = false
 )
+
+fun GameSchedule.toGameUiInfoWithResult(result: GameInfo): GameUiInfo = GameUiInfo(
+    homeTeamIcon = homeTeam.icon(),
+    homeTeamScore = result.result.homeScore,
+    awayTeamIcon = awayTeam.icon(),
+    awayTeamScore = result.result.awayScore,
+    isGameFinished = true
+)

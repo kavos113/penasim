@@ -25,14 +25,14 @@ class UpdatePitcherAppointmentsUseCaseTest {
         override suspend fun updatePitcherAppointments(pitcherAppointments: List<PitcherAppointment>) { lastUpdated = pitcherAppointments }
     }
 
-    private fun app(team: Int, player: Int, type: PitcherType, isMain: Boolean, num: Int) =
-        com.example.penasim.domain.PitcherAppointment(teamId = team, playerId = player, isMain = isMain, type = type, number = num)
+    private fun app(team: Int, player: Int, type: PitcherType, num: Int) =
+        PitcherAppointment(teamId = team, playerId = player, type = type, number = num)
 
     @Test
     fun execute_updatesOnlyChangedOrNewAppointments() = runTest {
         val current = listOf(
-            app(1, 10, PitcherType.STARTER, true, 1),
-            app(1, 11, PitcherType.CLOSER, false, 2)
+            app(1, 10, PitcherType.STARTER, 1),
+            app(1, 11, PitcherType.CLOSER, 2)
         )
         val repo = RecordingPitcherAppointmentRepository(current)
         val useCase = UpdatePitcherAppointmentsUseCase(repo)
@@ -42,9 +42,9 @@ class UpdatePitcherAppointmentsUseCaseTest {
         assertEquals(emptyList<PitcherAppointment>(), repo.lastUpdated)
 
         // Case 2: one changed, one same, and one new -> update includes changed + new
-        val changed = app(1, 10, PitcherType.RELIEVER, true, 1) // type changed
+        val changed = app(1, 10, PitcherType.RELIEVER, 1) // type changed
         val same = current[1]
-        val newApp = app(1, 12, PitcherType.STARTER, true, 3)
+        val newApp = app(1, 12, PitcherType.STARTER, 3)
         repo.lastUpdated = null
         useCase.execute(listOf(changed, same, newApp))
         assertEquals(listOf(changed, newApp), repo.lastUpdated)
@@ -59,13 +59,13 @@ class UpdatePitcherAppointmentsUseCaseTest {
         assertFailsWith<AssertionError> { useCase.execute(emptyList()) }
 
         // multi-team
-        val a = app(1, 10, PitcherType.STARTER, true, 1)
-        val b = app(2, 11, PitcherType.CLOSER, false, 2)
+        val a = app(1, 10, PitcherType.STARTER, 1)
+        val b = app(2, 11, PitcherType.CLOSER, 2)
         assertFailsWith<AssertionError> { useCase.execute(listOf(a, b)) }
 
         // duplicate player ids
-        val c = app(1, 10, PitcherType.STARTER, true, 1)
-        val d = app(1, 10, PitcherType.RELIEVER, false, 2)
+        val c = app(1, 10, PitcherType.STARTER, 1)
+        val d = app(1, 10, PitcherType.RELIEVER, 2)
         assertFailsWith<AssertionError> { useCase.execute(listOf(c, d)) }
     }
 }

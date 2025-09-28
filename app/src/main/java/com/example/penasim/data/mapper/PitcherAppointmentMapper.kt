@@ -6,7 +6,6 @@ import com.example.penasim.domain.PitcherAppointment
 fun PitcherAppointmentEntity.toDomain(): PitcherAppointment = PitcherAppointment(
     teamId = teamId,
     playerId = playerId,
-    isMain = isMain,
     type = type,
     number = number,
 )
@@ -14,7 +13,6 @@ fun PitcherAppointmentEntity.toDomain(): PitcherAppointment = PitcherAppointment
 fun PitcherAppointment.toEntity(): PitcherAppointmentEntity = PitcherAppointmentEntity(
     teamId = teamId,
     playerId = playerId,
-    isMain = isMain,
     type = type,
     number = number,
 )

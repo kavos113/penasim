@@ -30,7 +30,7 @@ class GetPlayerInfoUseCaseTest {
         override suspend fun getAllTeams(): List<Team> = teams
     }
 
-    private fun player(id: Int, teamId: Int) = Player(id, "F$id", "L$id", teamId, 1,1,1,1,1,1, 1,1,1)
+    private fun player(id: Int, teamId: Int) = Player(id, "F$id", "L$id", teamId, 1,1,1,1,1,1, 1,1,1, 1, 1)
 
     @Test
     fun execute_returnsPlayerInfo() = runTest {

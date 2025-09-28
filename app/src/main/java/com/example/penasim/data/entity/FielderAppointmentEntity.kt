@@ -27,7 +27,6 @@ data class FielderAppointmentEntity(
     val teamId: Int,
     val playerId: Int,
     val position: Position,
-    val isMain: Boolean,
     val number: Int,
     val orderType: OrderType
 )

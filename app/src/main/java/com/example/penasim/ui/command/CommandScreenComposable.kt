@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import com.example.penasim.domain.toShortJa
 import com.example.penasim.ui.theme.playerBorderColor
 
 
@@ -75,11 +76,11 @@ internal fun OrderPlayerItem(
                     color = playerBorderColor,
                     shape = RoundedCornerShape(4.dp)
                 )
-                .background(color = player.color)
+                .background(color = player.position.color())
                 .padding(horizontal = 4.dp, vertical = 2.dp)
         ) {
             Text(
-                text = player.position,
+                text = player.position.toShortJa(),
                 fontSize = 16.sp
             )
         }

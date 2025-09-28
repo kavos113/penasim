@@ -12,7 +12,10 @@ def insert_csv(db_path, csv_dir):
         df = pd.read_csv(csv)
 
         with sqlite3.connect(db_path) as conn:
-            df.to_sql(table_name, conn, if_exists='replace', index=False)
+            cursor = conn.cursor()
+            cursor.execute(f'DELETE FROM {table_name}')
+            
+            df.to_sql(table_name, conn, if_exists='append', index=False)
             print(f'Inserted {len(df)} records into {table_name}')
 
 if __name__ == '__main__':

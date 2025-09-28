@@ -25,7 +25,6 @@ import com.example.penasim.domain.PitcherType
 data class PitcherAppointmentEntity(
     val teamId: Int,
     @PrimaryKey val playerId: Int,
-    val isMain: Boolean,
     val type: PitcherType,
     val number: Int,
 )

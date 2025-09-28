@@ -28,13 +28,7 @@ import com.example.penasim.domain.PitcherType
 import com.example.penasim.domain.Player
 import com.example.penasim.domain.PlayerPosition
 import com.example.penasim.domain.Position
-import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.pitcherColor
-
-object PitcherDestination : NavigationDestination {
-    override val route: String = "pitcher"
-    override val titleResId: Int = R.string.pitcher
-}
 
 @Composable
 fun PitcherScreen(
@@ -274,6 +268,13 @@ private fun SubstituteList(
     }
 }
 
+private fun pitcherTypeAppropriate(appropriate: Int): String = when (appropriate) {
+    0 -> "△"
+    1 -> "〇"
+    2 -> "◎"
+    else -> "-"
+}
+
 @Composable
 private fun PitcherDetail(
     playerDetail: DisplayPlayerDetail,
@@ -322,6 +323,14 @@ private fun PitcherDetail(
                 color = playerDetail.player.stamina.statusColor(),
                 modifier = Modifier.fillMaxWidth()
             )
+            Text(
+                text = "先発 ${pitcherTypeAppropriate(playerDetail.player.starter)}",
+                fontSize = 16.sp,
+            )
+            Text(
+                text = "救援 ${pitcherTypeAppropriate(playerDetail.player.reliever)}",
+                fontSize = 16.sp,
+            )
         }
     }
 }
@@ -336,35 +345,30 @@ fun StartingListPreview() {
                 displayName = "山田",
                 type = PitcherType.STARTER,
                 number = 1,
-                isMain = true,
             ),
             DisplayPitcher(
                 id = 2,
                 displayName = "田中",
                 type = PitcherType.STARTER,
                 number = 2,
-                isMain = true,
             ),
             DisplayPitcher(
                 id = 3,
                 displayName = "鈴木",
                 type = PitcherType.STARTER,
                 number = 3,
-                isMain = true,
             ),
             DisplayPitcher(
                 id = 4,
                 displayName = "佐藤",
                 type = PitcherType.STARTER,
                 number = 4,
-                isMain = true,
             ),
             DisplayPitcher(
                 id = 5,
                 displayName = "高橋",
                 type = PitcherType.STARTER,
                 number = 5,
-                isMain = true,
             ),
         )
     )
@@ -380,42 +384,36 @@ fun ReliefListPreview() {
                 displayName = "伊藤",
                 type = PitcherType.RELIEVER,
                 number = 1,
-                isMain = true,
             ),
             DisplayPitcher(
                 id = 7,
                 displayName = "渡辺",
                 type = PitcherType.RELIEVER,
                 number = 2,
-                isMain = true,
             ),
             DisplayPitcher(
                 id = 8,
                 displayName = "山本",
                 type = PitcherType.RELIEVER,
                 number = 3,
-                isMain = true,
             ),
             DisplayPitcher(
                 id = 9,
                 displayName = "中村",
                 type = PitcherType.RELIEVER,
                 number = 4,
-                isMain = true,
             ),
             DisplayPitcher(
                 id = 10,
                 displayName = "小林",
                 type = PitcherType.RELIEVER,
                 number = 5,
-                isMain = true,
             ),
             DisplayPitcher(
                 id = 11,
                 displayName = "加藤",
                 type = PitcherType.RELIEVER,
                 number = 6,
-                isMain = true,
             ),
         )
     )
@@ -430,7 +428,6 @@ fun CloseListPreview() {
             displayName = "吉田",
             type = PitcherType.CLOSER,
             number = 1,
-            isMain = true,
         )
     )
 }
@@ -445,28 +442,24 @@ fun SubstitutePitcherListPreview() {
                 displayName = "山崎",
                 type = PitcherType.STARTER,
                 number = 1,
-                isMain = false,
             ),
             DisplayPitcher(
                 id = 14,
                 displayName = "藤田",
                 type = PitcherType.RELIEVER,
                 number = 2,
-                isMain = false,
             ),
             DisplayPitcher(
                 id = 15,
                 displayName = "松本",
                 type = PitcherType.STARTER,
                 number = 3,
-                isMain = false,
             ),
             DisplayPitcher(
                 id = 16,
                 displayName = "井上",
                 type = PitcherType.RELIEVER,
                 number = 4,
-                isMain = false,
             )
         )
     )
@@ -491,6 +484,8 @@ fun PitcherDetailPreview() {
                 ballSpeed = 148,
                 control = 61,
                 stamina = 70,
+                starter = 0,
+                reliever = 0,
             ),
             positions = listOf(
                 PlayerPosition(1, Position.PITCHER, 51)

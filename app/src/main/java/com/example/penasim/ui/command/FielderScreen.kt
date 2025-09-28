@@ -38,7 +38,6 @@ import com.example.penasim.domain.Player
 import com.example.penasim.domain.PlayerPosition
 import com.example.penasim.domain.Position
 import com.example.penasim.domain.toShortJa
-import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.catcherColor
 import com.example.penasim.ui.theme.infielderColor
 import com.example.penasim.ui.theme.outfielderColor
@@ -46,11 +45,6 @@ import com.example.penasim.ui.theme.pitcherColor
 import com.example.penasim.ui.theme.playerBorderColor
 import com.example.penasim.ui.theme.substituteBackgroundColor
 import kotlinx.coroutines.launch
-
-object FielderDestination : NavigationDestination {
-    override val route: String = "fielder"
-    override val titleResId: Int = R.string.fielder
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,6 +55,7 @@ fun FielderScreen(
     val uiState by commandViewModel.uiState.collectAsState()
 
     val tabs = listOf(
+        R.string.main_member_registration,
         R.string.fielder_order,
         R.string.fielder_order_left,
         R.string.fielder_order_dh,
@@ -98,24 +93,122 @@ fun FielderScreen(
             modifier = Modifier
                 .fillMaxSize()
         ) { page ->
-            FielderContent(
-                uiState = uiState,
-                onPlayerClick = { playerId ->
-                    commandViewModel.selectFielder(playerId)
-                },
-                modifier = Modifier.fillMaxSize(),
-                orderType = getOrderType(page)
-            )
+            if (page == 0) {
+                MainMemberContent(
+                    uiState = uiState,
+                    onPlayerClick = { playerId ->
+                        commandViewModel.selectMainFielder(playerId = playerId)
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                FielderContent(
+                    uiState = uiState,
+                    onPlayerClick = { playerId ->
+                        commandViewModel.selectFielder(
+                            playerId = playerId,
+                            orderType = getOrderType(page)
+                        )
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                    orderType = getOrderType(page)
+                )
+            }
         }
     }
 }
 
 private fun getOrderType(tabIndex: Int): OrderType = when(tabIndex) {
-    0 -> OrderType.NORMAL
-    1 -> OrderType.LEFT
-    2 -> OrderType.DH
-    3 -> OrderType.LEFT_DH
+    0 -> OrderType.NORMAL // Main Member Registration
+    1 -> OrderType.NORMAL
+    2 -> OrderType.LEFT
+    3 -> OrderType.DH
+    4 -> OrderType.LEFT_DH
     else -> OrderType.NORMAL
+}
+
+@Composable
+private fun MainMemberContent(
+    uiState: CommandUiState,
+    onPlayerClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Row (
+            horizontalArrangement = Arrangement.spacedBy(0.dp),
+            modifier = modifier
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(8f)
+                    .drawBehind {
+                        val strokeWidth = 1.dp.toPx()
+                        drawLine(
+                            color = playerBorderColor,
+                            start = Offset(0f, 0f),
+                            end = Offset(0f, size.height),
+                            strokeWidth = strokeWidth
+                        )
+
+                        drawLine(
+                            color = playerBorderColor,
+                            start = Offset(size.width, 0f),
+                            end = Offset(size.width, size.height),
+                            strokeWidth = strokeWidth
+                        )
+                    }
+            ) {
+                MainList(
+                    fielders = uiState.mainFielders,
+                    onItemClick = onPlayerClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+            SubstituteList(
+                fielders = uiState.subFielders,
+                onItemClick = onPlayerClick,
+                modifier = Modifier
+                    .weight(3f)
+                    .drawBehind {
+                        val strokeWidth = 1.dp.toPx()
+                        drawLine(
+                            color = playerBorderColor,
+                            start = Offset(0f, 0f),
+                            end = Offset(0f, size.height),
+                            strokeWidth = strokeWidth
+                        )
+
+                        drawLine(
+                            color = playerBorderColor,
+                            start = Offset(size.width, 0f),
+                            end = Offset(size.width, size.height),
+                            strokeWidth = strokeWidth
+                        )
+                    }
+                    .background(substituteBackgroundColor)
+            )
+        }
+
+        if (uiState.mainViewSelectedFielderId != null) {
+            val playerDetail = uiState.getDisplayPlayerDetail(uiState.mainViewSelectedFielderId!!)
+            if (playerDetail != null) {
+                Box(
+                    modifier = Modifier
+                        .background(Color.White, shape = RoundedCornerShape(8.dp))
+                        .border(2.dp, Color.Black, shape = RoundedCornerShape(8.dp))
+                        .padding(16.dp)
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth(0.7f)
+                ) {
+                    FielderDetail(playerDetail = playerDetail)
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -130,7 +223,7 @@ private fun FielderContent(
             .fillMaxSize()
     ) {
         Row (
-            horizontalArrangement = Arrangement.spacedBy(0.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = modifier
         ) {
             OrderList(
@@ -177,33 +270,10 @@ private fun FielderContent(
                         )
                     }
             )
-            SubstituteList(
-                fielders = uiState.getDisplayFielders(uiState.getSubFielderAppointments(orderType)),
-                onItemClick = onPlayerClick,
-                modifier = Modifier
-                    .weight(3f)
-                    .drawBehind {
-                        val strokeWidth = 1.dp.toPx()
-                        drawLine(
-                            color = playerBorderColor,
-                            start = Offset(0f, 0f),
-                            end = Offset(0f, size.height),
-                            strokeWidth = strokeWidth
-                        )
-
-                        drawLine(
-                            color = playerBorderColor,
-                            start = Offset(size.width, 0f),
-                            end = Offset(size.width, size.height),
-                            strokeWidth = strokeWidth
-                        )
-                    }
-                    .background(substituteBackgroundColor)
-            )
         }
 
-        if (uiState.selectedFielderId != null) {
-            val playerDetail = uiState.getDisplayPlayerDetail(uiState.selectedFielderId)
+        if (uiState.selectedFielder[orderType] != null) {
+            val playerDetail = uiState.getDisplayPlayerDetail(uiState.selectedFielder[orderType]!!)
             if (playerDetail != null) {
                 Box(
                     modifier = Modifier
@@ -214,6 +284,53 @@ private fun FielderContent(
                         .fillMaxWidth(0.7f)
                 ) {
                     FielderDetail(playerDetail = playerDetail)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MainList(
+    fielders: List<DisplayFielder>,
+    onItemClick: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column {
+        Text(
+            text = stringResource(R.string.order)
+        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(4.dp)
+        ) {
+            val (first, second) = fielders.withIndex().partition { it.index % 2 == 0 }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.weight(1f)
+            ) {
+                repeat(first.size) { index ->
+                    SimplePlayerItem(
+                        displayName = first[index].value.displayName,
+                        color = first[index].value.color,
+                        modifier = Modifier
+                            .clickable { onItemClick(first[index].value.id) }
+                    )
+                }
+            }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.weight(1f)
+            ) {
+                repeat(second.size) { index ->
+                    SimplePlayerItem(
+                        displayName = second[index].value.displayName,
+                        color = second[index].value.color,
+                        modifier = Modifier
+                            .clickable { onItemClick(second[index].value.id) }
+                    )
                 }
             }
         }
@@ -424,15 +541,69 @@ fun FielderScreenPreview() {
 fun OrderListPreview() {
     OrderList(
         fielders = listOf(
-            DisplayFielder(0, "Pitcher", "投", 1, true, pitcherColor),
-            DisplayFielder(1, "Player 2", "捕", 2, true, catcherColor),
-            DisplayFielder(2, "Player 3", "一", 3, true, infielderColor),
-            DisplayFielder(3, "Player 4", "二", 4, true, infielderColor),
-            DisplayFielder(4, "Player 5", "三", 5, true, infielderColor),
-            DisplayFielder(5, "Player 6", "遊", 6, true, infielderColor),
-            DisplayFielder(6, "Player 7", "左", 7, true, outfielderColor),
-            DisplayFielder(7, "Player 8", "中", 8, true, outfielderColor),
-            DisplayFielder(8, "Player 9", "右", 9, true, outfielderColor),
+            DisplayFielder(
+                0,
+                "Pitcher",
+                Position.PITCHER,
+                1,
+                pitcherColor
+            ),
+            DisplayFielder(
+                1,
+                "Player 2",
+                Position.CATCHER,
+                2,
+                catcherColor
+            ),
+            DisplayFielder(
+                2,
+                "Player 3",
+                Position.FIRST_BASEMAN,
+                3,
+                infielderColor
+            ),
+            DisplayFielder(
+                3,
+                "Player 4",
+                Position.SECOND_BASEMAN,
+                4,
+                infielderColor
+            ),
+            DisplayFielder(
+                4,
+                "Player 5",
+                Position.THIRD_BASEMAN,
+                5,
+                infielderColor
+            ),
+            DisplayFielder(
+                5,
+                "Player 6",
+                Position.SHORTSTOP,
+                6,
+                infielderColor
+            ),
+            DisplayFielder(
+                6,
+                "Player 7",
+                Position.LEFT_FIELDER,
+                7,
+                infielderColor
+            ),
+            DisplayFielder(
+                7,
+                "Player 8",
+                Position.CENTER_FIELDER,
+                8,
+                outfielderColor
+            ),
+            DisplayFielder(
+                8,
+                "Player 9",
+                Position.RIGHT_FIELDER,
+                9,
+                outfielderColor
+            ),
         ),
         onItemClick = { },
     )
@@ -443,12 +614,48 @@ fun OrderListPreview() {
 fun BenchListPreview() {
     BenchList(
         fielders = listOf(
-            DisplayFielder(0, "Player 10", "捕", 10, true, catcherColor),
-            DisplayFielder(0, "Player 11", "一", 11, true, infielderColor),
-            DisplayFielder(0, "Player 12", "外", 12, true, outfielderColor),
-            DisplayFielder(0, "Player 13", "三", 13, true, infielderColor),
-            DisplayFielder(0, "Player 14", "外", 14, true, infielderColor),
-            DisplayFielder(0, "Player 15", "遊", 15, true, infielderColor),
+            DisplayFielder(
+                0,
+                "Player 10",
+                Position.CATCHER,
+                10,
+                catcherColor
+            ),
+            DisplayFielder(
+                0,
+                "Player 11",
+                Position.FIRST_BASEMAN,
+                11,
+                infielderColor
+            ),
+            DisplayFielder(
+                0,
+                "Player 12",
+                Position.OUTFIELDER,
+                12,
+                outfielderColor
+            ),
+            DisplayFielder(
+                0,
+                "Player 13",
+                Position.THIRD_BASEMAN,
+                13,
+                infielderColor
+            ),
+            DisplayFielder(
+                0,
+                "Player 14",
+                Position.OUTFIELDER,
+                14,
+                infielderColor
+            ),
+            DisplayFielder(
+                0,
+                "Player 15",
+                Position.SHORTSTOP,
+                15,
+                infielderColor
+            ),
         ),
         onItemClick = { }
     )
@@ -459,13 +666,55 @@ fun BenchListPreview() {
 fun SubstituteListPreview() {
     SubstituteList(
         fielders = listOf(
-            DisplayFielder(0, "Player 16", "捕", 16, false, catcherColor),
-            DisplayFielder(0, "Player 17", "一", 17, false, infielderColor),
-            DisplayFielder(0, "Player 18", "外", 18, false, outfielderColor),
-            DisplayFielder(0, "Player 19", "三", 19, false, infielderColor),
-            DisplayFielder(0, "Player 20", "外", 20, false, outfielderColor),
-            DisplayFielder(0, "Player 21", "遊", 21, false, infielderColor),
-            DisplayFielder(0, "Player 22", "二", 22, false, infielderColor),
+            DisplayFielder(
+                0,
+                "Player 16",
+                Position.CATCHER,
+                16,
+                catcherColor
+            ),
+            DisplayFielder(
+                0,
+                "Player 17",
+                Position.FIRST_BASEMAN,
+                17,
+                infielderColor
+            ),
+            DisplayFielder(
+                0,
+                "Player 18",
+                Position.OUTFIELDER,
+                18,
+                outfielderColor
+            ),
+            DisplayFielder(
+                0,
+                "Player 19",
+                Position.THIRD_BASEMAN,
+                19,
+                infielderColor
+            ),
+            DisplayFielder(
+                0,
+                "Player 20",
+                Position.OUTFIELDER,
+                20,
+                outfielderColor
+            ),
+            DisplayFielder(
+                0,
+                "Player 21",
+                Position.SHORTSTOP,
+                21,
+                infielderColor
+            ),
+            DisplayFielder(
+                0,
+                "Player 22",
+                Position.SECOND_BASEMAN,
+                22,
+                infielderColor
+            ),
         ),
         onItemClick = { }
     )
@@ -489,7 +738,9 @@ fun PlayerDetailPreview() {
                 catching = 66,
                 ballSpeed = 120,
                 control = 1,
-                stamina = 1
+                stamina = 1,
+                starter = 0,
+                reliever = 0,
             ),
             positions = listOf(
                 PlayerPosition(1, Position.OUTFIELDER, 62),

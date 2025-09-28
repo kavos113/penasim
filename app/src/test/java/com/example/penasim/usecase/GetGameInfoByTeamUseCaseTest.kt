@@ -29,6 +29,7 @@ class GetGameInfoByTeamUseCaseTest {
         override suspend fun getGameByFixtureId(fixtureId: Int): GameResult? = results.find { it.fixtureId == fixtureId }
         override suspend fun getGamesByFixtureIds(fixtureIds: List<Int>): List<GameResult> = results.filter { it.fixtureId in fixtureIds }
         override suspend fun getAllGames(): List<GameResult> = results
+        override suspend fun deleteAllGames() {}
         override suspend fun createGame(fixtureId: Int, homeScore: Int, awayScore: Int): GameResult? = null
     }
 
