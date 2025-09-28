@@ -37,6 +37,8 @@ import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.Player
 import com.example.penasim.domain.PlayerPosition
 import com.example.penasim.domain.Position
+import com.example.penasim.domain.TotalBattingStats
+import com.example.penasim.domain.TotalPitchingStats
 import com.example.penasim.domain.toShortJa
 import com.example.penasim.ui.theme.catcherColor
 import com.example.penasim.ui.theme.infielderColor
@@ -421,16 +423,16 @@ private fun FielderDetail(
                 color = playerDetail.color,
             )
             Text(
-                text = ".306",
+                text = playerDetail.battingStats.battingAverageString,
                 fontSize = 20.sp,
                 modifier = Modifier.padding(top = 8.dp)
             )
             Text(
-                text = "12本 55点",
+                text = "${playerDetail.battingStats.homeRun}本 ${playerDetail.battingStats.rbi}点",
                 fontSize = 20.sp,
             )
             Text(
-                text = "2盗",
+                text = "${playerDetail.battingStats.rbi}盗",
                 fontSize = 20.sp,
             )
 
@@ -746,6 +748,18 @@ fun PlayerDetailPreview() {
                 PlayerPosition(1, Position.OUTFIELDER, 62),
                 PlayerPosition(1, Position.FIRST_BASEMAN, 58)
             ),
+            battingStats = TotalBattingStats(
+                playerId = 1,
+                atBat = 300,
+                hit = 102,
+                doubleHit = 20,
+                tripleHit = 5,
+                homeRun = 12,
+                walk = 40,
+                rbi = 55,
+                strikeOut = 60,
+            ),
+            pitchingStats = TotalPitchingStats(playerId = 1),
             color = outfielderColor
         )
     )

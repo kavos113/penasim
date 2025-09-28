@@ -4,6 +4,8 @@ import androidx.compose.ui.graphics.Color
 import com.example.penasim.domain.Player
 import com.example.penasim.domain.PlayerPosition
 import com.example.penasim.domain.Position
+import com.example.penasim.domain.TotalBattingStats
+import com.example.penasim.domain.TotalPitchingStats
 import com.example.penasim.ui.theme.aColor
 import com.example.penasim.ui.theme.bColor
 import com.example.penasim.ui.theme.cColor
@@ -20,6 +22,8 @@ import com.example.penasim.ui.theme.sColor
 data class DisplayPlayerDetail(
     val player: Player,
     val positions: List<PlayerPosition>,
+    val battingStats: TotalBattingStats,
+    val pitchingStats: TotalPitchingStats,
     val color: Color
 )
 

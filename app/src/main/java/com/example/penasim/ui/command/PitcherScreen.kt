@@ -28,6 +28,8 @@ import com.example.penasim.domain.PitcherType
 import com.example.penasim.domain.Player
 import com.example.penasim.domain.PlayerPosition
 import com.example.penasim.domain.Position
+import com.example.penasim.domain.TotalBattingStats
+import com.example.penasim.domain.TotalPitchingStats
 import com.example.penasim.ui.theme.pitcherColor
 
 @Composable
@@ -292,12 +294,12 @@ private fun PitcherDetail(
                 color = playerDetail.color,
             )
             Text(
-                text = "1.97",
+                text = playerDetail.pitchingStats.eraStr,
                 fontSize = 20.sp,
                 modifier = Modifier.padding(top = 8.dp)
             )
             Text(
-                text = "11勝5敗",
+                text = "${playerDetail.pitchingStats.wins}勝${playerDetail.pitchingStats.losses}敗",
                 fontSize = 20.sp,
             )
         }
@@ -489,6 +491,21 @@ fun PitcherDetailPreview() {
             ),
             positions = listOf(
                 PlayerPosition(1, Position.PITCHER, 51)
+            ),
+            battingStats = TotalBattingStats(playerId = 1),
+            pitchingStats = TotalPitchingStats(
+                playerId = 1,
+                inningsPitched = 423,
+                hits = 105,
+                runs = 32,
+                earnedRuns = 30,
+                walks = 28,
+                strikeOuts = 145,
+                homeRuns = 4,
+                wins = 14,
+                losses = 3,
+                holds = 0,
+                saves = 0,
             ),
             color = pitcherColor
         )

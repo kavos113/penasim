@@ -109,6 +109,8 @@ data class CommandUiState(
             DisplayPlayerDetail(
                 player = playerInfo.player,
                 positions = playerInfo.positions,
+                battingStats = playerInfo.battingStat,
+                pitchingStats = playerInfo.pitchingStat,
                 color = color
             )
         }.sortedBy { it.player.id }
@@ -121,6 +123,8 @@ data class CommandUiState(
         return DisplayPlayerDetail(
             player = playerInfo.player,
             positions = playerInfo.positions,
+            battingStats = playerInfo.battingStat,
+            pitchingStats = playerInfo.pitchingStat,
             color = color
         )
     }
