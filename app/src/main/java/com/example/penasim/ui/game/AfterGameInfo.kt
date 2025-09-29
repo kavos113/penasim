@@ -1,7 +1,7 @@
 package com.example.penasim.ui.game
 
 import com.example.penasim.domain.InningScore
-import com.example.penasim.domain.TeamStanding
+import com.example.penasim.ui.common.RankingUiInfo
 
 data class AfterGameInfo(
     val homeScores: List<InningScore> = emptyList(),
@@ -10,5 +10,5 @@ data class AfterGameInfo(
     val awayPitcherResults: List<PitcherResult> = emptyList(),
     val homeFielderResults: List<FielderResult> = emptyList(),
     val awayFielderResults: List<FielderResult> = emptyList(),
-    val rankings: List<TeamStanding> = emptyList(),
+    val rankings: List<RankingUiInfo> = emptyList(),
 )

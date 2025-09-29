@@ -6,34 +6,62 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.penasim.R
+import com.example.penasim.const.DataSource
 import com.example.penasim.domain.InningScore
+import com.example.penasim.ui.common.Ranking
+import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.errorContainerLight
 import com.example.penasim.ui.theme.onPrimaryLight
 import com.example.penasim.ui.theme.playerBorderColor
 import com.example.penasim.ui.theme.primaryContainerLight
 import com.example.penasim.ui.theme.primaryLight
-import com.example.penasim.ui.theme.substituteBackgroundColor
+
+object AfterGGameDestination : NavigationDestination {
+    override val route: String = "after_game"
+    override val titleResId: Int = R.string.game
+}
+
+@Composable
+fun AfterGameScreen(
+    modifier: Modifier = Modifier,
+    onClickFinish: () -> Unit = { },
+    gameViewModel: GameViewModel,
+) {
+    val uiState by gameViewModel.uiState.collectAsState()
+
+    AfterGameContent(
+        afterGameInfo = uiState.afterGameInfo,
+        modifier = modifier,
+        onClickFinish = onClickFinish
+    )
+}
 
 @Composable
 private fun AfterGameContent(
     afterGameInfo: AfterGameInfo,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClickFinish: () -> Unit = { }
 ) {
     Column(
         modifier = modifier
@@ -100,6 +128,24 @@ private fun AfterGameContent(
                     .weight(1f)
                     .padding(8.dp)
             )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        Ranking(
+            rankings = afterGameInfo.rankings,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 32.dp)
+        )
+
+        Button(
+            onClick = onClickFinish,
+            modifier = Modifier
+                .padding(24.dp)
+                .align(Alignment.CenterHorizontally)
+        ) {
+            Text(text = "終了")
         }
     }
 }
@@ -508,6 +554,7 @@ fun AfterGameContentPreview() {
             awayPitcherResults = SAMPLE_LOSE_PITCHER_RESULTS,
             homeFielderResults = SAMPLE_FIELDER_RESULTS,
             awayFielderResults = emptyList(),
+            rankings = DataSource.rankings
         )
     )
 }

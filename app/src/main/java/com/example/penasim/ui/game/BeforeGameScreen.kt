@@ -36,8 +36,8 @@ import com.example.penasim.ui.theme.outfielderColor
 import com.example.penasim.ui.theme.pitcherColor
 import java.time.LocalDate
 
-object GameDestination : NavigationDestination {
-    override val route: String = "game"
+object BeforeGameDestination : NavigationDestination {
+    override val route: String = "before_game"
     override val titleResId: Int = R.string.game
 }
 

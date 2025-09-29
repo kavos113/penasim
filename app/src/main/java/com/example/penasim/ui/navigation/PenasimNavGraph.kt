@@ -11,7 +11,7 @@ import com.example.penasim.ui.calender.CalendarScreen
 import com.example.penasim.ui.calender.CalenderDestination
 import com.example.penasim.ui.command.CommandDestination
 import com.example.penasim.ui.command.CommandScreen
-import com.example.penasim.ui.game.GameDestination
+import com.example.penasim.ui.game.BeforeGameDestination
 import com.example.penasim.ui.game.BeforeGameScreen
 import com.example.penasim.ui.home.HomeDestination
 import com.example.penasim.ui.home.HomeScreen
@@ -28,13 +28,13 @@ fun PenasimNavHost(
     ) {
         composable(route = HomeDestination.route) {
             HomeScreen(
-                onGameClick = { navController.navigate(GameDestination.route) },
+                onGameClick = { navController.navigate(BeforeGameDestination.route) },
                 onCalenderClick = { navController.navigate(CalenderDestination.route) },
                 onCommandClick = { navController.navigate(CommandDestination.route) },
                 modifier = Modifier.fillMaxSize(),
             )
         }
-        composable(route = GameDestination.route) {
+        composable(route = BeforeGameDestination.route) {
             BeforeGameScreen(
                 gameViewModel = hiltViewModel()
             )

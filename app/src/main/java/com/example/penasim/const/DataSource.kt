@@ -2,7 +2,7 @@ package com.example.penasim.const
 
 import com.example.penasim.R
 import com.example.penasim.domain.toLeague
-import com.example.penasim.ui.calender.RankingUiInfo
+import com.example.penasim.ui.common.RankingUiInfo
 
 object DataSource {
     val rankings = List(12) {

@@ -1,9 +1,7 @@
 package com.example.penasim.ui.calender
 
 import android.annotation.SuppressLint
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -37,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.penasim.R
 import com.example.penasim.const.Constants
-import com.example.penasim.domain.toLeague
+import com.example.penasim.ui.common.Ranking
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.PenasimTheme
 import java.time.LocalDate
@@ -103,82 +101,6 @@ private fun CalendarContent(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
-        )
-    }
-}
-
-@Composable
-private fun Ranking(
-    rankings: List<RankingUiInfo>,
-    modifier: Modifier = Modifier
-) {
-    assert(rankings.size == 12)
-    Column(
-        modifier = modifier
-    ) {
-        repeat(2) {
-            LeagueRanking(
-                rankings = rankings.filter { ranking -> ranking.league == it.toLeague() },
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-        }
-    }
-}
-
-@Composable
-private fun LeagueRanking(
-    rankings: List<RankingUiInfo>,
-    modifier: Modifier = Modifier
-) {
-    assert(rankings.size == 6)
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        repeat(6) {
-            RankingTeam(
-                teamLogo = rankings[it].teamIcon,
-                gamesBack = rankings[it].gameBack,
-                isMyTeam = rankings[it].isMyTeam,
-                modifier = Modifier
-            )
-        }
-    }
-}
-
-@Composable
-private fun RankingTeam(
-    @DrawableRes teamLogo: Int,
-    gamesBack: Double,
-    isMyTeam: Boolean,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .then(
-                if (isMyTeam) {
-                    Modifier.border(
-                        width = 2.dp,
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = MaterialTheme.shapes.small
-                    )
-                } else {
-                    Modifier
-                }
-            )
-            .padding(4.dp)
-    ) {
-        Image(
-            painter = painterResource(id = teamLogo),
-            contentDescription = "team icon",
-            modifier = Modifier
-                .size(18.dp)
-                .align(Alignment.CenterVertically)
-        )
-        Text(
-            text = gamesBack.toString(),
-            modifier = Modifier
         )
     }
 }
