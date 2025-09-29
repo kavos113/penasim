@@ -4,13 +4,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +35,73 @@ private fun AfterGameContent(
     afterGameInfo: AfterGameInfo,
     modifier: Modifier = Modifier
 ) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+        InningScoresTable(
+            homeInningScores = afterGameInfo.homeScores,
+            awayInningScores = afterGameInfo.awayScores,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        )
 
+        Row(
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+        ) {
+            SingleTeamPitcherResults(
+                pitcherResults = afterGameInfo.awayPitcherResults,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(8.dp)
+            )
+            VerticalDivider(
+                color = playerBorderColor,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(vertical = 8.dp)
+            )
+            SingleTeamPitcherResults(
+                pitcherResults = afterGameInfo.homePitcherResults,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(8.dp)
+            )
+        }
+
+        HorizontalDivider(
+            color = playerBorderColor,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp)
+        )
+
+        Row(
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+        ) {
+            SingleTeamFielderResults(
+                fielderResults = afterGameInfo.awayFielderResults,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(8.dp)
+            )
+            VerticalDivider(
+                color = playerBorderColor,
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(vertical = 8.dp)
+            )
+            SingleTeamFielderResults(
+                fielderResults = afterGameInfo.homeFielderResults,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(8.dp)
+            )
+        }
+    }
 }
 
 @Composable
@@ -49,13 +119,13 @@ private fun InningScoresTable(
         )
         InningScoreRow(
             teamName = "A",
-            inningScores = homeInningScores,
+            inningScores = awayInningScores,
             modifier = Modifier
                 .fillMaxWidth()
         )
         InningScoreRow(
             teamName = "B",
-            inningScores = awayInningScores,
+            inningScores = homeInningScores,
             modifier = Modifier
                 .fillMaxWidth()
         )
@@ -172,10 +242,6 @@ private fun SingleTeamPitcherResults(
 ) {
     Column(
         modifier = modifier
-            .border(
-                width = 1.dp,
-                color = playerBorderColor
-            )
     ) {
         pitcherResults.forEach { pitcherResult ->
             PitcherResultItem(
@@ -213,10 +279,6 @@ private fun PitcherResultItem(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
-            .border(
-                width = 1.dp,
-                color = playerBorderColor
-            )
     ) {
         if (pitcherResult.isWin) {
             Text(
@@ -226,8 +288,7 @@ private fun PitcherResultItem(
                     .background(errorContainerLight)
                     .padding(horizontal = 4.dp)
             )
-        }
-        if (pitcherResult.isLoss) {
+        } else if (pitcherResult.isLoss) {
             Text(
                 text = "敗",
                 fontSize = 16.sp,
@@ -235,18 +296,23 @@ private fun PitcherResultItem(
                     .background(primaryContainerLight)
                     .padding(horizontal = 4.dp)
             )
-        }
-        if (pitcherResult.isHold) {
+        } else if (pitcherResult.isHold) {
             Text(
                 text = "Ｈ",
                 fontSize = 16.sp,
                 modifier = Modifier
                     .padding(horizontal = 4.dp)
             )
-        }
-        if (pitcherResult.isSave) {
+        } else if (pitcherResult.isSave) {
             Text(
                 text = "Ｓ",
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+            )
+        } else {
+            Text(
+                text = "　",
                 fontSize = 16.sp,
                 modifier = Modifier
                     .padding(horizontal = 4.dp)
@@ -268,10 +334,6 @@ private fun SingleTeamFielderResults(
 ) {
     Column(
         modifier = modifier
-            .border(
-                width = 1.dp,
-                color = playerBorderColor
-            )
     ) {
         fielderResults.forEach { fielderResult ->
             FielderResultItem(
@@ -292,15 +354,11 @@ private fun FielderResultItem(
         text = "${fielderResult.displayName} ${fielderResult.inning}回 ${fielderResult.numberOfHomeRuns}号",
         fontSize = 16.sp,
         modifier = modifier
-            .border(
-                width = 1.dp,
-                color = playerBorderColor
-            )
             .padding(horizontal = 4.dp, vertical = 2.dp)
     )
 }
 
-private val SAMPLE_INNING_SCORES = listOf(
+private val SAMPLE_HOME_INNING_SCORES = listOf(
     InningScore(fixtureId = 0, teamId = 0, inning = 1, score = 0),
     InningScore(fixtureId = 0, teamId = 0, inning = 2, score = 1),
     InningScore(fixtureId = 0, teamId = 0, inning = 3, score = 0),
@@ -310,6 +368,9 @@ private val SAMPLE_INNING_SCORES = listOf(
     InningScore(fixtureId = 0, teamId = 0, inning = 7, score = 0),
     InningScore(fixtureId = 0, teamId = 0, inning = 8, score = 1),
     InningScore(fixtureId = 0, teamId = 0, inning = 9, score = 0),
+)
+
+private val SAMPLE_AWAY_INNING_SCORES = listOf(
     InningScore(fixtureId = 0, teamId = 1, inning = 1, score = 0),
     InningScore(fixtureId = 0, teamId = 1, inning = 2, score = 0),
     InningScore(fixtureId = 0, teamId = 1, inning = 3, score = 0),
@@ -399,8 +460,8 @@ private val SAMPLE_FIELDER_RESULTS = listOf(
 @Composable
 fun InningScoresTablePreview() {
     InningScoresTable(
-        homeInningScores = SAMPLE_INNING_SCORES.take(9),
-        awayInningScores = SAMPLE_INNING_SCORES.take(9),
+        homeInningScores = SAMPLE_HOME_INNING_SCORES,
+        awayInningScores = SAMPLE_AWAY_INNING_SCORES,
         modifier = Modifier
             .fillMaxWidth()
     )
@@ -411,7 +472,7 @@ fun InningScoresTablePreview() {
 fun InningScoreRowPreview() {
     InningScoreRow(
         teamName = "A",
-        inningScores = SAMPLE_INNING_SCORES.take(9),
+        inningScores = SAMPLE_HOME_INNING_SCORES,
         modifier = Modifier
     )
 }
@@ -441,7 +502,8 @@ fun SingleTeamFielderResultsPreview() {
 fun AfterGameContentPreview() {
     AfterGameContent(
         afterGameInfo = AfterGameInfo(
-            scores = SAMPLE_INNING_SCORES,
+            homeScores = SAMPLE_HOME_INNING_SCORES,
+            awayScores = SAMPLE_AWAY_INNING_SCORES,
             homePitcherResults = SAMPLE_WIN_PITCHER_RESULTS,
             awayPitcherResults = SAMPLE_LOSE_PITCHER_RESULTS,
             homeFielderResults = SAMPLE_FIELDER_RESULTS,
