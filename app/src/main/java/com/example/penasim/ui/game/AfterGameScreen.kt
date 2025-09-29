@@ -14,7 +14,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -37,7 +40,7 @@ import com.example.penasim.ui.theme.playerBorderColor
 import com.example.penasim.ui.theme.primaryContainerLight
 import com.example.penasim.ui.theme.primaryLight
 
-object AfterGGameDestination : NavigationDestination {
+object AfterGameDestination : NavigationDestination {
     override val route: String = "after_game"
     override val titleResId: Int = R.string.game
 }
@@ -45,7 +48,7 @@ object AfterGGameDestination : NavigationDestination {
 @Composable
 fun AfterGameScreen(
     modifier: Modifier = Modifier,
-    onClickFinish: () -> Unit = { },
+    navFinishGame: () -> Unit = { },
     gameViewModel: GameViewModel,
 ) {
     val uiState by gameViewModel.uiState.collectAsState()
@@ -53,99 +56,115 @@ fun AfterGameScreen(
     AfterGameContent(
         afterGameInfo = uiState.afterGameInfo,
         modifier = modifier,
-        onClickFinish = onClickFinish
+        onClickFinish = navFinishGame
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AfterGameContent(
     afterGameInfo: AfterGameInfo,
     modifier: Modifier = Modifier,
     onClickFinish: () -> Unit = { }
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
-        InningScoresTable(
-            homeInningScores = afterGameInfo.homeScores,
-            awayInningScores = afterGameInfo.awayScores,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        )
-
-        Row(
-            modifier = Modifier
-                .height(IntrinsicSize.Min)
-        ) {
-            SingleTeamPitcherResults(
-                pitcherResults = afterGameInfo.awayPitcherResults,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp)
-            )
-            VerticalDivider(
-                color = playerBorderColor,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(vertical = 8.dp)
-            )
-            SingleTeamPitcherResults(
-                pitcherResults = afterGameInfo.homePitcherResults,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp)
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "${afterGameInfo.date.monthValue}月${afterGameInfo.date.dayOfMonth}日",
+                        fontSize = 20.sp,
+                        modifier = Modifier
+                    )
+                }
             )
         }
-
-        HorizontalDivider(
-            color = playerBorderColor,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-        )
-
-        Row(
-            modifier = Modifier
-                .height(IntrinsicSize.Min)
+    ) { innerPadding ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(innerPadding),
         ) {
-            SingleTeamFielderResults(
-                fielderResults = afterGameInfo.awayFielderResults,
+            InningScoresTable(
+                homeInningScores = afterGameInfo.homeScores,
+                awayInningScores = afterGameInfo.awayScores,
                 modifier = Modifier
-                    .weight(1f)
+                    .fillMaxWidth()
                     .padding(8.dp)
             )
-            VerticalDivider(
+
+            Row(
+                modifier = Modifier
+                    .height(IntrinsicSize.Min)
+            ) {
+                SingleTeamPitcherResults(
+                    pitcherResults = afterGameInfo.awayPitcherResults,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)
+                )
+                VerticalDivider(
+                    color = playerBorderColor,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(vertical = 8.dp)
+                )
+                SingleTeamPitcherResults(
+                    pitcherResults = afterGameInfo.homePitcherResults,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)
+                )
+            }
+
+            HorizontalDivider(
                 color = playerBorderColor,
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .padding(vertical = 8.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
             )
-            SingleTeamFielderResults(
-                fielderResults = afterGameInfo.homeFielderResults,
+
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(8.dp)
+                    .height(IntrinsicSize.Min)
+            ) {
+                SingleTeamFielderResults(
+                    fielderResults = afterGameInfo.awayFielderResults,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)
+                )
+                VerticalDivider(
+                    color = playerBorderColor,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(vertical = 8.dp)
+                )
+                SingleTeamFielderResults(
+                    fielderResults = afterGameInfo.homeFielderResults,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Ranking(
+                rankings = afterGameInfo.rankings,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 32.dp)
             )
-        }
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        Ranking(
-            rankings = afterGameInfo.rankings,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 32.dp)
-        )
-
-        Button(
-            onClick = onClickFinish,
-            modifier = Modifier
-                .padding(24.dp)
-                .align(Alignment.CenterHorizontally)
-        ) {
-            Text(text = "終了")
+            Button(
+                onClick = onClickFinish,
+                modifier = Modifier
+                    .padding(24.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Text(text = "終了")
+            }
         }
     }
 }

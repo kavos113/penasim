@@ -44,7 +44,7 @@ object BeforeGameDestination : NavigationDestination {
 @Composable
 fun BeforeGameScreen(
     modifier: Modifier = Modifier,
-    onClickStartGame: () -> Unit = {},
+    navToAfterGame: () -> Unit = {},
     gameViewModel: GameViewModel
 ) {
     val uiState by gameViewModel.uiState.collectAsState()
@@ -59,7 +59,7 @@ fun BeforeGameScreen(
             modifier = modifier
         )
         Button(
-            onClick = onClickStartGame,
+            onClick = navToAfterGame,
             modifier = Modifier
                 .padding(24.dp)
                 .align(Alignment.CenterHorizontally)
