@@ -143,6 +143,8 @@ class GameViewModel @Inject constructor(
 
             _uiState.update { currentState ->
                 currentState.copy(
+                    homePlayers = getPlayerInfosByTeamUseCase.execute(schedule.homeTeam.id),
+                    awayPlayers = getPlayerInfosByTeamUseCase.execute(schedule.awayTeam.id),
                     afterGameInfo = AfterGameInfo(
                         homeScores = inningScores.filter { it.teamId == schedule.homeTeam.id },
                         awayScores = inningScores.filter { it.teamId == schedule.awayTeam.id },
