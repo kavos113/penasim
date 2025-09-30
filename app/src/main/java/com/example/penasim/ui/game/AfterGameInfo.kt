@@ -6,7 +6,6 @@ import com.example.penasim.ui.common.RankingUiInfo
 import java.time.LocalDate
 
 data class AfterGameInfo(
-    val date: LocalDate = Constants.START,
     val homeScores: List<InningScore> = emptyList(),
     val awayScores: List<InningScore> = emptyList(),
     val homePitcherResults: List<PitcherResult> = emptyList(),
