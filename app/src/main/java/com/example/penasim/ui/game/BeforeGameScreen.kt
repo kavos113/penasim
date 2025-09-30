@@ -55,32 +55,31 @@ fun BeforeGameScreen(
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         BeforeGameContent(
+            date = uiState.date,
             beforeGameInfo = uiState.beforeGameInfo,
+            onClickStartGame = {
+                gameViewModel.startGame()
+                navToAfterGame()
+            },
             modifier = modifier
         )
-        Button(
-            onClick = navToAfterGame,
-            modifier = Modifier
-                .padding(24.dp)
-                .align(Alignment.CenterHorizontally)
-        ) {
-            Text(text = "試合開始")
-        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BeforeGameContent(
+    date: LocalDate,
     beforeGameInfo: BeforeGameInfo,
     modifier: Modifier = Modifier,
+    onClickStartGame: () -> Unit = { },
 ) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "${beforeGameInfo.date.monthValue}月${beforeGameInfo.date.dayOfMonth}日",
+                        text = "${date.monthValue}月${date.dayOfMonth}日",
                         fontSize = 20.sp,
                         modifier = Modifier
                     )
@@ -88,24 +87,41 @@ private fun BeforeGameContent(
             )
         }
     ) { innerPadding ->
-        Row(
-            modifier = modifier.padding(innerPadding),
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .then(modifier)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            TeamInfoView(
-                teamStanding = beforeGameInfo.awayTeam,
-                fielders = beforeGameInfo.awayStartingPlayers,
+            Row(
+                modifier = Modifier,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                TeamInfoView(
+                    teamStanding = beforeGameInfo.awayTeam,
+                    fielders = beforeGameInfo.awayStartingPlayers,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(16.dp)
+                )
+                TeamInfoView(
+                    teamStanding = beforeGameInfo.homeTeam,
+                    fielders = beforeGameInfo.homeStartingPlayers,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(16.dp)
+                )
+            }
+            Button(
+                onClick = onClickStartGame,
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp)
-            )
-            TeamInfoView(
-                teamStanding = beforeGameInfo.homeTeam,
-                fielders = beforeGameInfo.homeStartingPlayers,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp)
-            )
+                    .padding(24.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Text(text = "試合開始")
+            }
         }
     }
 }
@@ -239,8 +255,8 @@ private val SAMPLE_TEAM_STANDING = TeamStanding(
 @Composable
 private fun BeforeGameContentPreview() {
     BeforeGameContent(
+        date = LocalDate.of(2024, 4, 1),
         beforeGameInfo = BeforeGameInfo(
-            date = LocalDate.of(2024, 4, 1),
             homeTeam = SAMPLE_TEAM_STANDING,
             awayTeam = SAMPLE_TEAM_STANDING,
             homeStartingPlayers = SAMPLE_FIELDERS,

@@ -115,7 +115,7 @@ class GameViewModel @Inject constructor(
 
     fun startGame() {
         viewModelScope.launch {
-            val recentGames = executeGamesByDate.execute(uiState.value.date)
+            executeGamesByDate.execute(uiState.value.date)
             val inningScores = getInningScoreUseCase.executeByFixtureId(schedule.fixture.id)
             val pitchingStats = getPitchingStatUseCase.executeByFixtureId(schedule.fixture.id)
             val ranking =

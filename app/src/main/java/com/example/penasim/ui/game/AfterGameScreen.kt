@@ -1,5 +1,6 @@
 package com.example.penasim.ui.game
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -39,6 +40,7 @@ import com.example.penasim.ui.theme.onPrimaryLight
 import com.example.penasim.ui.theme.playerBorderColor
 import com.example.penasim.ui.theme.primaryContainerLight
 import com.example.penasim.ui.theme.primaryLight
+import java.time.LocalDate
 
 object AfterGameDestination : NavigationDestination {
     override val route: String = "after_game"
@@ -53,7 +55,13 @@ fun AfterGameScreen(
 ) {
     val uiState by gameViewModel.uiState.collectAsState()
 
+    BackHandler(
+        enabled = true,
+        onBack = { /* Do nothing */ }
+    )
+
     AfterGameContent(
+        date = uiState.date,
         afterGameInfo = uiState.afterGameInfo,
         modifier = modifier,
         onClickFinish = navFinishGame
@@ -63,6 +71,7 @@ fun AfterGameScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AfterGameContent(
+    date: LocalDate,
     afterGameInfo: AfterGameInfo,
     modifier: Modifier = Modifier,
     onClickFinish: () -> Unit = { }
@@ -72,7 +81,7 @@ private fun AfterGameContent(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "${afterGameInfo.date.monthValue}月${afterGameInfo.date.dayOfMonth}日",
+                        text = "${date.monthValue}月${date.dayOfMonth}日",
                         fontSize = 20.sp,
                         modifier = Modifier
                     )
@@ -566,6 +575,7 @@ fun SingleTeamFielderResultsPreview() {
 @Composable
 fun AfterGameContentPreview() {
     AfterGameContent(
+        date = LocalDate.of(2024, 4, 1),
         afterGameInfo = AfterGameInfo(
             homeScores = SAMPLE_HOME_INNING_SCORES,
             awayScores = SAMPLE_AWAY_INNING_SCORES,

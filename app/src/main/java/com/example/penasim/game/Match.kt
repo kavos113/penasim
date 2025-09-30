@@ -73,6 +73,22 @@ class Match(
 
         awayScores.removeAt(awayScores.lastIndex)
 
+        if (homeScore > awayScore) {
+            pitchingStats[homePitcher()] = pitchingStats[homePitcher()]!!.copy(
+                win = true
+            )
+            pitchingStats[awayPitcher()] = pitchingStats[awayPitcher()]!!.copy(
+                lose = true
+            )
+        } else if (awayScore > homeScore) {
+            pitchingStats[awayPitcher()] = pitchingStats[awayPitcher()]!!.copy(
+                win = true
+            )
+            pitchingStats[homePitcher()] = pitchingStats[homePitcher()]!!.copy(
+                lose = true
+            )
+        }
+
         println("  1 2 3 4 5 6 7 8 9 | R")
         println("${schedule.awayTeam.name} ${awayScores.joinToString(" ")} | $awayScore")
         println("${schedule.homeTeam.name} ${homeScores.joinToString(" ")} | $homeScore")
