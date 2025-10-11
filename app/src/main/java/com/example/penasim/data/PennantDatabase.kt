@@ -14,6 +14,7 @@ import com.example.penasim.data.dao.MainMemberDao
 import com.example.penasim.data.dao.InningScoreDao
 import com.example.penasim.data.dao.BattingStatDao
 import com.example.penasim.data.dao.PitchingStatDao
+import com.example.penasim.data.dao.HomeRunDao
 import com.example.penasim.data.entity.FielderAppointmentEntity
 import com.example.penasim.data.entity.GameFixtureEntity
 import com.example.penasim.data.entity.GameResultEntity
@@ -25,6 +26,7 @@ import com.example.penasim.data.entity.MainMemberEntity
 import com.example.penasim.data.entity.InningScoreEntity
 import com.example.penasim.data.entity.BattingStatEntity
 import com.example.penasim.data.entity.PitchingStatEntity
+import com.example.penasim.data.entity.HomeRunEntity
 import com.example.penasim.data.repository.Converters
 
 @Database(
@@ -40,6 +42,7 @@ import com.example.penasim.data.repository.Converters
         InningScoreEntity::class,
         BattingStatEntity::class,
         PitchingStatEntity::class,
+        HomeRunEntity::class,
     ],
     version = 10,
     exportSchema = false
@@ -57,4 +60,5 @@ abstract class PennantDatabase : RoomDatabase() {
     abstract fun inningScoreDao(): InningScoreDao
     abstract fun battingStatDao(): BattingStatDao
     abstract fun pitchingStatDao(): PitchingStatDao
+    abstract fun homeRunDao(): HomeRunDao
 }
