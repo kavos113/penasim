@@ -35,4 +35,5 @@ data class PitchingStatEntity(
     val loss: Boolean,
     val hold: Boolean,
     val save: Boolean,
+    val numberOfPitches: Int,
 )

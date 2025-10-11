@@ -17,6 +17,7 @@ fun PitchingStatEntity.toDomain(): PitchingStat = PitchingStat(
     lose = loss,
     hold = hold,
     save = save,
+    numberOfPitches = numberOfPitches,
 )
 
 fun PitchingStat.toEntity(): PitchingStatEntity = PitchingStatEntity(
@@ -33,4 +34,5 @@ fun PitchingStat.toEntity(): PitchingStatEntity = PitchingStatEntity(
     loss = lose,
     hold = hold,
     save = save,
+    numberOfPitches = numberOfPitches,
 )

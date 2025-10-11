@@ -14,6 +14,7 @@ data class PitchingStat(
     val lose: Boolean = false,
     val hold: Boolean = false,
     val save: Boolean = false,
+    val numberOfPitches: Int = 0, // 登板順
 ) {
     val displayInningPitched: String
         get() {
