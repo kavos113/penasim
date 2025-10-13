@@ -1,5 +1,6 @@
 package com.example.penasim.ui.game
 
+import com.example.penasim.domain.HomeRun
 import com.example.penasim.domain.PitchingStat
 import com.example.penasim.domain.PlayerInfo
 
@@ -18,10 +19,9 @@ data class PitcherResult(
 
 fun PitchingStat.toPitcherResult(
     info: PlayerInfo,
-    number: Int
 ): PitcherResult = PitcherResult(
     displayName = info.player.firstName,
-    number = number,
+    number = this.numberOfPitches,
     wins = info.pitchingStat.wins,
     losses = info.pitchingStat.losses,
     holds = info.pitchingStat.holds,
@@ -36,4 +36,12 @@ data class FielderResult(
     val displayName: String,
     val inning: Int,
     val numberOfHomeRuns: Int,
+)
+
+fun HomeRun.toFielderResult(
+    info: PlayerInfo,
+): FielderResult = FielderResult(
+    displayName = info.player.firstName,
+    inning = this.inning,
+    numberOfHomeRuns = info.battingStat.homeRun,
 )

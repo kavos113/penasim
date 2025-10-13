@@ -15,6 +15,7 @@ import com.example.penasim.ui.common.toRankingUiInfo
 import com.example.penasim.usecase.GetFielderAppointmentByTeamUseCase
 import com.example.penasim.usecase.GetGameInfoAllUseCase
 import com.example.penasim.usecase.GetGameSchedulesByDateUseCase
+import com.example.penasim.usecase.GetHomeRunUseCase
 import com.example.penasim.usecase.GetInningScoreUseCase
 import com.example.penasim.usecase.GetPitchingStatUseCase
 import com.example.penasim.usecase.GetPlayerInfosByTeamUseCase
@@ -36,7 +37,8 @@ class GameViewModel @Inject constructor(
     private val getGameInfoAllUseCase: GetGameInfoAllUseCase,
     private val getGameSchedulesByDateUseCase: GetGameSchedulesByDateUseCase,
     private val getFielderAppointmentByTeamUseCase: GetFielderAppointmentByTeamUseCase,
-    private val getPlayerInfosByTeamUseCase: GetPlayerInfosByTeamUseCase
+    private val getPlayerInfosByTeamUseCase: GetPlayerInfosByTeamUseCase,
+    private val getHomeRunUseCase: GetHomeRunUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
@@ -123,23 +125,28 @@ class GameViewModel @Inject constructor(
                     .sortedBy { it.rank }
                     .map { it.toRankingUiInfo() }
 
-            // TODO
             val homePitchingStats =
                 pitchingStats.filter { uiState.value.homePlayers.any { p -> p.player.id == it.playerId } }
             val awayPitchingStats =
                 pitchingStats.filter { uiState.value.awayPlayers.any { p -> p.player.id == it.playerId } }
             val homePitcherResults = homePitchingStats.map {
-                it.toPitcherResult(
-                    uiState.value.homePlayers.find { p -> p.player.id == it.playerId }!!,
-                    0
-                )
+                it.toPitcherResult(uiState.value.homePlayers.find { p -> p.player.id == it.playerId }!!)
             }
             val awayPitcherResults = awayPitchingStats.map {
-                it.toPitcherResult(
-                    uiState.value.awayPlayers.find { p -> p.player.id == it.playerId }!!,
-                    0
-                )
+                it.toPitcherResult(uiState.value.awayPlayers.find { p -> p.player.id == it.playerId }!!)
             }
+
+            val homeRuns = getHomeRunUseCase.execute(schedule.fixture.id)
+            val homeFielderResults = homeRuns
+                .filter { uiState.value.homePlayers.any { p -> p.player.id == it.playerId } }
+                .map {
+                    it.toFielderResult(uiState.value.homePlayers.find { p -> p.player.id == it.playerId }!!)
+                }
+            val awayFielderResults = homeRuns
+                .filter { uiState.value.awayPlayers.any { p -> p.player.id == it.playerId } }
+                .map {
+                    it.toFielderResult(uiState.value.awayPlayers.find { p -> p.player.id == it.playerId }!!)
+                }
 
             _uiState.update { currentState ->
                 currentState.copy(
@@ -150,6 +157,8 @@ class GameViewModel @Inject constructor(
                         awayScores = inningScores.filter { it.teamId == schedule.awayTeam.id },
                         homePitcherResults = homePitcherResults,
                         awayPitcherResults = awayPitcherResults,
+                        homeFielderResults = homeFielderResults,
+                        awayFielderResults = awayFielderResults,
                         rankings = ranking
                     )
                 )

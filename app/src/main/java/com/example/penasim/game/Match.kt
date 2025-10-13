@@ -3,6 +3,7 @@ package com.example.penasim.game
 import com.example.penasim.domain.BattingStat
 import com.example.penasim.domain.GameResult
 import com.example.penasim.domain.GameSchedule
+import com.example.penasim.domain.HomeRun
 import com.example.penasim.domain.InningScore
 import com.example.penasim.domain.PitcherType
 import com.example.penasim.domain.PitchingStat
@@ -21,6 +22,7 @@ class Match(
     private val homePlayers: TeamPlayers,
     private val awayPlayers: TeamPlayers
 ) {
+    // game states
     private var inning = 1
     private var half = Half.INNING_TOP
 
@@ -36,11 +38,15 @@ class Match(
     private var homeBatterIndex = 1
     private var awayBatterIndex = 1
 
+    // game records
     private val homeScores: MutableList<Int> = mutableListOf()
     private val awayScores: MutableList<Int> = mutableListOf(0)
 
     private val battingStats: MutableMap<Int, BattingStat> = mutableMapOf()
     private val pitchingStats: MutableMap<Int, PitchingStat> = mutableMapOf()
+
+    private val homeHomeRuns: MutableList<HomeRun> = mutableListOf()
+    private val awayHomeRuns: MutableList<HomeRun> = mutableListOf()
 
     private fun homeBatter(number: Int)
         = homePlayers.fielderAppointments.filter { it.position.isStarting() }.find { it.number == number }?.playerId
@@ -129,6 +135,7 @@ class Match(
 
     fun battingStats(): List<BattingStat> = battingStats.values.toList()
     fun pitchingStats(): List<PitchingStat> = pitchingStats.values.toList()
+    fun homeRuns(): List<HomeRun> = homeHomeRuns + awayHomeRuns
 
     private fun batting() {
 //        println("$awayScore - $homeScore ${inning}回${half.toStr()} Out $outs, Bases: [${firstBaseOccupied.toStr()}, ${secondBaseOccupied.toStr()}, ${thirdBaseOccupied.toStr()}], Batter: $batter")
@@ -139,8 +146,9 @@ class Match(
         when {
             outcome <= 70 -> out()
             outcome <= 85 -> single()
-            outcome <= 95 -> double()
-            else -> triple()
+            outcome <= 93 -> double()
+            outcome <= 95 -> triple()
+            else -> homeRun()
         }
     }
 
@@ -172,32 +180,24 @@ class Match(
         val batter = currentBatter()
         val pitcher = currentPitcher()
 
+        // stats are already initialized in out() / single() / double() / triple()
+        battingStats[batter] = battingStats[batter]!!.copy(
+            hit = battingStats[batter]!!.rbi + 1,
+        )
+
+        pitchingStats[pitcher] = pitchingStats[pitcher]!!.copy(
+            run = pitchingStats[pitcher]!!.run + 1,
+            earnedRun = pitchingStats[pitcher]!!.earnedRun + 1,
+        )
+
         when (half) {
             Half.INNING_TOP -> {
                 awayScore++
                 awayScores[awayScores.lastIndex]++
-
-                battingStats[batter] = battingStats[batter]!!.copy(
-                    hit = battingStats[batter]!!.rbi + 1,
-                )
-
-                pitchingStats[pitcher] = pitchingStats[pitcher]!!.copy(
-                    run = pitchingStats[pitcher]!!.run + 1,
-                    earnedRun = pitchingStats[pitcher]!!.earnedRun + 1,
-                )
             }
             Half.INNING_BOTTOM -> {
                 homeScore++
                 homeScores[homeScores.lastIndex]++
-
-                battingStats[batter] = battingStats[batter]!!.copy(
-                    hit = battingStats[batter]!!.rbi + 1,
-                )
-
-                pitchingStats[pitcher] = pitchingStats[pitcher]!!.copy(
-                    run = pitchingStats[pitcher]!!.run + 1,
-                    earnedRun = pitchingStats[pitcher]!!.earnedRun + 1,
-                )
             }
         }
     }
@@ -385,5 +385,82 @@ class Match(
             firstBaseOccupied = false
         }
         thirdBaseOccupied = true
+    }
+
+    private fun homeRun() {
+        val batter = currentBatter()
+        val pitcher = currentPitcher()
+
+        if (batter in battingStats) {
+            battingStats[batter] = battingStats[batter]!!.copy(
+                atBat = battingStats[batter]!!.atBat + 1,
+                hit = battingStats[batter]!!.hit + 1,
+                homeRun = battingStats[batter]!!.homeRun + 1,
+            )
+        } else {
+            battingStats[batter] = BattingStat(
+                gameFixtureId = schedule.fixture.id,
+                playerId = batter,
+                atBat = 1,
+                hit = 1,
+                homeRun = 1,
+            )
+        }
+
+        if (pitcher in pitchingStats) {
+            pitchingStats[pitcher] = pitchingStats[pitcher]!!.copy(
+                hit = pitchingStats[pitcher]!!.hit + 1,
+                homeRun = pitchingStats[pitcher]!!.homeRun + 1,
+            )
+        } else {
+            pitchingStats[pitcher] = PitchingStat(
+                gameFixtureId = schedule.fixture.id,
+                playerId = pitcher,
+                hit = 1,
+                homeRun = 1,
+            )
+        }
+
+        var count = 1
+
+        if (thirdBaseOccupied) {
+            score()
+            thirdBaseOccupied = false
+            count++
+        }
+        if (secondBaseOccupied) {
+            score()
+            secondBaseOccupied = false
+            count++
+        }
+        if (firstBaseOccupied) {
+            score()
+            firstBaseOccupied = false
+            count++
+        }
+        score()
+
+        when (half) {
+            Half.INNING_TOP -> {
+                awayHomeRuns.add(
+                    HomeRun(
+                        fixtureId = schedule.fixture.id,
+                        playerId = batter,
+                        inning = inning,
+                        count = count
+                    )
+                )
+            }
+            Half.INNING_BOTTOM -> {
+                homeHomeRuns.add(
+                    HomeRun(
+                        fixtureId = schedule.fixture.id,
+                        playerId = batter,
+                        inning = inning,
+                        count = count
+                    )
+                )
+            }
+        }
     }
 }

@@ -5,6 +5,7 @@ import com.example.penasim.usecase.ExecuteGameUseCase
 import com.example.penasim.usecase.GetGameSchedulesByDateUseCase
 import com.example.penasim.usecase.GetTeamPlayersUseCase
 import com.example.penasim.usecase.InsertBattingStatUseCase
+import com.example.penasim.usecase.InsertHomeRunUseCase
 import com.example.penasim.usecase.InsertInningScoreUseCase
 import com.example.penasim.usecase.InsertPitchingStatUseCase
 import java.time.LocalDate
@@ -16,7 +17,8 @@ class ExecuteGamesByDate @Inject constructor(
     private val getGameSchedulesByDateUseCase: GetGameSchedulesByDateUseCase,
     private val insertBattingStatUseCase: InsertBattingStatUseCase,
     private val insertPitchingStatUseCase: InsertPitchingStatUseCase,
-    private val insertInningScoreUseCase: InsertInningScoreUseCase
+    private val insertInningScoreUseCase: InsertInningScoreUseCase,
+    private val insertHomeRunUseCase: InsertHomeRunUseCase
 ) {
     suspend fun execute(date: LocalDate): List<GameInfo> {
         val schedules = getGameSchedulesByDateUseCase.execute(date)
@@ -32,6 +34,7 @@ class ExecuteGamesByDate @Inject constructor(
             insertInningScoreUseCase.execute(match.inningScores())
             insertBattingStatUseCase.execute(match.battingStats())
             insertPitchingStatUseCase.execute(match.pitchingStats())
+            insertHomeRunUseCase.execute(match.homeRuns())
 
             executeGameUseCase.execute(
                 fixtureId = result.fixtureId,
