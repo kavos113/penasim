@@ -1,4 +1,4 @@
-package com.example.penasim.ui.calender
+package com.example.penasim.ui.common
 
 import com.example.penasim.const.icon
 import com.example.penasim.domain.GameInfo

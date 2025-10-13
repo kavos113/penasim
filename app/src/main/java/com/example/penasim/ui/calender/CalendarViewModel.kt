@@ -5,6 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.penasim.const.Constants
 import com.example.penasim.domain.League
 import com.example.penasim.game.ExecuteGamesByDate
+import com.example.penasim.ui.common.GameUiInfo
+import com.example.penasim.ui.common.toGameUiInfo
+import com.example.penasim.ui.common.toGameUiInfoWithResult
 import com.example.penasim.ui.common.toRankingUiInfo
 import com.example.penasim.usecase.GetGameInfoAllUseCase
 import com.example.penasim.usecase.GetGameSchedulesAllUseCase

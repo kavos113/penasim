@@ -11,6 +11,7 @@ import com.example.penasim.domain.isStarting
 import com.example.penasim.game.ExecuteGamesByDate
 import com.example.penasim.ui.command.color
 import com.example.penasim.ui.common.DisplayFielder
+import com.example.penasim.ui.common.toGameUiInfo
 import com.example.penasim.ui.common.toRankingUiInfo
 import com.example.penasim.usecase.GetFielderAppointmentByTeamUseCase
 import com.example.penasim.usecase.GetGameInfoAllUseCase
@@ -117,7 +118,7 @@ class GameViewModel @Inject constructor(
 
     fun startGame() {
         viewModelScope.launch {
-            executeGamesByDate.execute(uiState.value.date)
+            val recentGames = executeGamesByDate.execute(uiState.value.date)
             val inningScores = getInningScoreUseCase.executeByFixtureId(schedule.fixture.id)
             val pitchingStats = getPitchingStatUseCase.executeByFixtureId(schedule.fixture.id)
             val ranking =
@@ -171,7 +172,8 @@ class GameViewModel @Inject constructor(
                         awayPitcherResults = awayPitcherResults,
                         homeFielderResults = homeFielderResults,
                         awayFielderResults = awayFielderResults,
-                        rankings = ranking
+                        rankings = ranking,
+                        games = recentGames.map { it.toGameUiInfo() }
                     )
                 )
             }

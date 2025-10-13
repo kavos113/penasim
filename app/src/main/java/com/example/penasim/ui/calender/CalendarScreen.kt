@@ -1,14 +1,10 @@
 package com.example.penasim.ui.calender
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,28 +13,24 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.penasim.R
 import com.example.penasim.const.Constants
+import com.example.penasim.ui.common.Clause
 import com.example.penasim.ui.common.Ranking
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.PenasimTheme
-import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 object CalenderDestination : NavigationDestination {
@@ -102,111 +94,6 @@ private fun CalendarContent(
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
         )
-    }
-}
-
-@Composable
-private fun Game(
-    modifier: Modifier = Modifier,
-    homeTeamLogo: Int,
-    awayTeamLogo: Int,
-    homeTeamScore: Int,
-    awayTeamScore: Int,
-    isGameFinished: Boolean = false,
-) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
-        modifier = modifier
-            .padding(
-                top = 4.dp,
-                bottom = 4.dp
-            )
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 8.dp,
-                    bottom = 8.dp
-                )
-        ) {
-            Image(
-                painter = painterResource(id = awayTeamLogo),
-                contentDescription = "away team icon",
-                modifier = Modifier
-                    .size(18.dp)
-                    .align(Alignment.CenterVertically)
-            )
-            Text(
-                text = if (isGameFinished) awayTeamScore.toString() else " ",
-                modifier = Modifier
-            )
-            Text(
-                text = "-",
-                modifier = Modifier
-            )
-            Text(
-                text = if (isGameFinished) homeTeamScore.toString() else " ",
-                modifier = Modifier
-            )
-            Image(
-                painter = painterResource(id = homeTeamLogo),
-                contentDescription = "home team icon",
-                modifier = Modifier
-                    .size(18.dp)
-                    .align(Alignment.CenterVertically)
-            )
-        }
-    }
-}
-
-@Composable
-private fun Clause(
-    currentDay: LocalDate,
-    games: List<GameUiInfo>,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        modifier = modifier
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            Text(
-                text = "$currentDay",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
-            )
-            repeat(2) { i ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    repeat(3) { j ->
-                        if (i * 3 + j >= games.size) return@repeat
-                        val game = games[i * 3 + j]
-                        Game(
-                            homeTeamLogo = game.homeTeamIcon,
-                            awayTeamLogo = game.awayTeamIcon,
-                            homeTeamScore = game.homeTeamScore,
-                            awayTeamScore = game.awayTeamScore,
-                            isGameFinished = game.isGameFinished
-                        )
-                    }
-                }
-            }
-        }
     }
 }
 
