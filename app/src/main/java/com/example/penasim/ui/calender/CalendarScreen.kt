@@ -83,7 +83,8 @@ private fun CalendarContent(
                         currentDay = game.key,
                         games = game.value,
                         modifier = Modifier
-                            .padding(8.dp)
+                            .padding(8.dp),
+                        focusTeamIcon = R.drawable.team1_icon // TODO fix
                     )
                 }
             }

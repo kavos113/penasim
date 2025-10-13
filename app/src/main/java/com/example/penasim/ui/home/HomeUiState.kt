@@ -7,4 +7,5 @@ data class HomeUiState(
     val teamId: Int = Constants.TEAM_ID,
     val currentDay: LocalDate = Constants.START,
     val rank: Int = 0,
+    val isGameDay: Boolean = true,
 )

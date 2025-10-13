@@ -13,6 +13,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -45,9 +46,14 @@ object BeforeGameDestination : NavigationDestination {
 fun BeforeGameScreen(
     modifier: Modifier = Modifier,
     navToAfterGame: () -> Unit = {},
-    gameViewModel: GameViewModel
+    gameViewModel: GameViewModel,
+    currentDate: LocalDate
 ) {
     val uiState by gameViewModel.uiState.collectAsState()
+
+    LaunchedEffect(currentDate) {
+        gameViewModel.setDate(currentDate)
+    }
 
     Column(
         modifier = modifier.fillMaxSize(),

@@ -37,6 +37,7 @@ object HomeDestination : NavigationDestination {
 @Composable
 fun HomeScreen(
     onGameClick: () -> Unit = {},
+    onNoGameDayClick: () -> Unit = {},
     onCalenderClick: () -> Unit = {},
     onCommandClick: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -70,7 +71,9 @@ fun HomeScreen(
                 .align(alignment = Alignment.CenterHorizontally)
         )
         HomeMenu(
+            isGameDay = uiState.isGameDay,
             onGameClick = onGameClick,
+            onNoGameDayClick = onNoGameDayClick,
             onCalenderClick = onCalenderClick,
             onCommandClick = onCommandClick,
             modifier = Modifier
@@ -95,7 +98,9 @@ fun HomeInformation(
 
 @Composable
 fun HomeMenu(
+    isGameDay: Boolean = true,
     onGameClick: () -> Unit = {},
+    onNoGameDayClick: () -> Unit = {},
     onCalenderClick: () -> Unit = {},
     onCommandClick: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -103,12 +108,22 @@ fun HomeMenu(
     Column(
         modifier = modifier
     ) {
-        Button(
-            onClick = onGameClick,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.game))
+        if (isGameDay) {
+            Button(
+                onClick = onGameClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.game))
+            }
+        } else {
+            Button(
+                onClick = onNoGameDayClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.next_day))
+            }
         }
         Button(
             onClick = onCalenderClick,

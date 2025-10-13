@@ -23,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -47,6 +48,11 @@ import java.time.LocalDate
 
 object AfterGameDestination : NavigationDestination {
     override val route: String = "after_game"
+    override val titleResId: Int = R.string.game
+}
+
+object AfterGameWithoutGameResultDestination : NavigationDestination {
+    override val route: String = "after_game_without_game_result"
     override val titleResId: Int = R.string.game
 }
 
@@ -76,8 +82,13 @@ fun AfterGameScreenWithoutGameResult(
     modifier: Modifier = Modifier,
     navFinishGame: () -> Unit = { },
     gameViewModel: GameViewModel,
+    currentDate: LocalDate
 ) {
     val uiState by gameViewModel.uiState.collectAsState()
+
+    LaunchedEffect(currentDate) {
+        gameViewModel.setDate(currentDate)
+    }
 
     BackHandler(
         enabled = true,
@@ -238,8 +249,6 @@ private fun AfterGameContentWithoutGameResult(
             Column(
                 modifier = Modifier.align(Alignment.BottomCenter)
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-
                 ClauseWithoutDate(
                     games = afterGameInfo.games,
                     modifier = Modifier
@@ -622,7 +631,7 @@ private val SAMPLE_FIELDER_RESULTS = listOf(
 
 @Preview
 @Composable
-fun InningScoresTablePreview() {
+private fun InningScoresTablePreview() {
     InningScoresTable(
         homeInningScores = SAMPLE_HOME_INNING_SCORES,
         awayInningScores = SAMPLE_AWAY_INNING_SCORES,
@@ -633,7 +642,7 @@ fun InningScoresTablePreview() {
 
 @Preview
 @Composable
-fun InningScoreRowPreview() {
+private fun InningScoreRowPreview() {
     InningScoreRow(
         teamName = "A",
         inningScores = SAMPLE_HOME_INNING_SCORES,
@@ -643,7 +652,7 @@ fun InningScoreRowPreview() {
 
 @Preview
 @Composable
-fun SingleTeamPitcherResultsPreview() {
+private fun SingleTeamPitcherResultsPreview() {
     SingleTeamPitcherResults(
         pitcherResults = SAMPLE_WIN_PITCHER_RESULTS,
         modifier = Modifier
@@ -653,7 +662,7 @@ fun SingleTeamPitcherResultsPreview() {
 
 @Preview
 @Composable
-fun SingleTeamFielderResultsPreview() {
+private fun SingleTeamFielderResultsPreview() {
     SingleTeamFielderResults(
         fielderResults = SAMPLE_FIELDER_RESULTS,
         modifier = Modifier
@@ -663,7 +672,7 @@ fun SingleTeamFielderResultsPreview() {
 
 @Preview
 @Composable
-fun AfterGameContentPreview() {
+private fun AfterGameContentPreview() {
     AfterGameContent(
         date = LocalDate.of(2024, 4, 1),
         afterGameInfo = AfterGameInfo(
@@ -724,7 +733,7 @@ fun AfterGameContentPreview() {
 
 @Preview
 @Composable
-fun AfterGameContentWithoutGameResultPreview() {
+private fun AfterGameContentWithoutGameResultPreview() {
     AfterGameContentWithoutGameResult(
         date = LocalDate.of(2024, 4, 1),
         afterGameInfo = AfterGameInfo(

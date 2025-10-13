@@ -29,10 +29,15 @@ private fun Game(
     homeTeamScore: Int,
     awayTeamScore: Int,
     isGameFinished: Boolean = false,
+    isFocus: Boolean = false
 ) {
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = if (isFocus) {
+                MaterialTheme.colorScheme.errorContainer
+            } else {
+                MaterialTheme.colorScheme.primaryContainer
+            }
         ),
         modifier = modifier
             .padding(
@@ -83,7 +88,8 @@ private fun Game(
 fun Clause(
     currentDay: LocalDate,
     games: List<GameUiInfo>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    focusTeamIcon: Int? = null,
 ) {
     Card(
         colors = CardDefaults.cardColors(
@@ -117,7 +123,8 @@ fun Clause(
                             awayTeamLogo = game.awayTeamIcon,
                             homeTeamScore = game.homeTeamScore,
                             awayTeamScore = game.awayTeamScore,
-                            isGameFinished = game.isGameFinished
+                            isGameFinished = game.isGameFinished,
+                            isFocus = focusTeamIcon != null && (focusTeamIcon == game.homeTeamIcon || focusTeamIcon == game.awayTeamIcon)
                         )
                     }
                 }
@@ -215,7 +222,8 @@ fun PreviewClause() {
             )
         ),
         modifier = Modifier
-            .padding(16.dp)
+            .padding(16.dp),
+        focusTeamIcon = R.drawable.team1_icon
     )
 }
 

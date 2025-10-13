@@ -15,6 +15,8 @@ import com.example.penasim.ui.command.CommandDestination
 import com.example.penasim.ui.command.CommandScreen
 import com.example.penasim.ui.game.AfterGameDestination
 import com.example.penasim.ui.game.AfterGameScreen
+import com.example.penasim.ui.game.AfterGameScreenWithoutGameResult
+import com.example.penasim.ui.game.AfterGameWithoutGameResultDestination
 import com.example.penasim.ui.game.BeforeGameDestination
 import com.example.penasim.ui.game.BeforeGameScreen
 import com.example.penasim.ui.game.GameViewModel
@@ -34,6 +36,7 @@ fun PenasimNavHost(
         composable(route = HomeDestination.route) {
             HomeScreen(
                 onGameClick = { navController.navigate(BeforeGameDestination.route) },
+                onNoGameDayClick = { navController.navigate(AfterGameWithoutGameResultDestination.route) },
                 onCalenderClick = { navController.navigate(CalenderDestination.route) },
                 onCommandClick = { navController.navigate(CommandDestination.route) },
                 modifier = Modifier.fillMaxSize(),
@@ -65,6 +68,13 @@ fun PenasimNavHost(
                     modifier = Modifier.fillMaxSize()
                 )
             }
+        }
+        composable(route = AfterGameWithoutGameResultDestination.route) {
+            AfterGameScreenWithoutGameResult(
+                gameViewModel = hiltViewModel(),
+                navFinishGame = { navController.navigate(HomeDestination.route) },
+                modifier = Modifier.fillMaxSize()
+            )
         }
         composable(route = CalenderDestination.route) {
             CalendarScreen()

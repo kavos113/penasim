@@ -9,7 +9,7 @@ data class GameUiInfo(
     val homeTeamScore: Int,
     val awayTeamIcon: Int,
     val awayTeamScore: Int,
-    val isGameFinished: Boolean
+    val isGameFinished: Boolean,
 )
 
 fun GameInfo.toGameUiInfo(): GameUiInfo = GameUiInfo(
@@ -17,7 +17,7 @@ fun GameInfo.toGameUiInfo(): GameUiInfo = GameUiInfo(
     homeTeamScore = result.homeScore,
     awayTeamIcon = awayTeam.icon(),
     awayTeamScore = result.awayScore,
-    isGameFinished = true
+    isGameFinished = true,
 )
 
 fun GameSchedule.toGameUiInfo(): GameUiInfo = GameUiInfo(

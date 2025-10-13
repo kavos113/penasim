@@ -22,6 +22,7 @@ class ExecuteGamesByDate @Inject constructor(
 ) {
     suspend fun execute(date: LocalDate): List<GameInfo> {
         val schedules = getGameSchedulesByDateUseCase.execute(date)
+        println("Executing games for date: $date, total schedules: ${schedules.size}")
         return schedules.map { schedule ->
             val homeTeamPlayers = getTeamPlayersUseCase.execute(schedule.homeTeam.id)
             val awayTeamPlayers = getTeamPlayersUseCase.execute(schedule.awayTeam.id)

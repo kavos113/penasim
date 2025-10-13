@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,7 +36,6 @@ class GameViewModel @Inject constructor(
     private val getInningScoreUseCase: GetInningScoreUseCase,
     private val getPitchingStatUseCase: GetPitchingStatUseCase,
     private val getRankingUseCase: GetRankingUseCase,
-    private val getGameInfoAllUseCase: GetGameInfoAllUseCase,
     private val getGameSchedulesByDateUseCase: GetGameSchedulesByDateUseCase,
     private val getFielderAppointmentByTeamUseCase: GetFielderAppointmentByTeamUseCase,
     private val getPlayerInfosByTeamUseCase: GetPlayerInfosByTeamUseCase,
@@ -46,21 +46,28 @@ class GameViewModel @Inject constructor(
 
     private lateinit var schedule: GameSchedule
 
+    fun setDate(date: LocalDate) {
+        _uiState.update { currentState ->
+            currentState.copy(date = date)
+        }
+    }
+
     init {
         viewModelScope.launch {
-            val gameInfos = getGameInfoAllUseCase.execute()
-            val date = gameInfos.maxOfOrNull { it.fixture.date }?.plusDays(1)
-                ?: Constants.START
-
             val ranking =
                 (getRankingUseCase.execute(League.L1) + getRankingUseCase.execute(League.L2))
                     .sortedBy { it.rank }
 
-            val schedules = getGameSchedulesByDateUseCase.execute(date)
-            // TODO: 試合が無い日の処理
-            schedule = schedules.find {
+            val schedules = getGameSchedulesByDateUseCase.execute(uiState.value.date)
+            val s = schedules.find {
                 it.homeTeam.id == Constants.TEAM_ID || it.awayTeam.id == Constants.TEAM_ID
-            } ?: throw IllegalStateException("No game scheduled for my team on $date")
+            }
+            if (s == null) {
+                skipGame()
+                return@launch
+            } else {
+                schedule = s
+            }
 
             val homeFielderAppointment =
                 getFielderAppointmentByTeamUseCase.execute(schedule.homeTeam)
@@ -100,7 +107,6 @@ class GameViewModel @Inject constructor(
 
             _uiState.update { currentState ->
                 currentState.copy(
-                    date = date,
                     homePlayers = homePlayers,
                     awayPlayers = awayPlayers,
                     beforeGameInfo = BeforeGameInfo(
@@ -111,6 +117,28 @@ class GameViewModel @Inject constructor(
                         homeStartingPlayers = homeStartingPlayers,
                         awayStartingPlayers = awayStartingPlayers
                     ),
+                )
+            }
+        }
+    }
+
+    fun skipGame() {
+        viewModelScope.launch {
+            val recentGames = executeGamesByDate.execute(uiState.value.date)
+            val rankings =
+                (getRankingUseCase.execute(League.L1) + getRankingUseCase.execute(League.L2))
+                    .sortedBy { it.rank }
+                    .map { it.toRankingUiInfo() }
+
+            _uiState.update { currentState ->
+                currentState.copy(
+                    homePlayers = emptyList(),
+                    awayPlayers = emptyList(),
+                    beforeGameInfo = BeforeGameInfo(),
+                    afterGameInfo = AfterGameInfo(
+                        rankings = rankings,
+                        games = recentGames.map { it.toGameUiInfo() }
+                    )
                 )
             }
         }
