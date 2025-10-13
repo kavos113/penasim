@@ -3,6 +3,7 @@ package com.example.penasim.ui.game
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -33,6 +34,8 @@ import androidx.compose.ui.unit.sp
 import com.example.penasim.R
 import com.example.penasim.const.DataSource
 import com.example.penasim.domain.InningScore
+import com.example.penasim.ui.common.ClauseWithoutDate
+import com.example.penasim.ui.common.GameUiInfo
 import com.example.penasim.ui.common.Ranking
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.errorContainerLight
@@ -61,6 +64,27 @@ fun AfterGameScreen(
     )
 
     AfterGameContent(
+        date = uiState.date,
+        afterGameInfo = uiState.afterGameInfo,
+        modifier = modifier,
+        onClickFinish = navFinishGame
+    )
+}
+
+@Composable
+fun AfterGameScreenWithoutGameResult(
+    modifier: Modifier = Modifier,
+    navFinishGame: () -> Unit = { },
+    gameViewModel: GameViewModel,
+) {
+    val uiState by gameViewModel.uiState.collectAsState()
+
+    BackHandler(
+        enabled = true,
+        onBack = { /* Do nothing */ }
+    )
+
+    AfterGameContentWithoutGameResult(
         date = uiState.date,
         afterGameInfo = uiState.afterGameInfo,
         modifier = modifier,
@@ -159,11 +183,18 @@ private fun AfterGameContent(
 
             Spacer(modifier = Modifier.weight(1f))
 
+            ClauseWithoutDate(
+                games = afterGameInfo.games,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
+            )
+
             Ranking(
                 rankings = afterGameInfo.rankings,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 32.dp)
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
             )
 
             Button(
@@ -173,6 +204,64 @@ private fun AfterGameContent(
                     .align(Alignment.CenterHorizontally)
             ) {
                 Text(text = "終了")
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AfterGameContentWithoutGameResult(
+    date: LocalDate,
+    afterGameInfo: AfterGameInfo,
+    modifier: Modifier = Modifier,
+    onClickFinish: () -> Unit = { }
+) {
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "${date.monthValue}月${date.dayOfMonth}日",
+                        fontSize = 20.sp,
+                        modifier = Modifier
+                    )
+                }
+            )
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+        ) {
+            Column(
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ClauseWithoutDate(
+                    games = afterGameInfo.games,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp)
+                )
+
+                Ranking(
+                    rankings = afterGameInfo.rankings,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
+                )
+
+                Button(
+                    onClick = onClickFinish,
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    Text(text = "終了")
+                }
             }
         }
     }
@@ -584,7 +673,112 @@ fun AfterGameContentPreview() {
             awayPitcherResults = SAMPLE_LOSE_PITCHER_RESULTS,
             homeFielderResults = SAMPLE_FIELDER_RESULTS,
             awayFielderResults = emptyList(),
-            rankings = DataSource.rankings
+            rankings = DataSource.rankings,
+            games = listOf(
+                GameUiInfo(
+                    homeTeamIcon = R.drawable.team1_icon,
+                    homeTeamScore = 3,
+                    awayTeamIcon = R.drawable.team2_icon,
+                    awayTeamScore = 1,
+                    isGameFinished = true
+                ),
+                GameUiInfo(
+                    homeTeamIcon = R.drawable.team3_icon,
+                    homeTeamScore = 2,
+                    awayTeamIcon = R.drawable.team4_icon,
+                    awayTeamScore = 2,
+                    isGameFinished = true
+                ),
+                GameUiInfo(
+                    homeTeamIcon = R.drawable.team5_icon,
+                    homeTeamScore = 0,
+                    awayTeamIcon = R.drawable.team6_icon,
+                    awayTeamScore = 1,
+                    isGameFinished = true
+                ),
+                GameUiInfo(
+                    homeTeamIcon = R.drawable.team7_icon,
+                    homeTeamScore = 0,
+                    awayTeamIcon = R.drawable.team8_icon,
+                    awayTeamScore = 3,
+                    isGameFinished = true
+                ),
+                GameUiInfo(
+                    homeTeamIcon = R.drawable.team9_icon,
+                    homeTeamScore = 1,
+                    awayTeamIcon = R.drawable.team10_icon,
+                    awayTeamScore = 0,
+                    isGameFinished = true
+                ),
+                GameUiInfo(
+                    homeTeamIcon = R.drawable.team11_icon,
+                    homeTeamScore = 2,
+                    awayTeamIcon = R.drawable.team12_icon,
+                    awayTeamScore = 2,
+                    isGameFinished = true
+                )
+            ),
+        )
+    )
+}
+
+@Preview
+@Composable
+fun AfterGameContentWithoutGameResultPreview() {
+    AfterGameContentWithoutGameResult(
+        date = LocalDate.of(2024, 4, 1),
+        afterGameInfo = AfterGameInfo(
+            homeScores = SAMPLE_HOME_INNING_SCORES,
+            awayScores = SAMPLE_AWAY_INNING_SCORES,
+            homePitcherResults = SAMPLE_WIN_PITCHER_RESULTS,
+            awayPitcherResults = SAMPLE_LOSE_PITCHER_RESULTS,
+            homeFielderResults = SAMPLE_FIELDER_RESULTS,
+            awayFielderResults = emptyList(),
+            rankings = DataSource.rankings,
+            games = listOf(
+                GameUiInfo(
+                    homeTeamIcon = R.drawable.team1_icon,
+                    homeTeamScore = 3,
+                    awayTeamIcon = R.drawable.team2_icon,
+                    awayTeamScore = 1,
+                    isGameFinished = true
+                ),
+                GameUiInfo(
+                    homeTeamIcon = R.drawable.team3_icon,
+                    homeTeamScore = 2,
+                    awayTeamIcon = R.drawable.team4_icon,
+                    awayTeamScore = 2,
+                    isGameFinished = true
+                ),
+                GameUiInfo(
+                    homeTeamIcon = R.drawable.team5_icon,
+                    homeTeamScore = 0,
+                    awayTeamIcon = R.drawable.team6_icon,
+                    awayTeamScore = 1,
+                    isGameFinished = true
+                ),
+                GameUiInfo(
+                    homeTeamIcon = R.drawable.team7_icon,
+                    homeTeamScore = 0,
+                    awayTeamIcon = R.drawable.team8_icon,
+                    awayTeamScore = 3,
+                    isGameFinished = true
+                ),
+                GameUiInfo(
+                    homeTeamIcon = R.drawable.team9_icon,
+                    homeTeamScore = 1,
+                    awayTeamIcon = R.drawable.team10_icon,
+                    awayTeamScore = 0,
+                    isGameFinished = true
+                ),
+                GameUiInfo(
+                    homeTeamIcon = R.drawable.team11_icon,
+                    homeTeamScore = 2,
+                    awayTeamIcon = R.drawable.team12_icon,
+                    awayTeamScore = 2,
+                    isGameFinished = true
+                )
+            ),
         )
     )
 }

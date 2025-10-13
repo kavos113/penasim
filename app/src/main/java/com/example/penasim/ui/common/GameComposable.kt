@@ -126,6 +126,45 @@ fun Clause(
     }
 }
 
+@Composable
+fun ClauseWithoutDate(
+    games: List<GameUiInfo>,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainer
+        ),
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            repeat(2) { i ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    repeat(3) { j ->
+                        if (i * 3 + j >= games.size) return@repeat
+                        val game = games[i * 3 + j]
+                        Game(
+                            homeTeamLogo = game.homeTeamIcon,
+                            awayTeamLogo = game.awayTeamIcon,
+                            homeTeamScore = game.homeTeamScore,
+                            awayTeamScore = game.awayTeamScore,
+                            isGameFinished = game.isGameFinished
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 fun PreviewClause() {
@@ -246,6 +285,59 @@ fun PreviewNotFinishedClause() {
                 awayTeamIcon = R.drawable.team12_icon,
                 awayTeamScore = 0,
                 isGameFinished = false
+            )
+        ),
+        modifier = Modifier
+            .padding(16.dp)
+    )
+}
+
+@Preview
+@Composable
+fun PreviewClauseWithoutDate() {
+    ClauseWithoutDate(
+        games = listOf(
+            GameUiInfo(
+                homeTeamIcon = R.drawable.team1_icon,
+                homeTeamScore = 3,
+                awayTeamIcon = R.drawable.team2_icon,
+                awayTeamScore = 1,
+                isGameFinished = true
+            ),
+            GameUiInfo(
+                homeTeamIcon = R.drawable.team3_icon,
+                homeTeamScore = 2,
+                awayTeamIcon = R.drawable.team4_icon,
+                awayTeamScore = 2,
+                isGameFinished = true
+            ),
+            GameUiInfo(
+                homeTeamIcon = R.drawable.team5_icon,
+                homeTeamScore = 0,
+                awayTeamIcon = R.drawable.team6_icon,
+                awayTeamScore = 1,
+                isGameFinished = true
+            ),
+            GameUiInfo(
+                homeTeamIcon = R.drawable.team7_icon,
+                homeTeamScore = 0,
+                awayTeamIcon = R.drawable.team8_icon,
+                awayTeamScore = 3,
+                isGameFinished = true
+            ),
+            GameUiInfo(
+                homeTeamIcon = R.drawable.team9_icon,
+                homeTeamScore = 1,
+                awayTeamIcon = R.drawable.team10_icon,
+                awayTeamScore = 0,
+                isGameFinished = true
+            ),
+            GameUiInfo(
+                homeTeamIcon = R.drawable.team11_icon,
+                homeTeamScore = 2,
+                awayTeamIcon = R.drawable.team12_icon,
+                awayTeamScore = 2,
+                isGameFinished = true
             )
         ),
         modifier = Modifier
