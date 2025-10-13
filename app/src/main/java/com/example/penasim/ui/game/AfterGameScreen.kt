@@ -425,7 +425,7 @@ private fun FielderResultItem(
     modifier: Modifier = Modifier
 ) {
     Text(
-        text = "${fielderResult.displayName} ${fielderResult.inning}回 ${fielderResult.numberOfHomeRuns}号",
+        text = "${fielderResult.displayName} ${fielderResult.inning}回 ${fielderResult.numberOfHomeRuns}号 ${fielderResult.type.toStringJp()}",
         fontSize = 16.sp,
         modifier = modifier
             .padding(horizontal = 4.dp, vertical = 2.dp)
@@ -526,7 +526,8 @@ private val SAMPLE_FIELDER_RESULTS = listOf(
     FielderResult(
         displayName = "渡辺",
         inning = 6,
-        numberOfHomeRuns = 13
+        numberOfHomeRuns = 13,
+        type = HomeRunType.TWO_RUN
     ),
 )
 

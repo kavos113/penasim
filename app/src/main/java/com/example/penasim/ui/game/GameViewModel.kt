@@ -139,14 +139,26 @@ class GameViewModel @Inject constructor(
             val homeRuns = getHomeRunUseCase.execute(schedule.fixture.id)
             val homeFielderResults = homeRuns
                 .filter { uiState.value.homePlayers.any { p -> p.player.id == it.playerId } }
-                .map {
-                    it.toFielderResult(uiState.value.homePlayers.find { p -> p.player.id == it.playerId }!!)
-                }
+                .groupBy { it.playerId }
+                .map { (playerId, homeRuns) ->
+                    homeRuns.mapIndexed { index, homeRun ->
+                        homeRun.toFielderResult(
+                            uiState.value.homePlayers.find { p -> p.player.id == playerId }!!,
+                            index
+                        )
+                    }
+                }.flatten()
             val awayFielderResults = homeRuns
                 .filter { uiState.value.awayPlayers.any { p -> p.player.id == it.playerId } }
-                .map {
-                    it.toFielderResult(uiState.value.awayPlayers.find { p -> p.player.id == it.playerId }!!)
-                }
+                .groupBy { it.playerId }
+                .map { (playerId, homeRuns) ->
+                    homeRuns.mapIndexed { index, homeRun ->
+                        homeRun.toFielderResult(
+                            uiState.value.awayPlayers.find { p -> p.player.id == playerId }!!,
+                            index
+                        )
+                    }
+                }.flatten()
 
             _uiState.update { currentState ->
                 currentState.copy(

@@ -146,8 +146,8 @@ class Match(
         when {
             outcome <= 70 -> out()
             outcome <= 85 -> single()
-            outcome <= 93 -> double()
-            outcome <= 95 -> triple()
+            outcome <= 95 -> double()
+            outcome <= 98 -> triple()
             else -> homeRun()
         }
     }
