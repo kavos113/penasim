@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -28,6 +29,8 @@ fun PenasimNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
+    val globalViewModel: GlobalViewModel = viewModel()
+
     NavHost(
         navController = navController,
         startDestination = HomeDestination.route,
