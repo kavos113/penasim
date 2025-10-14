@@ -31,7 +31,13 @@ class CalendarViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(CalendarUiState())
     val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
 
-    private var currentDate = Constants.START
+    fun setCurrentDate(date: LocalDate) {
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentDay = date
+            )
+        }
+    }
 
     init {
         viewModelScope.launch {
@@ -56,17 +62,10 @@ class CalendarViewModel @Inject constructor(
                 .sortedBy { it.rank }
                 .map { it.toRankingUiInfo() }
 
-            val currentDay = gameInfos.maxOfOrNull { it.fixture.date }?.plusDays(1)
-                ?: Constants.START
-
-            println("Initial currentDay: $currentDay")
-            currentDate = currentDay
-
             _uiState.update { currentState ->
                 currentState.copy(
                     games = clauses,
                     rankings = rankings,
-                    currentDay = currentDay
                 )
             }
             println("[CalendarViewModel] Initial data loaded, total days: ${clauses.size}")
@@ -74,17 +73,17 @@ class CalendarViewModel @Inject constructor(
     }
 
     fun nextGame() {
-        if (currentDate > Constants.END) {
+        if (uiState.value.currentDay > Constants.END) {
             println("[CalendarViewModel] All games have been processed.")
             return
         }
 
         viewModelScope.launch {
-            val recentGames = executeGamesByDate.execute(currentDate)
+            val recentGames = executeGamesByDate.execute(uiState.value.currentDay)
 
             _uiState.update { currentState ->
                 val newGames = currentState.games.toMutableMap()
-                newGames[currentDate] = recentGames.map { it.toGameUiInfo() }
+                newGames[uiState.value.currentDay] = recentGames.map { it.toGameUiInfo() }
 
                 val rankings = (getRankingUseCase.execute(League.L1) + getRankingUseCase.execute(League.L2))
                     .sortedBy { it.rank }
@@ -93,17 +92,14 @@ class CalendarViewModel @Inject constructor(
                 currentState.copy(
                     games = newGames,
                     rankings = rankings,
-                    currentDay = currentDate
                 )
             }
 
-            println("[CalendarViewModel] Current Game: $currentDate ======================")
+            println("[CalendarViewModel] Current Game: ${uiState.value.currentDay} ======================")
             val league1Rankings = getRankingUseCase.execute(League.L1)
             league1Rankings.forEach {
                 println("[CalendarViewModel] L1 Ranking - Rank: ${it.rank}, Team: ${it.team.name}, Wins: ${it.wins}, Losses: ${it.losses}, GB: ${"%.1f".format(it.gameBack)}")
             }
-
-            currentDate = currentDate.plusDays(1)
         }
     }
 }
