@@ -29,7 +29,6 @@ import com.example.penasim.R
 import com.example.penasim.const.Constants
 import com.example.penasim.ui.common.Clause
 import com.example.penasim.ui.common.Ranking
-import com.example.penasim.ui.navigation.GlobalViewModel
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.PenasimTheme
 import java.time.temporal.ChronoUnit
@@ -43,22 +42,12 @@ object CalenderDestination : NavigationDestination {
 @Composable
 fun CalendarScreen(
     modifier: Modifier = Modifier,
-    globalViewModel: GlobalViewModel,
     calendarViewModel: CalendarViewModel = hiltViewModel(),
 ) {
     val uiState by calendarViewModel.uiState.collectAsState()
-    val globalState by globalViewModel.state.collectAsState()
-
-    LaunchedEffect(globalState) {
-        calendarViewModel.setCurrentDate(globalState.currentDate)
-    }
-
     CalendarContent(
         uiState = uiState,
-        onNextGame = {
-            calendarViewModel.nextGame()
-            globalViewModel.nextDay()
-         },
+        onNextGame = { calendarViewModel.nextGame() },
         modifier = modifier
     )
 }
