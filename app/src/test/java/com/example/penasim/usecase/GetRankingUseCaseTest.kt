@@ -67,9 +67,9 @@ class GetRankingUseCaseTest {
         val teamRepo = FakeTeamRepository(teams)
         val fixtureRepo = FakeGameFixtureRepository(fixtures)
         val resultRepo = FakeGameResultRepository(results)
-        val useCase = GetRankingUseCase(teamRepo, fixtureRepo, resultRepo)
+        val useCase = RankingUseCase(teamRepo, fixtureRepo, resultRepo)
 
-        val standings = useCase.execute(league)
+        val standings = useCase.getByLeague(league)
 
         assertEquals(6, standings.size)
 

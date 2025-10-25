@@ -9,7 +9,7 @@ import com.example.penasim.testing.MainDispatcherRule
 import com.example.penasim.usecase.ExecuteRandomGamesByDateUseCase
 import com.example.penasim.usecase.GetGameInfoAllUseCase
 import com.example.penasim.usecase.GetGameSchedulesAllUseCase
-import com.example.penasim.usecase.GetRankingUseCase
+import com.example.penasim.usecase.RankingUseCase
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -74,7 +74,7 @@ class CalendarViewModelTest {
         val vm = CalendarViewModel(
             getGameSchedulesAllUseCase = GetGameSchedulesAllUseCase(fixtureRepo, teamRepo),
             getGameInfoAllUseCase = GetGameInfoAllUseCase(fixtureRepo, resultRepo, teamRepo),
-            getRankingUseCase = GetRankingUseCase(teamRepo, fixtureRepo, resultRepo),
+            getRankingUseCase = RankingUseCase(teamRepo, fixtureRepo, resultRepo),
             executeGamesByDateUseCase = ExecuteRandomGamesByDateUseCase(resultRepo, fixtureRepo, teamRepo)
         )
 
@@ -116,7 +116,7 @@ class CalendarViewModelTest {
         val vm = CalendarViewModel(
             getGameSchedulesAllUseCase = GetGameSchedulesAllUseCase(fixtureRepo, teamRepo),
             getGameInfoAllUseCase = GetGameInfoAllUseCase(fixtureRepo, resultRepo, teamRepo),
-            getRankingUseCase = GetRankingUseCase(teamRepo, fixtureRepo, resultRepo),
+            getRankingUseCase = RankingUseCase(teamRepo, fixtureRepo, resultRepo),
             executeGamesByDateUseCase = ExecuteRandomGamesByDateUseCase(resultRepo, fixtureRepo, teamRepo)
         )
 

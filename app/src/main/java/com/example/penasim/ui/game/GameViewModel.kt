@@ -19,7 +19,7 @@ import com.example.penasim.usecase.GetHomeRunUseCase
 import com.example.penasim.usecase.GetInningScoreUseCase
 import com.example.penasim.usecase.GetPitchingStatUseCase
 import com.example.penasim.usecase.GetPlayerInfosByTeamUseCase
-import com.example.penasim.usecase.GetRankingUseCase
+import com.example.penasim.usecase.RankingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,7 +34,7 @@ class GameViewModel @Inject constructor(
     private val executeGamesByDate: ExecuteGamesByDate,
     private val getInningScoreUseCase: GetInningScoreUseCase,
     private val getPitchingStatUseCase: GetPitchingStatUseCase,
-    private val getRankingUseCase: GetRankingUseCase,
+    private val getRankingUseCase: RankingUseCase,
     private val gameScheduleUseCase: GameScheduleUseCase,
     private val getFielderAppointmentByTeamUseCase: GetFielderAppointmentByTeamUseCase,
     private val getPlayerInfosByTeamUseCase: GetPlayerInfosByTeamUseCase,
@@ -54,7 +54,7 @@ class GameViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val ranking =
-                (getRankingUseCase.execute(League.L1) + getRankingUseCase.execute(League.L2))
+                (getRankingUseCase.getByLeague(League.L1) + getRankingUseCase.getByLeague(League.L2))
                     .sortedBy { it.rank }
 
             val schedules = gameScheduleUseCase.getByDate(uiState.value.date)
@@ -125,7 +125,7 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             val recentGames = executeGamesByDate.execute(uiState.value.date)
             val rankings =
-                (getRankingUseCase.execute(League.L1) + getRankingUseCase.execute(League.L2))
+                (getRankingUseCase.getByLeague(League.L1) + getRankingUseCase.getByLeague(League.L2))
                     .sortedBy { it.rank }
                     .map { it.toRankingUiInfo() }
 
@@ -149,7 +149,7 @@ class GameViewModel @Inject constructor(
             val inningScores = getInningScoreUseCase.executeByFixtureId(schedule.fixture.id)
             val pitchingStats = getPitchingStatUseCase.executeByFixtureId(schedule.fixture.id)
             val ranking =
-                (getRankingUseCase.execute(League.L1) + getRankingUseCase.execute(League.L2))
+                (getRankingUseCase.getByLeague(League.L1) + getRankingUseCase.getByLeague(League.L2))
                     .sortedBy { it.rank }
                     .map { it.toRankingUiInfo() }
 

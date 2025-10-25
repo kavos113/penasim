@@ -6,7 +6,7 @@ import com.example.penasim.domain.repository.GameResultRepository
 import com.example.penasim.domain.repository.TeamRepository
 import com.example.penasim.testing.MainDispatcherRule
 import com.example.penasim.usecase.GetGameInfoAllUseCase
-import com.example.penasim.usecase.GetRankingUseCase
+import com.example.penasim.usecase.RankingUseCase
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -58,7 +58,7 @@ class HomeViewModelTest {
             GameResult(fixtureId = fixtures[0].id, homeScore = 3, awayScore = 2)
         )
 
-        val rankingUseCase = GetRankingUseCase(
+        val rankingUseCase = RankingUseCase(
             teamRepository = FakeTeamRepository(listOf(myTeam, other)),
             gameFixtureRepository = FakeGameFixtureRepository(fixtures),
             gameResultRepository = FakeGameResultRepository(infos)

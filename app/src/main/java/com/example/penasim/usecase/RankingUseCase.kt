@@ -7,12 +7,12 @@ import com.example.penasim.domain.TeamStanding
 import com.example.penasim.domain.repository.GameFixtureRepository
 import javax.inject.Inject
 
-class GetRankingUseCase @Inject constructor(
+class RankingUseCase @Inject constructor(
     private val teamRepository: TeamRepository,
     private val gameFixtureRepository: GameFixtureRepository,
     private val gameResultRepository: GameResultRepository,
 ) {
-    suspend fun execute(league: League): List<TeamStanding> {
+    suspend fun getByLeague(league: League): List<TeamStanding> {
         val teams = teamRepository.getTeamsByLeague(league)
         val standings = mutableListOf<TeamStanding>()
 
@@ -87,5 +87,9 @@ class GetRankingUseCase @Inject constructor(
         }
 
         return standings
+    }
+
+    suspend fun getAll(): List<TeamStanding> = League.entries.flatMap { league ->
+        getByLeague(league).sortedBy { it.rank}
     }
 }

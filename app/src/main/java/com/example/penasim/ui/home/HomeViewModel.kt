@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.penasim.domain.League
 import com.example.penasim.usecase.GameScheduleUseCase
-import com.example.penasim.usecase.GetRankingUseCase
+import com.example.penasim.usecase.RankingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getRankingUseCase: GetRankingUseCase,
+    private val getRankingUseCase: RankingUseCase,
     private val gameScheduleUseCase: GameScheduleUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -39,7 +39,7 @@ class HomeViewModel @Inject constructor(
 
     fun update() {
         viewModelScope.launch {
-            val rankings = (getRankingUseCase.execute(League.L1) + getRankingUseCase.execute(League.L2))
+            val rankings = (getRankingUseCase.getByLeague(League.L1) + getRankingUseCase.getByLeague(League.L2))
             val rank = rankings.find { it.team.id == _uiState.value.teamId }?.rank ?: 0
 
             val schedules = gameScheduleUseCase.getByDate(_uiState.value.currentDay)

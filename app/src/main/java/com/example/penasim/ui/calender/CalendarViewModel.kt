@@ -11,7 +11,7 @@ import com.example.penasim.ui.common.toGameUiInfoWithResult
 import com.example.penasim.ui.common.toRankingUiInfo
 import com.example.penasim.usecase.GameInfoUseCase
 import com.example.penasim.usecase.GameScheduleUseCase
-import com.example.penasim.usecase.GetRankingUseCase
+import com.example.penasim.usecase.RankingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,7 +25,7 @@ import javax.inject.Inject
 class CalendarViewModel @Inject constructor(
     private val gameScheduleUseCase: GameScheduleUseCase,
     private val gameInfoUseCase: GameInfoUseCase,
-    private val getRankingUseCase: GetRankingUseCase,
+    private val getRankingUseCase: RankingUseCase,
     private val executeGamesByDate: ExecuteGamesByDate
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(CalendarUiState())
@@ -56,7 +56,7 @@ class CalendarViewModel @Inject constructor(
                         } ?: emptyList()
                     }
 
-            val rankings = (getRankingUseCase.execute(League.L1) + getRankingUseCase.execute(League.L2))
+            val rankings = (getRankingUseCase.getByLeague(League.L1) + getRankingUseCase.getByLeague(League.L2))
                 .sortedBy { it.rank }
                 .map { it.toRankingUiInfo() }
 
@@ -90,7 +90,7 @@ class CalendarViewModel @Inject constructor(
                 val newGames = currentState.games.toMutableMap()
                 newGames[currentDate] = recentGames.map { it.toGameUiInfo() }
 
-                val rankings = (getRankingUseCase.execute(League.L1) + getRankingUseCase.execute(League.L2))
+                val rankings = (getRankingUseCase.getByLeague(League.L1) + getRankingUseCase.getByLeague(League.L2))
                     .sortedBy { it.rank }
                     .map { it.toRankingUiInfo() }
 
@@ -101,7 +101,7 @@ class CalendarViewModel @Inject constructor(
             }
 
             println("[CalendarViewModel] Current Game: $currentDate ======================")
-            val league1Rankings = getRankingUseCase.execute(League.L1)
+            val league1Rankings = getRankingUseCase.getByLeague(League.L1)
             league1Rankings.forEach {
                 println("[CalendarViewModel] L1 Ranking - Rank: ${it.rank}, Team: ${it.team.name}, Wins: ${it.wins}, Losses: ${it.losses}, GB: ${"%.1f".format(it.gameBack)}")
             }
