@@ -92,7 +92,10 @@ fun PenasimNavHost(
             )
         }
         composable(route = CalenderDestination.route) {
-            CalendarScreen(currentDay = globalState.value.currentDay)
+            CalendarScreen(
+                currentDay = globalState.value.currentDay,
+                onNextGame = { globalViewModel.nextDay() }
+            )
         }
         composable(route = CommandDestination.route) {
             CommandScreen(teamId = globalState.value.teamId)

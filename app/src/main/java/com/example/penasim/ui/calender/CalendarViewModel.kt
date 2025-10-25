@@ -97,11 +97,10 @@ class CalendarViewModel @Inject constructor(
                 currentState.copy(
                     games = newGames,
                     rankings = rankings,
-                    currentDay = currentDate.plusDays(1)
                 )
             }
 
-            println("[CalendarViewModel] Current Game: ${currentDate.plusDays(-1)} ======================")
+            println("[CalendarViewModel] Current Game: $currentDate ======================")
             val league1Rankings = getRankingUseCase.execute(League.L1)
             league1Rankings.forEach {
                 println("[CalendarViewModel] L1 Ranking - Rank: ${it.rank}, Team: ${it.team.name}, Wins: ${it.wins}, Losses: ${it.losses}, GB: ${"%.1f".format(it.gameBack)}")

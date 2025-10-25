@@ -14,7 +14,6 @@ import com.example.penasim.ui.common.DisplayFielder
 import com.example.penasim.ui.common.toGameUiInfo
 import com.example.penasim.ui.common.toRankingUiInfo
 import com.example.penasim.usecase.GetFielderAppointmentByTeamUseCase
-import com.example.penasim.usecase.GetGameInfoAllUseCase
 import com.example.penasim.usecase.GetGameSchedulesByDateUseCase
 import com.example.penasim.usecase.GetHomeRunUseCase
 import com.example.penasim.usecase.GetInningScoreUseCase

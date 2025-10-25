@@ -44,6 +44,7 @@ object CalenderDestination : NavigationDestination {
 fun CalendarScreen(
     modifier: Modifier = Modifier,
     calendarViewModel: CalendarViewModel = hiltViewModel(),
+    onNextGame: () -> Unit = {},
     currentDay: LocalDate
 ) {
     val uiState by calendarViewModel.uiState.collectAsState()
@@ -54,7 +55,10 @@ fun CalendarScreen(
 
     CalendarContent(
         uiState = uiState,
-        onNextGame = { calendarViewModel.nextGame() },
+        onNextGame = {
+            calendarViewModel.nextGame()
+            onNextGame()
+         },
         modifier = modifier
     )
 }
