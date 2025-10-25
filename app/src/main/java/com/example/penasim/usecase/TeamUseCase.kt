@@ -13,7 +13,7 @@ import com.example.penasim.domain.toTotalBattingStats
 import com.example.penasim.domain.toTotalPitchingStats
 import javax.inject.Inject
 
-class GetTeamPlayersUseCase @Inject constructor(
+class TeamUseCase @Inject constructor(
     private val teamRepository: TeamRepository,
     private val playerRepository: PlayerRepository,
     private val fielderAppointmentRepository: FielderAppointmentRepository,
@@ -22,7 +22,9 @@ class GetTeamPlayersUseCase @Inject constructor(
     private val battingStatRepository: BattingStatRepository,
     private val pitchingStatRepository: PitchingStatRepository
 ) {
-    suspend fun execute(teamId: Int): TeamPlayers {
+    suspend fun getTeam(teamId: Int) = teamRepository.getTeam(teamId)
+
+    suspend fun getTeamPlayers(teamId: Int): TeamPlayers {
         val team = teamRepository.getTeam(teamId)
             ?: throw IllegalArgumentException("no team for id $teamId")
 
