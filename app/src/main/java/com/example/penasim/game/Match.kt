@@ -72,7 +72,6 @@ class Match(
     private fun Half.toStr() = if (this == Half.INNING_TOP) "表" else "裏"
 
     fun play() {
-        println("------- ${schedule.awayTeam.name} @ ${schedule.homeTeam.name} -------")
         while (inning <= MAX_INNINGS) {
             batting()
         }
@@ -95,11 +94,13 @@ class Match(
             )
         }
 
-        println("  1 2 3 4 5 6 7 8 9 | R")
-        println("${schedule.awayTeam.name} ${awayScores.joinToString(" ")} | $awayScore")
-        println("${schedule.homeTeam.name} ${homeScores.joinToString(" ")} | $homeScore")
-
-        println("Final Score: $awayScore - $homeScore")
+        println("""
+            ------- ${schedule.awayTeam.name} @ ${schedule.homeTeam.name} -------
+              1 2 3 4 5 6 7 8 9 | R
+            ${schedule.awayTeam.name} ${awayScores.joinToString(" ")} | $awayScore
+            ${schedule.homeTeam.name} ${homeScores.joinToString(" ")} | $homeScore
+            Final Score: $awayScore - $homeScore
+        """.trimIndent())
     }
 
     fun result(): GameResult = GameResult(
