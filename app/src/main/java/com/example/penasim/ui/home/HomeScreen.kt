@@ -12,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -25,6 +26,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.penasim.R
+import com.example.penasim.ui.navigation.GlobalViewModel
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.PenasimTheme
 import java.time.LocalDate
@@ -36,15 +38,23 @@ object HomeDestination : NavigationDestination {
 
 @Composable
 fun HomeScreen(
+    modifier: Modifier = Modifier,
     onGameClick: () -> Unit = {},
     onNoGameDayClick: () -> Unit = {},
     onCalenderClick: () -> Unit = {},
     onCommandClick: () -> Unit = {},
-    modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = hiltViewModel(),
+    teamId: Int,
+    currentDay: LocalDate,
     lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
+
+    LaunchedEffect(teamId, currentDay) {
+        homeViewModel.setTeamId(teamId)
+        homeViewModel.setCurrentDay(currentDay)
+        homeViewModel.update()
+    }
 
     DisposableEffect(lifeCycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -154,7 +164,8 @@ fun HomeScreenPreview() {
             HomeScreen(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(16.dp),
+                globalViewModel = GlobalViewModel()
             )
         }
     }

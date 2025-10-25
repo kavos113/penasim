@@ -45,6 +45,8 @@ fun PenasimNavHost(
                 onCalenderClick = { navController.navigate(CalenderDestination.route) },
                 onCommandClick = { navController.navigate(CommandDestination.route) },
                 modifier = Modifier.fillMaxSize(),
+                teamId = globalState.value.teamId,
+                currentDay = globalState.value.currentDay
             )
         }
         navigation(
@@ -80,14 +82,14 @@ fun PenasimNavHost(
                 gameViewModel = hiltViewModel(),
                 navFinishGame = { navController.navigate(HomeDestination.route) },
                 modifier = Modifier.fillMaxSize(),
-                currentDate = globalState.value.currentDay
+                currentDay = globalState.value.currentDay
             )
         }
         composable(route = CalenderDestination.route) {
-            CalendarScreen()
+            CalendarScreen(currentDay = globalState.value.currentDay)
         }
         composable(route = CommandDestination.route) {
-            CommandScreen()
+            CommandScreen(teamId = globalState.value.teamId)
         }
     }
 }

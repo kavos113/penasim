@@ -3,7 +3,6 @@ package com.example.penasim.ui.game
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -82,12 +81,12 @@ fun AfterGameScreenWithoutGameResult(
     modifier: Modifier = Modifier,
     navFinishGame: () -> Unit = { },
     gameViewModel: GameViewModel,
-    currentDate: LocalDate
+    currentDay: LocalDate
 ) {
     val uiState by gameViewModel.uiState.collectAsState()
 
-    LaunchedEffect(currentDate) {
-        gameViewModel.setDate(currentDate)
+    LaunchedEffect(currentDay) {
+        gameViewModel.setDate(currentDay)
     }
 
     BackHandler(

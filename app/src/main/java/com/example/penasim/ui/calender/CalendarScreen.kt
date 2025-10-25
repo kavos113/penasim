@@ -31,6 +31,7 @@ import com.example.penasim.ui.common.Clause
 import com.example.penasim.ui.common.Ranking
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.PenasimTheme
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 object CalenderDestination : NavigationDestination {
@@ -43,8 +44,14 @@ object CalenderDestination : NavigationDestination {
 fun CalendarScreen(
     modifier: Modifier = Modifier,
     calendarViewModel: CalendarViewModel = hiltViewModel(),
+    currentDay: LocalDate
 ) {
     val uiState by calendarViewModel.uiState.collectAsState()
+
+    LaunchedEffect(currentDay) {
+        calendarViewModel.setCurrentDay(currentDay)
+    }
+
     CalendarContent(
         uiState = uiState,
         onNextGame = { calendarViewModel.nextGame() },

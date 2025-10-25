@@ -11,6 +11,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -28,12 +29,17 @@ object CommandDestination : NavigationDestination {
 @Composable
 fun CommandScreen(
     modifier: Modifier = Modifier,
-    commandViewModel: CommandViewModel = hiltViewModel()
+    commandViewModel: CommandViewModel = hiltViewModel(),
+    teamId: Int
 ) {
     val tabs = listOf(R.string.fielder, R.string.pitcher)
 
     val selectedTabIndex = rememberPagerState { tabs.size }
     val tabScope = rememberCoroutineScope()
+
+    LaunchedEffect(teamId) {
+        commandViewModel.setTeamId(teamId)
+    }
 
     Scaffold(
         topBar = {
