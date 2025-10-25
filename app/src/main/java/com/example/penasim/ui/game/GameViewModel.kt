@@ -87,6 +87,7 @@ class GameViewModel @Inject constructor(
                             ?: Position.OUTFIELDER.color()
                     )
                 }
+                .sortedBy { it.number }
 
             val awayStartingPlayers = awayFielderAppointment
                 .filter { it.orderType == OrderType.NORMAL && it.position.isStarting() }
