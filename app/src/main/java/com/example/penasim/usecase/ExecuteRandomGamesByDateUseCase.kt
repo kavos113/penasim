@@ -1,6 +1,7 @@
 package com.example.penasim.usecase
 
 import com.example.penasim.domain.GameInfo
+import com.example.penasim.domain.TransactionProvider
 import com.example.penasim.domain.repository.GameFixtureRepository
 import com.example.penasim.domain.repository.GameResultRepository
 import com.example.penasim.domain.repository.TeamRepository
@@ -11,17 +12,23 @@ import javax.inject.Inject
 class ExecuteRandomGamesByDateUseCase @Inject constructor(
     private val gameResultRepository: GameResultRepository,
     private val gameFixtureRepository: GameFixtureRepository,
-    private val teamRepository: TeamRepository
+    private val teamRepository: TeamRepository,
+    private val transactionProvider: TransactionProvider
 ) {
     suspend fun execute(date: LocalDate): List<GameInfo> {
         val fixtures = gameFixtureRepository.getGameFixturesByDate(date)
-        val results = fixtures.mapNotNull { fixture ->
-            gameResultRepository.createGame(
-                fixtureId = fixture.id,
-                homeScore = (0..10).random(),
-                awayScore = (0..10).random()
-            )
+
+        transactionProvider.runInTransaction {
+            fixtures.forEach { fixture ->
+                gameResultRepository.createGame(
+                    fixtureId = fixture.id,
+                    homeScore = (0..10).random(),
+                    awayScore = (0..10).random()
+                )
+            }
         }
+
+        val results = gameResultRepository.getGamesByFixtureIds(fixtures.map { it.id })
 
         return fixtures.map { fixture ->
             val homeTeam = teamRepository.getTeam(fixture.homeTeamId)

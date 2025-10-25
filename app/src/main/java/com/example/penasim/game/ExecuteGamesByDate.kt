@@ -1,6 +1,7 @@
 package com.example.penasim.game
 
 import com.example.penasim.domain.GameInfo
+import com.example.penasim.domain.TransactionProvider
 import com.example.penasim.usecase.ExecuteGameUseCase
 import com.example.penasim.usecase.GetGameSchedulesByDateUseCase
 import com.example.penasim.usecase.GetTeamPlayersUseCase
@@ -22,7 +23,8 @@ class ExecuteGamesByDate @Inject constructor(
     private val insertBattingStatUseCase: InsertBattingStatUseCase,
     private val insertPitchingStatUseCase: InsertPitchingStatUseCase,
     private val insertInningScoreUseCase: InsertInningScoreUseCase,
-    private val insertHomeRunUseCase: InsertHomeRunUseCase
+    private val insertHomeRunUseCase: InsertHomeRunUseCase,
+    private val transactionProvider: TransactionProvider
 ) {
     suspend fun execute(date: LocalDate): List<GameInfo> {
         val schedules = getGameSchedulesByDateUseCase.execute(date)
@@ -39,16 +41,18 @@ class ExecuteGamesByDate @Inject constructor(
 
                     val result = match.result()
 
-                    insertInningScoreUseCase.execute(match.inningScores())
-                    insertBattingStatUseCase.execute(match.battingStats())
-                    insertPitchingStatUseCase.execute(match.pitchingStats())
-                    insertHomeRunUseCase.execute(match.homeRuns())
+                    transactionProvider.runInTransaction {
+                        insertInningScoreUseCase.execute(match.inningScores())
+                        insertBattingStatUseCase.execute(match.battingStats())
+                        insertPitchingStatUseCase.execute(match.pitchingStats())
+                        insertHomeRunUseCase.execute(match.homeRuns())
 
-                    executeGameUseCase.execute(
-                        fixtureId = result.fixtureId,
-                        homeScore = result.homeScore,
-                        awayScore = result.awayScore
-                    )
+                        executeGameUseCase.execute(
+                            fixtureId = result.fixtureId,
+                            homeScore = result.homeScore,
+                            awayScore = result.awayScore
+                        )
+                    }
                 }
             }
 
