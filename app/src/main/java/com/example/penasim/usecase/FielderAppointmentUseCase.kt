@@ -33,7 +33,7 @@ class FielderAppointmentUseCase @Inject constructor(
     }
 
     // Full-team appointments update with validation and diffing
-    suspend fun updateTeamAppointments(appointments: List<FielderAppointment>) {
+    suspend fun updateOnlyDiff(appointments: List<FielderAppointment>) {
         require(appointments.isNotEmpty()) { "No appointments provided" }
         require(appointments.map { it.teamId }.distinct().size == 1) { "Appointments must belong to the same team" }
         require(appointments.map { it.playerId to it.orderType }.distinct().size == appointments.size) { "Duplicate player ID & order type in appointments" }

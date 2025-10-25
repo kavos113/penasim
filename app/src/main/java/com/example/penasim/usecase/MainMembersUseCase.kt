@@ -28,7 +28,7 @@ class MainMembersUseCase @Inject constructor(
         repository.updateMainMembers(items)
     }
 
-    suspend fun updateTeamMembers(members: List<MainMember>) {
+    suspend fun updateOnlyDiff(members: List<MainMember>) {
         require(members.isNotEmpty()) { "No members provided" }
         require(members.map { it.teamId }.distinct().size == 1) { "Members must belong to the same team" }
         require(members.map { it.playerId }.distinct().size == members.size) { "Duplicate player ID in members" }

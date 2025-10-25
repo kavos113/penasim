@@ -32,7 +32,7 @@ class PitcherAppointmentUseCase @Inject constructor(
         repository.updatePitcherAppointments(items)
     }
 
-    suspend fun updateTeamAppointments(appointments: List<PitcherAppointment>) {
+    suspend fun updateOnlyDiff(appointments: List<PitcherAppointment>) {
         require(appointments.isNotEmpty()) { "No appointments provided" }
         require(appointments.map { it.teamId }.distinct().size == 1) { "Appointments must belong to the same team" }
         require(appointments.map { it.playerId }.distinct().size == appointments.size) { "Duplicate player IDs in appointments" }

@@ -51,7 +51,7 @@ class PitcherAppointmentUseCaseTest {
             app(teamId, 22, PitcherType.STARTER, 3), // new
         )
 
-        useCase.updateTeamAppointments(changed)
+        useCase.updateOnlyDiff(changed)
 
         val updated = repo.lastUpdated
         requireNotNull(updated)
@@ -64,7 +64,7 @@ class PitcherAppointmentUseCaseTest {
         val useCase = PitcherAppointmentUseCase(repo)
 
         assertFailsWith<IllegalArgumentException> {
-            useCase.updateTeamAppointments(emptyList())
+            useCase.updateOnlyDiff(emptyList())
         }
     }
 

@@ -2,13 +2,13 @@ package com.example.penasim.game
 
 import com.example.penasim.domain.GameInfo
 import com.example.penasim.domain.TransactionProvider
+import com.example.penasim.usecase.BattingStatUseCase
 import com.example.penasim.usecase.ExecuteGameUseCase
-import com.example.penasim.usecase.GetGameSchedulesByDateUseCase
-import com.example.penasim.usecase.GetTeamPlayersUseCase
-import com.example.penasim.usecase.InsertBattingStatUseCase
-import com.example.penasim.usecase.InsertHomeRunUseCase
-import com.example.penasim.usecase.InsertInningScoreUseCase
-import com.example.penasim.usecase.InsertPitchingStatUseCase
+import com.example.penasim.usecase.GameScheduleUseCase
+import com.example.penasim.usecase.HomeRunUseCase
+import com.example.penasim.usecase.InningScoreUseCase
+import com.example.penasim.usecase.PitchingStatUseCase
+import com.example.penasim.usecase.TeamUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -18,23 +18,23 @@ import javax.inject.Inject
 
 class ExecuteGamesByDate @Inject constructor(
     private val executeGameUseCase: ExecuteGameUseCase,
-    private val getTeamPlayersUseCase: GetTeamPlayersUseCase,
-    private val getGameSchedulesByDateUseCase: GetGameSchedulesByDateUseCase,
-    private val insertBattingStatUseCase: InsertBattingStatUseCase,
-    private val insertPitchingStatUseCase: InsertPitchingStatUseCase,
-    private val insertInningScoreUseCase: InsertInningScoreUseCase,
-    private val insertHomeRunUseCase: InsertHomeRunUseCase,
+    private val teamUseCase: TeamUseCase,
+    private val gameScheduleUseCase: GameScheduleUseCase,
+    private val battingStatUseCase: BattingStatUseCase,
+    private val pitchingStatUseCase: PitchingStatUseCase,
+    private val inningScoreUseCase: InningScoreUseCase,
+    private val homeRunUseCase: HomeRunUseCase,
     private val transactionProvider: TransactionProvider
 ) {
     suspend fun execute(date: LocalDate): List<GameInfo> {
-        val schedules = getGameSchedulesByDateUseCase.execute(date)
+        val schedules = gameScheduleUseCase.getByDate(date)
         println("Executing games for date: $date, total schedules: ${schedules.size}")
 
         return supervisorScope {
             val deferredResults = schedules.map { schedule ->
                 async(Dispatchers.Default) {
-                    val homeTeamPlayers = getTeamPlayersUseCase.execute(schedule.homeTeam.id)
-                    val awayTeamPlayers = getTeamPlayersUseCase.execute(schedule.awayTeam.id)
+                    val homeTeamPlayers = teamUseCase.getTeamPlayers(schedule.homeTeam.id)
+                    val awayTeamPlayers = teamUseCase.getTeamPlayers(schedule.awayTeam.id)
 
                     val match = Match(schedule, homeTeamPlayers, awayTeamPlayers)
                     match.play()
@@ -42,10 +42,10 @@ class ExecuteGamesByDate @Inject constructor(
                     val result = match.result()
 
                     transactionProvider.runInTransaction {
-                        insertInningScoreUseCase.execute(match.inningScores())
-                        insertBattingStatUseCase.execute(match.battingStats())
-                        insertPitchingStatUseCase.execute(match.pitchingStats())
-                        insertHomeRunUseCase.execute(match.homeRuns())
+                        inningScoreUseCase.insertAll(match.inningScores())
+                        battingStatUseCase.insertAll(match.battingStats())
+                        pitchingStatUseCase.insertAll(match.pitchingStats())
+                        homeRunUseCase.insert(match.homeRuns())
 
                         executeGameUseCase.execute(
                             fixtureId = result.fixtureId,

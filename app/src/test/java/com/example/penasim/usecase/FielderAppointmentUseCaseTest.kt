@@ -52,7 +52,7 @@ class FielderAppointmentUseCaseTest {
             current[1].copy(position = Position.SECOND_BASEMAN), // changed
         )
 
-        useCase.updateTeamAppointments(changed)
+        useCase.updateOnlyDiff(changed)
 
         // only one changed entry should be updated
         val updated = repository.lastUpdated
@@ -68,7 +68,7 @@ class FielderAppointmentUseCaseTest {
         val useCase = FielderAppointmentUseCase(repository)
 
         assertFailsWith<IllegalArgumentException> {
-            useCase.updateTeamAppointments(emptyList())
+            useCase.updateOnlyDiff(emptyList())
         }
     }
 

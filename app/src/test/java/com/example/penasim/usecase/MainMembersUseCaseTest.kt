@@ -50,7 +50,7 @@ class MainMembersUseCaseTest {
             mm(teamId, 32, MemberType.SUB, true), // new
         )
 
-        useCase.updateTeamMembers(changed)
+        useCase.updateOnlyDiff(changed)
 
         val updated = repo.lastUpdated
         requireNotNull(updated)
@@ -63,7 +63,7 @@ class MainMembersUseCaseTest {
         val useCase = MainMembersUseCase(repo)
 
         assertFailsWith<IllegalArgumentException> {
-            useCase.updateTeamMembers(emptyList())
+            useCase.updateOnlyDiff(emptyList())
         }
     }
 

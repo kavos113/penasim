@@ -13,12 +13,12 @@ import com.example.penasim.ui.command.color
 import com.example.penasim.ui.common.DisplayFielder
 import com.example.penasim.ui.common.toGameUiInfo
 import com.example.penasim.ui.common.toRankingUiInfo
+import com.example.penasim.usecase.FielderAppointmentUseCase
 import com.example.penasim.usecase.GameScheduleUseCase
-import com.example.penasim.usecase.GetFielderAppointmentByTeamUseCase
-import com.example.penasim.usecase.GetHomeRunUseCase
-import com.example.penasim.usecase.GetInningScoreUseCase
-import com.example.penasim.usecase.GetPitchingStatUseCase
-import com.example.penasim.usecase.GetPlayerInfosByTeamUseCase
+import com.example.penasim.usecase.HomeRunUseCase
+import com.example.penasim.usecase.InningScoreUseCase
+import com.example.penasim.usecase.PitchingStatUseCase
+import com.example.penasim.usecase.PlayerInfoUseCase
 import com.example.penasim.usecase.RankingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,13 +32,13 @@ import javax.inject.Inject
 @HiltViewModel
 class GameViewModel @Inject constructor(
     private val executeGamesByDate: ExecuteGamesByDate,
-    private val getInningScoreUseCase: GetInningScoreUseCase,
-    private val getPitchingStatUseCase: GetPitchingStatUseCase,
+    private val inningScoreUseCase: InningScoreUseCase,
+    private val pitchingScoreUseCase: PitchingStatUseCase,
+    private val fielderAppointmentUseCase: FielderAppointmentUseCase,
     private val getRankingUseCase: RankingUseCase,
     private val gameScheduleUseCase: GameScheduleUseCase,
-    private val getFielderAppointmentByTeamUseCase: GetFielderAppointmentByTeamUseCase,
-    private val getPlayerInfosByTeamUseCase: GetPlayerInfosByTeamUseCase,
-    private val getHomeRunUseCase: GetHomeRunUseCase
+    private val playerInfoUseCase: PlayerInfoUseCase,
+    private val homeRunUseCase: HomeRunUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
@@ -68,13 +68,11 @@ class GameViewModel @Inject constructor(
                 schedule = s
             }
 
-            val homeFielderAppointment =
-                getFielderAppointmentByTeamUseCase.execute(schedule.homeTeam)
-            val awayFielderAppointment =
-                getFielderAppointmentByTeamUseCase.execute(schedule.awayTeam)
+            val homeFielderAppointment = fielderAppointmentUseCase.getByTeam(schedule.homeTeam)
+            val awayFielderAppointment = fielderAppointmentUseCase.getByTeam(schedule.awayTeam)
 
-            val homePlayers = getPlayerInfosByTeamUseCase.execute(schedule.homeTeam.id)
-            val awayPlayers = getPlayerInfosByTeamUseCase.execute(schedule.awayTeam.id)
+            val homePlayers = playerInfoUseCase.getByTeamId(schedule.homeTeam.id)
+            val awayPlayers = playerInfoUseCase.getByTeamId(schedule.awayTeam.id)
 
             val homeStartingPlayers = homeFielderAppointment
                 .filter { it.orderType == OrderType.NORMAL && it.position.isStarting() }
@@ -146,8 +144,8 @@ class GameViewModel @Inject constructor(
     fun startGame() {
         viewModelScope.launch {
             val recentGames = executeGamesByDate.execute(uiState.value.date)
-            val inningScores = getInningScoreUseCase.executeByFixtureId(schedule.fixture.id)
-            val pitchingStats = getPitchingStatUseCase.executeByFixtureId(schedule.fixture.id)
+            val inningScores = inningScoreUseCase.getByFixtureId(schedule.fixture.id)
+            val pitchingStats = pitchingScoreUseCase.getByFixtureId(schedule.fixture.id)
             val ranking =
                 (getRankingUseCase.getByLeague(League.L1) + getRankingUseCase.getByLeague(League.L2))
                     .sortedBy { it.rank }
@@ -164,7 +162,7 @@ class GameViewModel @Inject constructor(
                 it.toPitcherResult(uiState.value.awayPlayers.find { p -> p.player.id == it.playerId }!!)
             }
 
-            val homeRuns = getHomeRunUseCase.execute(schedule.fixture.id)
+            val homeRuns = homeRunUseCase.getByFixtureId(schedule.fixture.id)
             val homeFielderResults = homeRuns
                 .filter { uiState.value.homePlayers.any { p -> p.player.id == it.playerId } }
                 .groupBy { it.playerId }
@@ -190,8 +188,8 @@ class GameViewModel @Inject constructor(
 
             _uiState.update { currentState ->
                 currentState.copy(
-                    homePlayers = getPlayerInfosByTeamUseCase.execute(schedule.homeTeam.id),
-                    awayPlayers = getPlayerInfosByTeamUseCase.execute(schedule.awayTeam.id),
+                    homePlayers = playerInfoUseCase.getByTeamId(schedule.homeTeam.id),
+                    awayPlayers = playerInfoUseCase.getByTeamId(schedule.awayTeam.id),
                     afterGameInfo = AfterGameInfo(
                         homeScores = inningScores.filter { it.teamId == schedule.homeTeam.id },
                         awayScores = inningScores.filter { it.teamId == schedule.awayTeam.id },

@@ -7,14 +7,11 @@ import com.example.penasim.domain.MemberType
 import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.PitcherType
 import com.example.penasim.domain.Position
-import com.example.penasim.usecase.GetFielderAppointmentByTeamUseCase
-import com.example.penasim.usecase.GetMainMembersByTeamUseCase
-import com.example.penasim.usecase.GetPitcherAppointmentByTeamUseCase
-import com.example.penasim.usecase.GetPlayerInfosByTeamUseCase
-import com.example.penasim.usecase.GetTeamUseCase
-import com.example.penasim.usecase.UpdateFielderAppointmentsUseCase
-import com.example.penasim.usecase.UpdateMainMembersUseCase
-import com.example.penasim.usecase.UpdatePitcherAppointmentsUseCase
+import com.example.penasim.usecase.FielderAppointmentUseCase
+import com.example.penasim.usecase.MainMembersUseCase
+import com.example.penasim.usecase.PitcherAppointmentUseCase
+import com.example.penasim.usecase.PlayerInfoUseCase
+import com.example.penasim.usecase.TeamUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,28 +23,24 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CommandViewModel @Inject constructor(
-    private val getTeamUseCase: GetTeamUseCase,
-    private val getPlayerInfosByTeamUseCase: GetPlayerInfosByTeamUseCase,
-    private val getFielderAppointmentByTeamUseCase: GetFielderAppointmentByTeamUseCase,
-    private val getPitcherAppointmentByTeamUseCase: GetPitcherAppointmentByTeamUseCase,
-    private val updateFielderAppointmentsUseCase: UpdateFielderAppointmentsUseCase,
-    private val updatePitcherAppointmentsUseCase: UpdatePitcherAppointmentsUseCase,
-    private val getMainMembersByTeamUseCase: GetMainMembersByTeamUseCase,
-    private val updateMainMembersUseCase: UpdateMainMembersUseCase
+    private val teamUseCase: TeamUseCase,
+    private val playerInfoUseCase: PlayerInfoUseCase,
+    private val fielderAppointmentUseCase: FielderAppointmentUseCase,
+    private val pitcherAppointmentUseCase: PitcherAppointmentUseCase,
+    private val mainMembersUseCase: MainMembersUseCase
 ): ViewModel() {
     private val _uiState = MutableStateFlow(CommandUiState())
     val uiState: StateFlow<CommandUiState> = _uiState.asStateFlow()
 
     fun setTeamId(teamId: Int) {
         viewModelScope.launch {
-            val team = getTeamUseCase.execute(teamId) ?: return@launch
+            val team = teamUseCase.getTeam(teamId) ?: return@launch
 
-            val players = getPlayerInfosByTeamUseCase.execute(team.id)
+            val players = playerInfoUseCase.getByTeamId(team.id)
 
-            val fielderAppointments = getFielderAppointmentByTeamUseCase.execute(team)
-            val pitcherAppointments = getPitcherAppointmentByTeamUseCase.execute(team)
-
-            val mainMembers = getMainMembersByTeamUseCase.execute(team.id)
+            val fielderAppointments = fielderAppointmentUseCase.getByTeam(team)
+            val pitcherAppointments = pitcherAppointmentUseCase.getByTeam(team)
+            val mainMembers = mainMembersUseCase.getByTeamId(team.id)
 
             _uiState.update { currentState ->
                 currentState.copy(
@@ -66,14 +59,13 @@ class CommandViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val team = getTeamUseCase.execute(TEAM_ID) ?: return@launch
+            val team = teamUseCase.getTeam(TEAM_ID) ?: return@launch
 
-            val players = getPlayerInfosByTeamUseCase.execute(team.id)
+            val players = playerInfoUseCase.getByTeamId(team.id)
 
-            val fielderAppointments = getFielderAppointmentByTeamUseCase.execute(team)
-            val pitcherAppointments = getPitcherAppointmentByTeamUseCase.execute(team)
-
-            val mainMembers = getMainMembersByTeamUseCase.execute(team.id)
+            val fielderAppointments = fielderAppointmentUseCase.getByTeam(team)
+            val pitcherAppointments = pitcherAppointmentUseCase.getByTeam(team)
+            val mainMembers = mainMembersUseCase.getByTeamId(team.id)
 
             _uiState.update { currentState ->
                 currentState.copy(
@@ -145,9 +137,9 @@ class CommandViewModel @Inject constructor(
 
     fun save() {
         viewModelScope.launch(Dispatchers.IO) {
-            updateFielderAppointmentsUseCase.execute(_uiState.value.fielderAppointments)
-            updatePitcherAppointmentsUseCase.execute(_uiState.value.pitcherAppointments)
-            updateMainMembersUseCase.execute(_uiState.value.mainMembers)
+            fielderAppointmentUseCase.updateOnlyDiff(_uiState.value.fielderAppointments)
+            pitcherAppointmentUseCase.updateOnlyDiff(_uiState.value.pitcherAppointments)
+            mainMembersUseCase.updateOnlyDiff(_uiState.value.mainMembers)
         }
     }
 
