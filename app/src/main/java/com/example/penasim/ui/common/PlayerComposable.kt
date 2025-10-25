@@ -130,7 +130,7 @@ internal fun Status(
         ) {
             Text(
                 text = alphabet,
-                fontSize = 24.sp,
+                fontSize = 16.sp,
                 color = color
             )
         }
@@ -141,7 +141,7 @@ internal fun Status(
         ) {
             Text(
                 text = value.toString(),
-                fontSize = 24.sp,
+                fontSize = 16.sp,
             )
         }
     }

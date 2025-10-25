@@ -420,7 +420,7 @@ private fun FielderDetail(
             verticalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier
                 .weight(2f)
-                .padding(12.dp)
+                .padding(6.dp)
         ) {
             SimplePlayerItem(
                 displayName = playerDetail.player.firstName,
@@ -428,16 +428,16 @@ private fun FielderDetail(
             )
             Text(
                 text = playerDetail.battingStats.battingAverageString,
-                fontSize = 20.sp,
+                fontSize = 16.sp,
                 modifier = Modifier.padding(top = 8.dp)
             )
             Text(
                 text = "${playerDetail.battingStats.homeRun}本 ${playerDetail.battingStats.rbi}点",
-                fontSize = 20.sp,
+                fontSize = 16.sp,
             )
             Text(
                 text = "${playerDetail.battingStats.rbi}盗",
-                fontSize = 20.sp,
+                fontSize = 16.sp,
             )
 
             Row {
@@ -465,7 +465,7 @@ private fun FielderDetail(
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(12.dp)
+                .padding(6.dp)
         ) {
             Status(
                 value = playerDetail.player.meet,
@@ -518,13 +518,13 @@ private fun DefenseStatus(
     ) {
         Text(
             text = position.position.toShortJa(),
-            fontSize = 20.sp,
+            fontSize = 16.sp,
             modifier = Modifier
                 .padding(horizontal = 4.dp, vertical = 2.dp)
         )
         Text(
             text = position.defense.statusAlphabet(),
-            fontSize = 24.sp,
+            fontSize = 20.sp,
             color = position.defense.statusColor(),
             modifier = Modifier
                 .padding(horizontal = 4.dp, vertical = 2.dp)

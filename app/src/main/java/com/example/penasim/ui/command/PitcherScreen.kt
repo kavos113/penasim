@@ -290,7 +290,7 @@ private fun PitcherDetail(
             verticalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier
                 .weight(1f)
-                .padding(12.dp)
+                .padding(6.dp)
         ) {
             SimplePlayerItem(
                 displayName = playerDetail.player.firstName,
@@ -298,22 +298,22 @@ private fun PitcherDetail(
             )
             Text(
                 text = playerDetail.pitchingStats.eraStr,
-                fontSize = 20.sp,
+                fontSize = 16.sp,
                 modifier = Modifier.padding(top = 8.dp)
             )
             Text(
                 text = "${playerDetail.pitchingStats.wins}勝${playerDetail.pitchingStats.losses}敗",
-                fontSize = 20.sp,
+                fontSize = 16.sp,
             )
         }
         Column(
             modifier = Modifier
                 .weight(1f)
-                .padding(12.dp)
+                .padding(6.dp)
         ) {
             Text(
                 text = "${playerDetail.player.ballSpeed}km/h",
-                fontSize = 24.sp,
+                fontSize = 16.sp,
                 modifier = Modifier.fillMaxWidth()
             )
             Status(
