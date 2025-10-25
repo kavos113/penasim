@@ -58,7 +58,7 @@ object AfterGameWithoutGameResultDestination : NavigationDestination {
 @Composable
 fun AfterGameScreen(
     modifier: Modifier = Modifier,
-    navFinishGame: () -> Unit = { },
+    onClickFinish: () -> Unit = { },
     gameViewModel: GameViewModel,
 ) {
     val uiState by gameViewModel.uiState.collectAsState()
@@ -72,14 +72,14 @@ fun AfterGameScreen(
         date = uiState.date,
         afterGameInfo = uiState.afterGameInfo,
         modifier = modifier,
-        onClickFinish = navFinishGame
+        onClickFinish = onClickFinish
     )
 }
 
 @Composable
 fun AfterGameScreenWithoutGameResult(
     modifier: Modifier = Modifier,
-    navFinishGame: () -> Unit = { },
+    onClickFinish: () -> Unit = { },
     gameViewModel: GameViewModel,
     currentDay: LocalDate
 ) {
@@ -98,7 +98,7 @@ fun AfterGameScreenWithoutGameResult(
         date = uiState.date,
         afterGameInfo = uiState.afterGameInfo,
         modifier = modifier,
-        onClickFinish = navFinishGame
+        onClickFinish = onClickFinish
     )
 }
 

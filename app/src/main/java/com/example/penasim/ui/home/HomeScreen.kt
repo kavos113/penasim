@@ -165,7 +165,8 @@ fun HomeScreenPreview() {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
-                globalViewModel = GlobalViewModel()
+                teamId = 1,
+                currentDay = LocalDate.now()
             )
         }
     }

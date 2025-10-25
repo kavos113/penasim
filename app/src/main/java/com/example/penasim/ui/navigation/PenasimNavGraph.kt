@@ -62,7 +62,7 @@ fun PenasimNavHost(
                     gameViewModel = gameViewModel,
                     navToAfterGame = { navController.navigate(route = AfterGameDestination.route) },
                     modifier = Modifier.fillMaxSize(),
-                    currentDate = globalState.value.currentDay
+                    currentDay = globalState.value.currentDay
                 )
             }
             composable(route = AfterGameDestination.route) {
@@ -72,7 +72,10 @@ fun PenasimNavHost(
                 val gameViewModel: GameViewModel = hiltViewModel(parentEntity)
                 AfterGameScreen(
                     gameViewModel = gameViewModel,
-                    navFinishGame = { navController.navigate(HomeDestination.route) },
+                    onClickFinish = {
+                        navController.navigate(HomeDestination.route)
+                        globalViewModel.nextDay()
+                    },
                     modifier = Modifier.fillMaxSize()
                 )
             }
@@ -80,7 +83,10 @@ fun PenasimNavHost(
         composable(route = AfterGameWithoutGameResultDestination.route) {
             AfterGameScreenWithoutGameResult(
                 gameViewModel = hiltViewModel(),
-                navFinishGame = { navController.navigate(HomeDestination.route) },
+                onClickFinish = {
+                    navController.navigate(HomeDestination.route)
+                    globalViewModel.nextDay()
+                },
                 modifier = Modifier.fillMaxSize(),
                 currentDay = globalState.value.currentDay
             )

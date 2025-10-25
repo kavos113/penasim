@@ -47,12 +47,12 @@ fun BeforeGameScreen(
     modifier: Modifier = Modifier,
     navToAfterGame: () -> Unit = {},
     gameViewModel: GameViewModel,
-    currentDate: LocalDate
+    currentDay: LocalDate
 ) {
     val uiState by gameViewModel.uiState.collectAsState()
 
-    LaunchedEffect(currentDate) {
-        gameViewModel.setDate(currentDate)
+    LaunchedEffect(currentDay) {
+        gameViewModel.setDate(currentDay)
     }
 
     Column(

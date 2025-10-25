@@ -14,6 +14,7 @@ class GlobalViewModel @Inject constructor(): ViewModel() {
     val state: StateFlow<GlobalState> = _state.asStateFlow()
 
     fun nextDay() {
+        println("Next Day Called: ${_state.value.currentDay}")
         _state.update { currentState ->
             currentState.copy(
                 currentDay = currentState.currentDay.plusDays(1)
