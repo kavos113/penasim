@@ -13,8 +13,8 @@ import com.example.penasim.ui.command.color
 import com.example.penasim.ui.common.DisplayFielder
 import com.example.penasim.ui.common.toGameUiInfo
 import com.example.penasim.ui.common.toRankingUiInfo
+import com.example.penasim.usecase.GameScheduleUseCase
 import com.example.penasim.usecase.GetFielderAppointmentByTeamUseCase
-import com.example.penasim.usecase.GetGameSchedulesByDateUseCase
 import com.example.penasim.usecase.GetHomeRunUseCase
 import com.example.penasim.usecase.GetInningScoreUseCase
 import com.example.penasim.usecase.GetPitchingStatUseCase
@@ -35,7 +35,7 @@ class GameViewModel @Inject constructor(
     private val getInningScoreUseCase: GetInningScoreUseCase,
     private val getPitchingStatUseCase: GetPitchingStatUseCase,
     private val getRankingUseCase: GetRankingUseCase,
-    private val getGameSchedulesByDateUseCase: GetGameSchedulesByDateUseCase,
+    private val gameScheduleUseCase: GameScheduleUseCase,
     private val getFielderAppointmentByTeamUseCase: GetFielderAppointmentByTeamUseCase,
     private val getPlayerInfosByTeamUseCase: GetPlayerInfosByTeamUseCase,
     private val getHomeRunUseCase: GetHomeRunUseCase
@@ -57,7 +57,7 @@ class GameViewModel @Inject constructor(
                 (getRankingUseCase.execute(League.L1) + getRankingUseCase.execute(League.L2))
                     .sortedBy { it.rank }
 
-            val schedules = getGameSchedulesByDateUseCase.execute(uiState.value.date)
+            val schedules = gameScheduleUseCase.getByDate(uiState.value.date)
             val s = schedules.find {
                 it.homeTeam.id == Constants.TEAM_ID || it.awayTeam.id == Constants.TEAM_ID
             }
