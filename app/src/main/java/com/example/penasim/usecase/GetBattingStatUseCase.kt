@@ -1,21 +1,20 @@
 package com.example.penasim.usecase
 
 import com.example.penasim.domain.BattingStat
-import com.example.penasim.domain.repository.BattingStatRepository
 import javax.inject.Inject
 
 class GetBattingStatUseCase @Inject constructor(
-    private val battingStatRepository: BattingStatRepository
+    private val battingStatUseCase: BattingStatUseCase
 ) {
     suspend fun executeByFixtureId(fixtureId: Int): List<BattingStat> =
-        battingStatRepository.getByFixtureId(fixtureId)
+        battingStatUseCase.getByFixtureId(fixtureId)
 
     suspend fun executeByFixtureIds(fixtureIds: List<Int>): List<BattingStat> =
-        battingStatRepository.getByFixtureIds(fixtureIds)
+        battingStatUseCase.getByFixtureIds(fixtureIds)
 
     suspend fun executeByPlayerId(playerId: Int): List<BattingStat> =
-        battingStatRepository.getByPlayerId(playerId)
+        battingStatUseCase.getByPlayerId(playerId)
 
     suspend fun executeByPlayerIds(playerIds: List<Int>): List<BattingStat> =
-        battingStatRepository.getByPlayerIds(playerIds)
+        battingStatUseCase.getByPlayerIds(playerIds)
 }
