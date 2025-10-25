@@ -3,7 +3,7 @@ package com.example.penasim.ui.navigation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.penasim.const.Constants
-import com.example.penasim.usecase.GetGameInfoAllUseCase
+import com.example.penasim.usecase.GameInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,14 +14,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GlobalViewModel @Inject constructor(
-    private val getGameInfoAllUseCase: GetGameInfoAllUseCase
+    private val gameInfoUseCase: GameInfoUseCase
 ): ViewModel() {
     private val _state = MutableStateFlow(GlobalState())
     val state: StateFlow<GlobalState> = _state.asStateFlow()
 
     init {
         viewModelScope.launch {
-            val gameInfos = getGameInfoAllUseCase.execute()
+            val gameInfos = gameInfoUseCase.getAll()
             val currentDay = gameInfos.maxOfOrNull { it.fixture.date }?.plusDays(1)
                 ?: Constants.START
 

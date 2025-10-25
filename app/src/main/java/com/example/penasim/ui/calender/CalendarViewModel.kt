@@ -9,7 +9,7 @@ import com.example.penasim.ui.common.GameUiInfo
 import com.example.penasim.ui.common.toGameUiInfo
 import com.example.penasim.ui.common.toGameUiInfoWithResult
 import com.example.penasim.ui.common.toRankingUiInfo
-import com.example.penasim.usecase.GetGameInfoAllUseCase
+import com.example.penasim.usecase.GameInfoUseCase
 import com.example.penasim.usecase.GetGameSchedulesAllUseCase
 import com.example.penasim.usecase.GetRankingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
     private val getGameSchedulesAllUseCase: GetGameSchedulesAllUseCase,
-    private val getGameInfoAllUseCase: GetGameInfoAllUseCase,
+    private val gameInfoUseCase: GameInfoUseCase,
     private val getRankingUseCase: GetRankingUseCase,
     private val executeGamesByDate: ExecuteGamesByDate
 ) : ViewModel() {
@@ -40,7 +40,7 @@ class CalendarViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val gameSchedules = getGameSchedulesAllUseCase.execute()
-            val gameInfos = getGameInfoAllUseCase.execute()
+            val gameInfos = gameInfoUseCase.getAll()
             val map = gameSchedules.groupBy { it.fixture.date }
             val clauses: Map<LocalDate, List<GameUiInfo>>
                 = generateSequence(Constants.START) { it.plusDays(1) }
