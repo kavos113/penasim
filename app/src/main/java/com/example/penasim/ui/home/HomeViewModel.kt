@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,6 +22,18 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+
+    fun setCurrentDay(day: LocalDate) {
+        _uiState.value = _uiState.value.copy(
+            currentDay = day
+        )
+    }
+
+    fun setTeamId(teamId: Int) {
+        _uiState.value = _uiState.value.copy(
+            teamId = teamId
+        )
+    }
 
     init {
         update()

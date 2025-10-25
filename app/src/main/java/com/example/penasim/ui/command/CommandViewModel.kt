@@ -38,6 +38,32 @@ class CommandViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(CommandUiState())
     val uiState: StateFlow<CommandUiState> = _uiState.asStateFlow()
 
+    fun setTeamId(teamId: Int) {
+        viewModelScope.launch {
+            val team = getTeamUseCase.execute(teamId) ?: return@launch
+
+            val players = getPlayerInfosByTeamUseCase.execute(team.id)
+
+            val fielderAppointments = getFielderAppointmentByTeamUseCase.execute(team)
+            val pitcherAppointments = getPitcherAppointmentByTeamUseCase.execute(team)
+
+            val mainMembers = getMainMembersByTeamUseCase.execute(team.id)
+
+            _uiState.update { currentState ->
+                currentState.copy(
+                    team = team,
+                    players = players,
+                    fielderAppointments = fielderAppointments,
+                    pitcherAppointments = pitcherAppointments,
+                    mainMembers = mainMembers,
+                    mainViewSelectedFielderId = null,
+                    selectedFielder = OrderType.entries.associateWith { null },
+                    selectedPitcherId = null
+                )
+            }
+        }
+    }
+
     init {
         viewModelScope.launch {
             val team = getTeamUseCase.execute(TEAM_ID) ?: return@launch

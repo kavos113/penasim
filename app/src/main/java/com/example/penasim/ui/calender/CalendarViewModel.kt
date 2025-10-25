@@ -31,7 +31,11 @@ class CalendarViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(CalendarUiState())
     val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
 
-    private var currentDate = Constants.START
+    fun setCurrentDay(day: LocalDate) {
+        _uiState.value = _uiState.value.copy(
+            currentDay = day
+        )
+    }
 
     init {
         viewModelScope.launch {
@@ -60,7 +64,6 @@ class CalendarViewModel @Inject constructor(
                 ?: Constants.START
 
             println("Initial currentDay: $currentDay")
-            currentDate = currentDay
 
             _uiState.update { currentState ->
                 currentState.copy(
@@ -74,6 +77,7 @@ class CalendarViewModel @Inject constructor(
     }
 
     fun nextGame() {
+        val currentDate = _uiState.value.currentDay
         if (currentDate > Constants.END) {
             println("[CalendarViewModel] All games have been processed.")
             return
@@ -93,17 +97,15 @@ class CalendarViewModel @Inject constructor(
                 currentState.copy(
                     games = newGames,
                     rankings = rankings,
-                    currentDay = currentDate
+                    currentDay = currentDate.plusDays(1)
                 )
             }
 
-            println("[CalendarViewModel] Current Game: $currentDate ======================")
+            println("[CalendarViewModel] Current Game: ${currentDate.plusDays(-1)} ======================")
             val league1Rankings = getRankingUseCase.execute(League.L1)
             league1Rankings.forEach {
                 println("[CalendarViewModel] L1 Ranking - Rank: ${it.rank}, Team: ${it.team.name}, Wins: ${it.wins}, Losses: ${it.losses}, GB: ${"%.1f".format(it.gameBack)}")
             }
-
-            currentDate = currentDate.plusDays(1)
         }
     }
 }
