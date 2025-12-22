@@ -22,17 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.penasim.R
 import com.example.penasim.domain.PitcherType
-import com.example.penasim.domain.Player
-import com.example.penasim.domain.PlayerPosition
-import com.example.penasim.domain.Position
-import com.example.penasim.domain.TotalBattingStats
-import com.example.penasim.domain.TotalPitchingStats
 import com.example.penasim.ui.common.DisplayPitcher
+import com.example.penasim.ui.common.PitcherDetail
 import com.example.penasim.ui.common.SimplePlayerItem
-import com.example.penasim.ui.common.Status
 import com.example.penasim.ui.theme.pitcherColor
 
 @Composable
@@ -273,73 +267,6 @@ private fun SubstituteList(
     }
 }
 
-private fun pitcherTypeAppropriate(appropriate: Int): String = when (appropriate) {
-    0 -> "△"
-    1 -> "〇"
-    2 -> "◎"
-    else -> "-"
-}
-
-@Composable
-private fun PitcherDetail(
-    playerDetail: DisplayPlayerDetail,
-    modifier: Modifier = Modifier
-) {
-    Row {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(2.dp),
-            modifier = Modifier
-                .weight(1f)
-                .padding(6.dp)
-        ) {
-            SimplePlayerItem(
-                displayName = playerDetail.player.firstName,
-                color = playerDetail.color,
-            )
-            Text(
-                text = playerDetail.pitchingStats.eraStr,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-            Text(
-                text = "${playerDetail.pitchingStats.wins}勝${playerDetail.pitchingStats.losses}敗",
-                fontSize = 16.sp,
-            )
-        }
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(6.dp)
-        ) {
-            Text(
-                text = "${playerDetail.player.ballSpeed}km/h",
-                fontSize = 16.sp,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Status(
-                value = playerDetail.player.control,
-                alphabet = playerDetail.player.control.statusAlphabet(),
-                color = playerDetail.player.control.statusColor(),
-                modifier = Modifier.fillMaxWidth()
-            )
-            Status(
-                value = playerDetail.player.stamina,
-                alphabet = playerDetail.player.stamina.statusAlphabet(),
-                color = playerDetail.player.stamina.statusColor(),
-                modifier = Modifier.fillMaxWidth()
-            )
-            Text(
-                text = "先発 ${pitcherTypeAppropriate(playerDetail.player.starter)}",
-                fontSize = 16.sp,
-            )
-            Text(
-                text = "救援 ${pitcherTypeAppropriate(playerDetail.player.reliever)}",
-                fontSize = 16.sp,
-            )
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun StartingListPreview() {
@@ -466,51 +393,6 @@ fun SubstitutePitcherListPreview() {
                 type = PitcherType.RELIEVER,
                 number = 4,
             )
-        )
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PitcherDetailPreview() {
-    PitcherDetail(
-        playerDetail = DisplayPlayerDetail(
-            player = Player(
-                id = 1,
-                firstName = "山田",
-                lastName = "太郎",
-                teamId = 0,
-                meet = 15,
-                power = 22,
-                speed = 55,
-                throwing = 72,
-                defense = 51,
-                catching = 44,
-                ballSpeed = 148,
-                control = 61,
-                stamina = 70,
-                starter = 0,
-                reliever = 0,
-            ),
-            positions = listOf(
-                PlayerPosition(1, Position.PITCHER, 51)
-            ),
-            battingStats = TotalBattingStats(playerId = 1),
-            pitchingStats = TotalPitchingStats(
-                playerId = 1,
-                inningsPitched = 423,
-                hits = 105,
-                runs = 32,
-                earnedRuns = 30,
-                walks = 28,
-                strikeOuts = 145,
-                homeRuns = 4,
-                wins = 14,
-                losses = 3,
-                holds = 0,
-                saves = 0,
-            ),
-            color = pitcherColor
         )
     )
 }

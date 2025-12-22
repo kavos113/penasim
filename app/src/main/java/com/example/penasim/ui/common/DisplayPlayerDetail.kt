@@ -1,4 +1,4 @@
-package com.example.penasim.ui.command
+package com.example.penasim.ui.common
 
 import androidx.compose.ui.graphics.Color
 import com.example.penasim.domain.Player

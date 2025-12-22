@@ -9,7 +9,7 @@ import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.Position
 import com.example.penasim.domain.isStarting
 import com.example.penasim.game.ExecuteGamesByDate
-import com.example.penasim.ui.command.color
+import com.example.penasim.ui.common.color
 import com.example.penasim.ui.common.DisplayFielder
 import com.example.penasim.ui.common.toGameUiInfo
 import com.example.penasim.ui.common.toRankingUiInfo

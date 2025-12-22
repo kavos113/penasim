@@ -13,6 +13,8 @@ import com.example.penasim.domain.Team
 import com.example.penasim.domain.isStarting
 import com.example.penasim.ui.common.DisplayFielder
 import com.example.penasim.ui.common.DisplayPitcher
+import com.example.penasim.ui.common.DisplayPlayerDetail
+import com.example.penasim.ui.common.color
 
 data class CommandUiState(
     val team: Team = Team(0, "", League.L1),
