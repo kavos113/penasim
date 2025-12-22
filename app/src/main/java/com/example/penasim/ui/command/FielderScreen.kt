@@ -298,7 +298,7 @@ private fun MainList(
 ) {
     Column {
         Text(
-            text = stringResource(R.string.order)
+            text = stringResource(R.string.main_member)
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),

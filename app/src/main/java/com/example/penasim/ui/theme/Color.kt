@@ -234,3 +234,6 @@ val dColor = Color(0xFFD8DE2F)
 val eColor = Color(0xFF76E635)
 val fColor = Color(0xFF357EE6)
 val gColor = Color(0xFF8C8C8C)
+
+val orderActiveColor = Color(0xFFFF6565)
+val lightWhiteColor = Color(0xFFFBFBFB)

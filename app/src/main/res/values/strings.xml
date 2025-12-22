@@ -19,4 +19,5 @@
     <string name="fielder_order_dh_left">DHあり・対左</string>
     <string name="main_member_registration">一軍登録</string>
     <string name="next_day">次の日へ</string>
+    <string name="main_member">1軍</string>
 </resources>
