@@ -2,7 +2,6 @@ package com.example.penasim.ui.game
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,7 +25,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,13 +33,12 @@ import com.example.penasim.const.DataSource
 import com.example.penasim.domain.InningScore
 import com.example.penasim.ui.common.ClauseWithoutDate
 import com.example.penasim.ui.common.GameUiInfo
+import com.example.penasim.ui.common.InningScoresTable
 import com.example.penasim.ui.common.Ranking
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.errorContainerLight
-import com.example.penasim.ui.theme.onPrimaryLight
 import com.example.penasim.ui.theme.playerBorderColor
 import com.example.penasim.ui.theme.primaryContainerLight
-import com.example.penasim.ui.theme.primaryLight
 import java.time.LocalDate
 
 object AfterGameDestination : NavigationDestination {
@@ -276,137 +272,6 @@ private fun AfterGameContentWithoutGameResult(
 }
 
 @Composable
-private fun InningScoresTable(
-    homeInningScores: List<InningScore>,
-    awayInningScores: List<InningScore>,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-    ) {
-        InningHeader(
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-        InningScoreRow(
-            teamName = "A",
-            inningScores = awayInningScores,
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-        InningScoreRow(
-            teamName = "B",
-            inningScores = homeInningScores,
-            modifier = Modifier
-                .fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-private fun InningScoreRow(
-    teamName: String,
-    inningScores: List<InningScore>,
-    modifier: Modifier = Modifier
-) {
-    Row {
-        InningScoreItem(
-            value = teamName,
-            modifier = Modifier
-                .width(48.dp)
-                .height(32.dp)
-        )
-        inningScores.forEach { inningScore ->
-            InningScoreItem(
-                value = inningScore.score.toString(),
-                modifier = Modifier
-                    .width(32.dp)
-                    .height(32.dp)
-            )
-        }
-        InningScoreItem(
-            value = inningScores.sumOf { it.score }.toString(),
-            modifier = Modifier
-                .width(36.dp)
-                .height(32.dp)
-        )
-    }
-}
-
-@Composable
-private fun InningScoreItem(
-    value: String,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .fillMaxSize()
-            .border(
-                width = 1.dp,
-                color = playerBorderColor
-            )
-    ) {
-        Text(
-            text = value,
-            fontSize = 16.sp,
-        )
-    }
-}
-
-@Composable
-private fun InningHeader(
-    modifier: Modifier = Modifier
-) {
-    Row {
-        InningHeaderItem(
-            value = "回",
-            modifier = Modifier
-                .width(48.dp)
-                .height(32.dp)
-        )
-        (1..9).forEach { inning ->
-            InningHeaderItem(
-                value = inning.toString(),
-                modifier = Modifier
-                    .width(32.dp)
-                    .height(32.dp)
-            )
-        }
-        InningHeaderItem(
-            value = "計",
-            modifier = Modifier
-                .width(36.dp)
-                .height(32.dp)
-        )
-    }
-}
-
-@Composable
-private fun InningHeaderItem(
-    value: String,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .fillMaxSize()
-            .background(primaryLight)
-            .border(
-                width = 1.dp,
-                color = playerBorderColor
-            )
-    ) {
-        Text(
-            text = value,
-            fontSize = 16.sp,
-            color = onPrimaryLight,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
 private fun SingleTeamPitcherResults(
     pitcherResults: List<PitcherResult>,
     modifier: Modifier = Modifier
@@ -627,27 +492,6 @@ private val SAMPLE_FIELDER_RESULTS = listOf(
         type = HomeRunType.TWO_RUN
     ),
 )
-
-@Preview
-@Composable
-private fun InningScoresTablePreview() {
-    InningScoresTable(
-        homeInningScores = SAMPLE_HOME_INNING_SCORES,
-        awayInningScores = SAMPLE_AWAY_INNING_SCORES,
-        modifier = Modifier
-            .fillMaxWidth()
-    )
-}
-
-@Preview
-@Composable
-private fun InningScoreRowPreview() {
-    InningScoreRow(
-        teamName = "A",
-        inningScores = SAMPLE_HOME_INNING_SCORES,
-        modifier = Modifier
-    )
-}
 
 @Preview
 @Composable
