@@ -9,22 +9,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.penasim.domain.Position
 import com.example.penasim.ui.common.DisplayFielder
+import com.example.penasim.ui.common.InningScoresTable
 import com.example.penasim.ui.common.OrderPlayerItem
 import com.example.penasim.ui.common.SimplePlayerItem
 import com.example.penasim.ui.theme.blankColor
@@ -33,15 +34,42 @@ import com.example.penasim.ui.theme.infielderColor
 import com.example.penasim.ui.theme.outColor
 import com.example.penasim.ui.theme.outfielderColor
 import com.example.penasim.ui.theme.pitcherColor
-import kotlin.math.cos
-import kotlin.math.sin
+
+@Composable
+fun InGameScreen(
+
+) {
+
+}
 
 @Composable
 private fun InGameContent(
     inGameInfo: InGameInfo,
     modifier: Modifier = Modifier
 ) {
-
+    Column(
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        InningScoresTable(
+            homeInningScores = inGameInfo.homeTeam.inningScores,
+            awayInningScores = inGameInfo.awayTeam.inningScores
+        )
+        PlayerInfoContent(
+            homePlayers = inGameInfo.homeTeam.mainFielders,
+            awayPlayers = inGameInfo.awayTeam.mainFielders,
+            homeActiveNumber = inGameInfo.homeTeam.activeNumber,
+            awayActiveNumber = inGameInfo.awayTeam.activeNumber,
+            firstBase = inGameInfo.firstBase,
+            secondBase = inGameInfo.secondBase,
+            thirdBase = inGameInfo.thirdBase,
+            outCount = inGameInfo.outCount
+        )
+        FooterItems(
+            homeActivePlayer = inGameInfo.homeTeam.activePlayer,
+            awayActivePlayer = inGameInfo.awayTeam.activePlayer
+        )
+    }
 }
 
 @Composable
@@ -227,6 +255,66 @@ private fun OrderList(
     }
 }
 
+@Composable
+private fun FooterItems(
+    homeActivePlayer: DisplayFielder,
+    awayActivePlayer: DisplayFielder,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp)
+            .then(modifier)
+    ) {
+        Row {
+            SimplePlayerItem(
+                displayName = awayActivePlayer.displayName,
+                color = awayActivePlayer.color,
+                modifier = Modifier
+                    .weight(1f)
+            )
+            Spacer(
+                modifier = Modifier
+                    .weight(0.5f)
+            )
+            SimplePlayerItem(
+                displayName = homeActivePlayer.displayName,
+                color = homeActivePlayer.color,
+                modifier = Modifier
+                    .weight(1f)
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+        ) {
+            Button(
+                onClick = {}
+            ) {
+                Text("次へ")
+            }
+            Button(
+                onClick = {}
+            ) {
+                Text("高速")
+            }
+            Button(
+                onClick = {}
+            ) {
+                Text("skip")
+            }
+            Button(
+                onClick = {}
+            ) {
+                Text("交代")
+            }
+        }
+    }
+}
+
 private val SAMPLE_ORDER = listOf(
     DisplayFielder(
         0,
@@ -355,5 +443,26 @@ private fun PlayerInfoContentPreview() {
             outfielderColor
         ),
         outCount = 1,
+    )
+}
+
+@Preview
+@Composable
+private fun FooterItemsPreview() {
+    FooterItems(
+        homeActivePlayer = DisplayFielder(
+            8,
+            "Player 9",
+            Position.RIGHT_FIELDER,
+            9,
+            outfielderColor
+        ),
+        awayActivePlayer = DisplayFielder(
+            0,
+            "Pitcher",
+            Position.PITCHER,
+            1,
+            pitcherColor
+        ),
     )
 }

@@ -49,4 +49,16 @@ data class InGameTeamInfo(
                 color = player?.primaryPosition?.color() ?: Position.OUTFIELDER.color()
             )
         }
+
+    val activePlayer: DisplayFielder
+        get() {
+            val player = players.find { it.player.id == activePlayerId }
+            return DisplayFielder(
+                id = activePlayerId,
+                displayName = player?.player?.firstName ?: "Unknown Player",
+                position = Position.BENCH,
+                number = 0,
+                color = player?.primaryPosition?.color() ?: Position.OUTFIELDER.color()
+            )
+        }
 }
