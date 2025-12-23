@@ -72,10 +72,22 @@ class Match(
     private fun Half.toStr() = if (this == Half.INNING_TOP) "表" else "裏"
 
     fun play() {
-        while (inning <= MAX_INNINGS) {
-            batting()
+        while (next())
+        postFinishGame()
+    }
+
+    // 続くならtrue
+    fun next(): Boolean {
+        if (inning > MAX_INNINGS) {
+            return false
         }
 
+        batting()
+
+        return true
+    }
+
+    fun postFinishGame() {
         awayScores.removeAt(awayScores.lastIndex)
 
         if (homeScore > awayScore) {

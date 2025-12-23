@@ -6,6 +6,7 @@ import com.example.penasim.domain.repository.GameResultRepository
 import com.example.penasim.domain.repository.TeamRepository
 import javax.inject.Inject
 
+// game情報を格納
 class ExecuteGameUseCase @Inject constructor(
     private val gameResultRepository: GameResultRepository,
     private val gameFixtureRepository: GameFixtureRepository,
