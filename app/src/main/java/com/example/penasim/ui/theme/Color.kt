@@ -237,3 +237,6 @@ val gColor = Color(0xFF8C8C8C)
 
 val orderActiveColor = Color(0xFFFF6565)
 val lightWhiteColor = Color(0xFFFBFBFB)
+
+val outColor = Color(0xFFFF0000)
+val blankColor = Color(0xFF040404)

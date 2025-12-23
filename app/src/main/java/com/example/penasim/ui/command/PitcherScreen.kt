@@ -93,7 +93,7 @@ private fun PitcherContent(
         }
 
         if (uiState.selectedPitcherId != null) {
-            val playerDetail = uiState.getDisplayPlayerDetail(uiState.selectedPitcherId!!)
+            val playerDetail = uiState.getDisplayPlayerDetail(uiState.selectedPitcherId)
             if (playerDetail != null) {
                 Box(
                     modifier = Modifier
