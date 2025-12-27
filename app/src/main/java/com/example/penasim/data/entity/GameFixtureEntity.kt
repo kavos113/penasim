@@ -8,27 +8,27 @@ import com.example.penasim.data.repository.Converters
 import java.time.LocalDate
 
 @Entity(
-    tableName = "game_fixtures",
-    foreignKeys = [
-        ForeignKey(
-            entity = TeamEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["homeTeamId"],
-            onDelete = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = TeamEntity::class,
-            parentColumns = ["id"],
-            childColumns = ["awayTeamId"],
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
+  tableName = "game_fixtures",
+  foreignKeys = [
+    ForeignKey(
+      entity = TeamEntity::class,
+      parentColumns = ["id"],
+      childColumns = ["homeTeamId"],
+      onDelete = ForeignKey.CASCADE
+    ),
+    ForeignKey(
+      entity = TeamEntity::class,
+      parentColumns = ["id"],
+      childColumns = ["awayTeamId"],
+      onDelete = ForeignKey.CASCADE
+    )
+  ]
 )
 @TypeConverters(Converters::class)
 data class GameFixtureEntity(
-    @PrimaryKey val id: Int,
-    val date: LocalDate,
-    val numberOfGames: Int,
-    val homeTeamId: Int,
-    val awayTeamId: Int,
+  @PrimaryKey val id: Int,
+  val date: LocalDate,
+  val numberOfGames: Int,
+  val homeTeamId: Int,
+  val awayTeamId: Int,
 )

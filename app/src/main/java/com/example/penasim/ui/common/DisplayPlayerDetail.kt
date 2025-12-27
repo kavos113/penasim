@@ -20,61 +20,61 @@ import com.example.penasim.ui.theme.pitcherColor
 import com.example.penasim.ui.theme.sColor
 
 data class DisplayPlayerDetail(
-    val player: Player,
-    val positions: List<PlayerPosition>,
-    val battingStats: TotalBattingStats,
-    val pitchingStats: TotalPitchingStats,
-    val color: Color
+  val player: Player,
+  val positions: List<PlayerPosition>,
+  val battingStats: TotalBattingStats,
+  val pitchingStats: TotalPitchingStats,
+  val color: Color
 )
 
-fun Position.color(): Color = when(this) {
-    Position.PITCHER -> pitcherColor
-    Position.CATCHER -> catcherColor
-    Position.FIRST_BASEMAN -> infielderColor
-    Position.SECOND_BASEMAN -> infielderColor
-    Position.THIRD_BASEMAN -> infielderColor
-    Position.SHORTSTOP -> infielderColor
-    Position.OUTFIELDER -> outfielderColor
-    Position.LEFT_FIELDER -> outfielderColor
-    Position.CENTER_FIELDER -> outfielderColor
-    Position.RIGHT_FIELDER -> outfielderColor
-    Position.DH -> outfielderColor
-    Position.BENCH -> Color.Gray
-    Position.SUBSTITUTE -> Color.Gray
+fun Position.color(): Color = when (this) {
+  Position.PITCHER -> pitcherColor
+  Position.CATCHER -> catcherColor
+  Position.FIRST_BASEMAN -> infielderColor
+  Position.SECOND_BASEMAN -> infielderColor
+  Position.THIRD_BASEMAN -> infielderColor
+  Position.SHORTSTOP -> infielderColor
+  Position.OUTFIELDER -> outfielderColor
+  Position.LEFT_FIELDER -> outfielderColor
+  Position.CENTER_FIELDER -> outfielderColor
+  Position.RIGHT_FIELDER -> outfielderColor
+  Position.DH -> outfielderColor
+  Position.BENCH -> Color.Gray
+  Position.SUBSTITUTE -> Color.Gray
 }
 
 fun Int.statusAlphabet(): String = if (this >= 90) {
-    "S"
+  "S"
 } else if (this >= 80) {
-    "A"
+  "A"
 } else if (this >= 70) {
-    "B"
+  "B"
 } else if (this >= 60) {
-    "C"
+  "C"
 } else if (this >= 50) {
-    "D"
+  "D"
 } else if (this >= 40) {
-    "E"
+  "E"
 } else if (this >= 30) {
-    "F"
+  "F"
 } else {
-    "G"
+  "G"
 }
 
 fun Int.statusColor(): Color = if (this >= 90) {
-    sColor
+  sColor
 } else if (this >= 80) {
-    aColor
+  aColor
 } else if (this >= 70) {
-    bColor
+  bColor
 } else if (this >= 60) {
-    cColor
+  cColor
 } else if (this >= 50) {
-    dColor
+  dColor
 } else if (this >= 40) {
-    eColor
+  eColor
 } else if (this >= 30) {
-    fColor
+  fColor
 } else {
-    gColor
+  gColor
 }

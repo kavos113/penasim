@@ -5,9 +5,9 @@ import com.example.penasim.domain.PlayerInfo
 import java.time.LocalDate
 
 data class GameUiState(
-    val date: LocalDate = Constants.START,
-    val homePlayers: List<PlayerInfo> = emptyList(),
-    val awayPlayers: List<PlayerInfo> = emptyList(),
-    val beforeGameInfo: BeforeGameInfo = BeforeGameInfo(),
-    val afterGameInfo: AfterGameInfo = AfterGameInfo(),
+  val date: LocalDate = Constants.START,
+  val homePlayers: List<PlayerInfo> = emptyList(),
+  val awayPlayers: List<PlayerInfo> = emptyList(),
+  val beforeGameInfo: BeforeGameInfo = BeforeGameInfo(),
+  val afterGameInfo: AfterGameInfo = AfterGameInfo(),
 )

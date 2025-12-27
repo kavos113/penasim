@@ -23,332 +23,332 @@ import java.time.LocalDate
 
 @Composable
 private fun Game(
-    modifier: Modifier = Modifier,
-    homeTeamLogo: Int,
-    awayTeamLogo: Int,
-    homeTeamScore: Int,
-    awayTeamScore: Int,
-    isGameFinished: Boolean = false,
-    isFocus: Boolean = false
+  modifier: Modifier = Modifier,
+  homeTeamLogo: Int,
+  awayTeamLogo: Int,
+  homeTeamScore: Int,
+  awayTeamScore: Int,
+  isGameFinished: Boolean = false,
+  isFocus: Boolean = false
 ) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = if (isFocus) {
-                MaterialTheme.colorScheme.errorContainer
-            } else {
-                MaterialTheme.colorScheme.primaryContainer
-            }
-        ),
-        modifier = modifier
-            .padding(
-                top = 4.dp,
-                bottom = 4.dp
-            )
+  Card(
+    colors = CardDefaults.cardColors(
+      containerColor = if (isFocus) {
+        MaterialTheme.colorScheme.errorContainer
+      } else {
+        MaterialTheme.colorScheme.primaryContainer
+      }
+    ),
+    modifier = modifier
+      .padding(
+        top = 4.dp,
+        bottom = 4.dp
+      )
+  ) {
+    Row(
+      modifier = Modifier
+        .padding(
+          start = 16.dp,
+          end = 16.dp,
+          top = 8.dp,
+          bottom = 8.dp
+        )
     ) {
-        Row(
-            modifier = Modifier
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 8.dp,
-                    bottom = 8.dp
-                )
-        ) {
-            Image(
-                painter = painterResource(id = awayTeamLogo),
-                contentDescription = "away team icon",
-                modifier = Modifier
-                    .size(18.dp)
-                    .align(Alignment.CenterVertically)
-            )
-            Text(
-                text = if (isGameFinished) awayTeamScore.toString() else " ",
-                modifier = Modifier
-            )
-            Text(
-                text = "-",
-                modifier = Modifier
-            )
-            Text(
-                text = if (isGameFinished) homeTeamScore.toString() else " ",
-                modifier = Modifier
-            )
-            Image(
-                painter = painterResource(id = homeTeamLogo),
-                contentDescription = "home team icon",
-                modifier = Modifier
-                    .size(18.dp)
-                    .align(Alignment.CenterVertically)
-            )
-        }
+      Image(
+        painter = painterResource(id = awayTeamLogo),
+        contentDescription = "away team icon",
+        modifier = Modifier
+          .size(18.dp)
+          .align(Alignment.CenterVertically)
+      )
+      Text(
+        text = if (isGameFinished) awayTeamScore.toString() else " ",
+        modifier = Modifier
+      )
+      Text(
+        text = "-",
+        modifier = Modifier
+      )
+      Text(
+        text = if (isGameFinished) homeTeamScore.toString() else " ",
+        modifier = Modifier
+      )
+      Image(
+        painter = painterResource(id = homeTeamLogo),
+        contentDescription = "home team icon",
+        modifier = Modifier
+          .size(18.dp)
+          .align(Alignment.CenterVertically)
+      )
     }
+  }
 }
 
 @Composable
 fun Clause(
-    currentDay: LocalDate,
-    games: List<GameUiInfo>,
-    modifier: Modifier = Modifier,
-    focusTeamIcon: Int? = null,
+  currentDay: LocalDate,
+  games: List<GameUiInfo>,
+  modifier: Modifier = Modifier,
+  focusTeamIcon: Int? = null,
 ) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        modifier = modifier
+  Card(
+    colors = CardDefaults.cardColors(
+      containerColor = MaterialTheme.colorScheme.surfaceContainer
+    ),
+    modifier = modifier
+  ) {
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+      Text(
+        text = "$currentDay",
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(bottom = 8.dp)
+      )
+      repeat(2) { i ->
+        Row(
+          modifier = Modifier
+            .fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "$currentDay",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp)
+          repeat(3) { j ->
+            if (i * 3 + j >= games.size) return@repeat
+            val game = games[i * 3 + j]
+            Game(
+              homeTeamLogo = game.homeTeamIcon,
+              awayTeamLogo = game.awayTeamIcon,
+              homeTeamScore = game.homeTeamScore,
+              awayTeamScore = game.awayTeamScore,
+              isGameFinished = game.isGameFinished,
+              isFocus = focusTeamIcon != null && (focusTeamIcon == game.homeTeamIcon || focusTeamIcon == game.awayTeamIcon)
             )
-            repeat(2) { i ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    repeat(3) { j ->
-                        if (i * 3 + j >= games.size) return@repeat
-                        val game = games[i * 3 + j]
-                        Game(
-                            homeTeamLogo = game.homeTeamIcon,
-                            awayTeamLogo = game.awayTeamIcon,
-                            homeTeamScore = game.homeTeamScore,
-                            awayTeamScore = game.awayTeamScore,
-                            isGameFinished = game.isGameFinished,
-                            isFocus = focusTeamIcon != null && (focusTeamIcon == game.homeTeamIcon || focusTeamIcon == game.awayTeamIcon)
-                        )
-                    }
-                }
-            }
+          }
         }
+      }
     }
+  }
 }
 
 @Composable
 fun ClauseWithoutDate(
-    games: List<GameUiInfo>,
-    modifier: Modifier = Modifier
+  games: List<GameUiInfo>,
+  modifier: Modifier = Modifier
 ) {
-    Card(
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer
-        ),
-        modifier = modifier
+  Card(
+    colors = CardDefaults.cardColors(
+      containerColor = MaterialTheme.colorScheme.surfaceContainer
+    ),
+    modifier = modifier
+  ) {
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
+      repeat(2) { i ->
+        Row(
+          modifier = Modifier
+            .fillMaxWidth(),
+          horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            repeat(2) { i ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    repeat(3) { j ->
-                        if (i * 3 + j >= games.size) return@repeat
-                        val game = games[i * 3 + j]
-                        Game(
-                            homeTeamLogo = game.homeTeamIcon,
-                            awayTeamLogo = game.awayTeamIcon,
-                            homeTeamScore = game.homeTeamScore,
-                            awayTeamScore = game.awayTeamScore,
-                            isGameFinished = game.isGameFinished
-                        )
-                    }
-                }
-            }
+          repeat(3) { j ->
+            if (i * 3 + j >= games.size) return@repeat
+            val game = games[i * 3 + j]
+            Game(
+              homeTeamLogo = game.homeTeamIcon,
+              awayTeamLogo = game.awayTeamIcon,
+              homeTeamScore = game.homeTeamScore,
+              awayTeamScore = game.awayTeamScore,
+              isGameFinished = game.isGameFinished
+            )
+          }
         }
+      }
     }
+  }
 }
 
 @Preview
 @Composable
 fun PreviewClause() {
-    Clause(
-        currentDay = LocalDate.of(2024, 6, 15),
-        games = listOf(
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team1_icon,
-                homeTeamScore = 3,
-                awayTeamIcon = R.drawable.team2_icon,
-                awayTeamScore = 1,
-                isGameFinished = true
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team3_icon,
-                homeTeamScore = 2,
-                awayTeamIcon = R.drawable.team4_icon,
-                awayTeamScore = 2,
-                isGameFinished = true
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team5_icon,
-                homeTeamScore = 0,
-                awayTeamIcon = R.drawable.team6_icon,
-                awayTeamScore = 1,
-                isGameFinished = true
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team7_icon,
-                homeTeamScore = 0,
-                awayTeamIcon = R.drawable.team8_icon,
-                awayTeamScore = 3,
-                isGameFinished = true
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team9_icon,
-                homeTeamScore = 1,
-                awayTeamIcon = R.drawable.team10_icon,
-                awayTeamScore = 0,
-                isGameFinished = true
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team11_icon,
-                homeTeamScore = 2,
-                awayTeamIcon = R.drawable.team12_icon,
-                awayTeamScore = 2,
-                isGameFinished = true
-            )
-        ),
-        modifier = Modifier
-            .padding(16.dp),
-        focusTeamIcon = R.drawable.team1_icon
-    )
+  Clause(
+    currentDay = LocalDate.of(2024, 6, 15),
+    games = listOf(
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team1_icon,
+        homeTeamScore = 3,
+        awayTeamIcon = R.drawable.team2_icon,
+        awayTeamScore = 1,
+        isGameFinished = true
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team3_icon,
+        homeTeamScore = 2,
+        awayTeamIcon = R.drawable.team4_icon,
+        awayTeamScore = 2,
+        isGameFinished = true
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team5_icon,
+        homeTeamScore = 0,
+        awayTeamIcon = R.drawable.team6_icon,
+        awayTeamScore = 1,
+        isGameFinished = true
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team7_icon,
+        homeTeamScore = 0,
+        awayTeamIcon = R.drawable.team8_icon,
+        awayTeamScore = 3,
+        isGameFinished = true
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team9_icon,
+        homeTeamScore = 1,
+        awayTeamIcon = R.drawable.team10_icon,
+        awayTeamScore = 0,
+        isGameFinished = true
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team11_icon,
+        homeTeamScore = 2,
+        awayTeamIcon = R.drawable.team12_icon,
+        awayTeamScore = 2,
+        isGameFinished = true
+      )
+    ),
+    modifier = Modifier
+      .padding(16.dp),
+    focusTeamIcon = R.drawable.team1_icon
+  )
 }
 
 @Preview
 @Composable
 fun PreviewClauseWithFewGames() {
-    Clause(
-        currentDay = LocalDate.of(2024, 6, 15),
-        games = listOf(
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team1_icon,
-                homeTeamScore = 3,
-                awayTeamIcon = R.drawable.team2_icon,
-                awayTeamScore = 1,
-                isGameFinished = true
-            ),
-        ),
-        modifier = Modifier
-            .padding(16.dp)
-    )
+  Clause(
+    currentDay = LocalDate.of(2024, 6, 15),
+    games = listOf(
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team1_icon,
+        homeTeamScore = 3,
+        awayTeamIcon = R.drawable.team2_icon,
+        awayTeamScore = 1,
+        isGameFinished = true
+      ),
+    ),
+    modifier = Modifier
+      .padding(16.dp)
+  )
 }
 
 @Preview
 @Composable
 fun PreviewNotFinishedClause() {
-    Clause(
-        currentDay = LocalDate.of(2024, 6, 15),
-        games = listOf(
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team1_icon,
-                homeTeamScore = 0,
-                awayTeamIcon = R.drawable.team2_icon,
-                awayTeamScore = 0,
-                isGameFinished = false
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team3_icon,
-                homeTeamScore = 0,
-                awayTeamIcon = R.drawable.team4_icon,
-                awayTeamScore = 0,
-                isGameFinished = false
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team5_icon,
-                homeTeamScore = 0,
-                awayTeamIcon = R.drawable.team6_icon,
-                awayTeamScore = 0,
-                isGameFinished = false
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team7_icon,
-                homeTeamScore = 0,
-                awayTeamIcon = R.drawable.team8_icon,
-                awayTeamScore = 0,
-                isGameFinished = false
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team9_icon,
-                homeTeamScore = 0,
-                awayTeamIcon = R.drawable.team10_icon,
-                awayTeamScore = 0,
-                isGameFinished = false
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team11_icon,
-                homeTeamScore = 0,
-                awayTeamIcon = R.drawable.team12_icon,
-                awayTeamScore = 0,
-                isGameFinished = false
-            )
-        ),
-        modifier = Modifier
-            .padding(16.dp)
-    )
+  Clause(
+    currentDay = LocalDate.of(2024, 6, 15),
+    games = listOf(
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team1_icon,
+        homeTeamScore = 0,
+        awayTeamIcon = R.drawable.team2_icon,
+        awayTeamScore = 0,
+        isGameFinished = false
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team3_icon,
+        homeTeamScore = 0,
+        awayTeamIcon = R.drawable.team4_icon,
+        awayTeamScore = 0,
+        isGameFinished = false
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team5_icon,
+        homeTeamScore = 0,
+        awayTeamIcon = R.drawable.team6_icon,
+        awayTeamScore = 0,
+        isGameFinished = false
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team7_icon,
+        homeTeamScore = 0,
+        awayTeamIcon = R.drawable.team8_icon,
+        awayTeamScore = 0,
+        isGameFinished = false
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team9_icon,
+        homeTeamScore = 0,
+        awayTeamIcon = R.drawable.team10_icon,
+        awayTeamScore = 0,
+        isGameFinished = false
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team11_icon,
+        homeTeamScore = 0,
+        awayTeamIcon = R.drawable.team12_icon,
+        awayTeamScore = 0,
+        isGameFinished = false
+      )
+    ),
+    modifier = Modifier
+      .padding(16.dp)
+  )
 }
 
 @Preview
 @Composable
 fun PreviewClauseWithoutDate() {
-    ClauseWithoutDate(
-        games = listOf(
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team1_icon,
-                homeTeamScore = 3,
-                awayTeamIcon = R.drawable.team2_icon,
-                awayTeamScore = 1,
-                isGameFinished = true
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team3_icon,
-                homeTeamScore = 2,
-                awayTeamIcon = R.drawable.team4_icon,
-                awayTeamScore = 2,
-                isGameFinished = true
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team5_icon,
-                homeTeamScore = 0,
-                awayTeamIcon = R.drawable.team6_icon,
-                awayTeamScore = 1,
-                isGameFinished = true
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team7_icon,
-                homeTeamScore = 0,
-                awayTeamIcon = R.drawable.team8_icon,
-                awayTeamScore = 3,
-                isGameFinished = true
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team9_icon,
-                homeTeamScore = 1,
-                awayTeamIcon = R.drawable.team10_icon,
-                awayTeamScore = 0,
-                isGameFinished = true
-            ),
-            GameUiInfo(
-                homeTeamIcon = R.drawable.team11_icon,
-                homeTeamScore = 2,
-                awayTeamIcon = R.drawable.team12_icon,
-                awayTeamScore = 2,
-                isGameFinished = true
-            )
-        ),
-        modifier = Modifier
-            .padding(16.dp)
-    )
+  ClauseWithoutDate(
+    games = listOf(
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team1_icon,
+        homeTeamScore = 3,
+        awayTeamIcon = R.drawable.team2_icon,
+        awayTeamScore = 1,
+        isGameFinished = true
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team3_icon,
+        homeTeamScore = 2,
+        awayTeamIcon = R.drawable.team4_icon,
+        awayTeamScore = 2,
+        isGameFinished = true
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team5_icon,
+        homeTeamScore = 0,
+        awayTeamIcon = R.drawable.team6_icon,
+        awayTeamScore = 1,
+        isGameFinished = true
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team7_icon,
+        homeTeamScore = 0,
+        awayTeamIcon = R.drawable.team8_icon,
+        awayTeamScore = 3,
+        isGameFinished = true
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team9_icon,
+        homeTeamScore = 1,
+        awayTeamIcon = R.drawable.team10_icon,
+        awayTeamScore = 0,
+        isGameFinished = true
+      ),
+      GameUiInfo(
+        homeTeamIcon = R.drawable.team11_icon,
+        homeTeamScore = 2,
+        awayTeamIcon = R.drawable.team12_icon,
+        awayTeamScore = 2,
+        isGameFinished = true
+      )
+    ),
+    modifier = Modifier
+      .padding(16.dp)
+  )
 }

@@ -42,595 +42,595 @@ import com.example.penasim.ui.theme.primaryContainerLight
 import java.time.LocalDate
 
 object AfterGameDestination : NavigationDestination {
-    override val route: String = "after_game"
-    override val titleResId: Int = R.string.game
+  override val route: String = "after_game"
+  override val titleResId: Int = R.string.game
 }
 
 object AfterGameWithoutGameResultDestination : NavigationDestination {
-    override val route: String = "after_game_without_game_result"
-    override val titleResId: Int = R.string.game
+  override val route: String = "after_game_without_game_result"
+  override val titleResId: Int = R.string.game
 }
 
 @Composable
 fun AfterGameScreen(
-    modifier: Modifier = Modifier,
-    onClickFinish: () -> Unit = { },
-    gameViewModel: GameViewModel,
+  modifier: Modifier = Modifier,
+  onClickFinish: () -> Unit = { },
+  gameViewModel: GameViewModel,
 ) {
-    val uiState by gameViewModel.uiState.collectAsState()
+  val uiState by gameViewModel.uiState.collectAsState()
 
-    BackHandler(
-        enabled = true,
-        onBack = { /* Do nothing */ }
-    )
+  BackHandler(
+    enabled = true,
+    onBack = { /* Do nothing */ }
+  )
 
-    AfterGameContent(
-        date = uiState.date,
-        afterGameInfo = uiState.afterGameInfo,
-        modifier = modifier,
-        onClickFinish = onClickFinish
-    )
+  AfterGameContent(
+    date = uiState.date,
+    afterGameInfo = uiState.afterGameInfo,
+    modifier = modifier,
+    onClickFinish = onClickFinish
+  )
 }
 
 @Composable
 fun AfterGameScreenWithoutGameResult(
-    modifier: Modifier = Modifier,
-    onClickFinish: () -> Unit = { },
-    gameViewModel: GameViewModel,
-    currentDay: LocalDate
+  modifier: Modifier = Modifier,
+  onClickFinish: () -> Unit = { },
+  gameViewModel: GameViewModel,
+  currentDay: LocalDate
 ) {
-    val uiState by gameViewModel.uiState.collectAsState()
+  val uiState by gameViewModel.uiState.collectAsState()
 
-    LaunchedEffect(currentDay) {
-        gameViewModel.setDate(currentDay)
-    }
+  LaunchedEffect(currentDay) {
+    gameViewModel.setDate(currentDay)
+  }
 
-    BackHandler(
-        enabled = true,
-        onBack = { /* Do nothing */ }
-    )
+  BackHandler(
+    enabled = true,
+    onBack = { /* Do nothing */ }
+  )
 
-    AfterGameContentWithoutGameResult(
-        date = uiState.date,
-        afterGameInfo = uiState.afterGameInfo,
-        modifier = modifier,
-        onClickFinish = onClickFinish
-    )
+  AfterGameContentWithoutGameResult(
+    date = uiState.date,
+    afterGameInfo = uiState.afterGameInfo,
+    modifier = modifier,
+    onClickFinish = onClickFinish
+  )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AfterGameContent(
-    date: LocalDate,
-    afterGameInfo: AfterGameInfo,
-    modifier: Modifier = Modifier,
-    onClickFinish: () -> Unit = { }
+  date: LocalDate,
+  afterGameInfo: AfterGameInfo,
+  modifier: Modifier = Modifier,
+  onClickFinish: () -> Unit = { }
 ) {
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "${date.monthValue}月${date.dayOfMonth}日",
-                        fontSize = 20.sp,
-                        modifier = Modifier
-                    )
-                }
-            )
+  Scaffold(
+    topBar = {
+      CenterAlignedTopAppBar(
+        title = {
+          Text(
+            text = "${date.monthValue}月${date.dayOfMonth}日",
+            fontSize = 20.sp,
+            modifier = Modifier
+          )
         }
-    ) { innerPadding ->
-        Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-        ) {
-            InningScoresTable(
-                homeInningScores = afterGameInfo.homeScores,
-                awayInningScores = afterGameInfo.awayScores,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            )
-
-            Row(
-                modifier = Modifier
-                    .height(IntrinsicSize.Min)
-            ) {
-                SingleTeamPitcherResults(
-                    pitcherResults = afterGameInfo.awayPitcherResults,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(8.dp)
-                )
-                VerticalDivider(
-                    color = playerBorderColor,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(vertical = 8.dp)
-                )
-                SingleTeamPitcherResults(
-                    pitcherResults = afterGameInfo.homePitcherResults,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(8.dp)
-                )
-            }
-
-            HorizontalDivider(
-                color = playerBorderColor,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-            )
-
-            Row(
-                modifier = Modifier
-                    .height(IntrinsicSize.Min)
-            ) {
-                SingleTeamFielderResults(
-                    fielderResults = afterGameInfo.awayFielderResults,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(8.dp)
-                )
-                VerticalDivider(
-                    color = playerBorderColor,
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .padding(vertical = 8.dp)
-                )
-                SingleTeamFielderResults(
-                    fielderResults = afterGameInfo.homeFielderResults,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(8.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            ClauseWithoutDate(
-                games = afterGameInfo.games,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-            )
-
-            Ranking(
-                rankings = afterGameInfo.rankings,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 8.dp)
-            )
-
-            Button(
-                onClick = onClickFinish,
-                modifier = Modifier
-                    .padding(24.dp)
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                Text(text = "終了")
-            }
-        }
+      )
     }
+  ) { innerPadding ->
+    Column(
+      modifier = modifier
+        .fillMaxSize()
+        .padding(innerPadding),
+    ) {
+      InningScoresTable(
+        homeInningScores = afterGameInfo.homeScores,
+        awayInningScores = afterGameInfo.awayScores,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(8.dp)
+      )
+
+      Row(
+        modifier = Modifier
+          .height(IntrinsicSize.Min)
+      ) {
+        SingleTeamPitcherResults(
+          pitcherResults = afterGameInfo.awayPitcherResults,
+          modifier = Modifier
+            .weight(1f)
+            .padding(8.dp)
+        )
+        VerticalDivider(
+          color = playerBorderColor,
+          modifier = Modifier
+            .fillMaxHeight()
+            .padding(vertical = 8.dp)
+        )
+        SingleTeamPitcherResults(
+          pitcherResults = afterGameInfo.homePitcherResults,
+          modifier = Modifier
+            .weight(1f)
+            .padding(8.dp)
+        )
+      }
+
+      HorizontalDivider(
+        color = playerBorderColor,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 8.dp)
+      )
+
+      Row(
+        modifier = Modifier
+          .height(IntrinsicSize.Min)
+      ) {
+        SingleTeamFielderResults(
+          fielderResults = afterGameInfo.awayFielderResults,
+          modifier = Modifier
+            .weight(1f)
+            .padding(8.dp)
+        )
+        VerticalDivider(
+          color = playerBorderColor,
+          modifier = Modifier
+            .fillMaxHeight()
+            .padding(vertical = 8.dp)
+        )
+        SingleTeamFielderResults(
+          fielderResults = afterGameInfo.homeFielderResults,
+          modifier = Modifier
+            .weight(1f)
+            .padding(8.dp)
+        )
+      }
+
+      Spacer(modifier = Modifier.weight(1f))
+
+      ClauseWithoutDate(
+        games = afterGameInfo.games,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 8.dp)
+      )
+
+      Ranking(
+        rankings = afterGameInfo.rankings,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 8.dp, vertical = 8.dp)
+      )
+
+      Button(
+        onClick = onClickFinish,
+        modifier = Modifier
+          .padding(24.dp)
+          .align(Alignment.CenterHorizontally)
+      ) {
+        Text(text = "終了")
+      }
+    }
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AfterGameContentWithoutGameResult(
-    date: LocalDate,
-    afterGameInfo: AfterGameInfo,
-    modifier: Modifier = Modifier,
-    onClickFinish: () -> Unit = { }
+  date: LocalDate,
+  afterGameInfo: AfterGameInfo,
+  modifier: Modifier = Modifier,
+  onClickFinish: () -> Unit = { }
 ) {
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "${date.monthValue}月${date.dayOfMonth}日",
-                        fontSize = 20.sp,
-                        modifier = Modifier
-                    )
-                }
-            )
-        }
-    ) { innerPadding ->
-        Box(
+  Scaffold(
+    topBar = {
+      CenterAlignedTopAppBar(
+        title = {
+          Text(
+            text = "${date.monthValue}月${date.dayOfMonth}日",
+            fontSize = 20.sp,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-        ) {
-            Column(
-                modifier = Modifier.align(Alignment.BottomCenter)
-            ) {
-                ClauseWithoutDate(
-                    games = afterGameInfo.games,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                )
-
-                Ranking(
-                    rankings = afterGameInfo.rankings,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 8.dp)
-                )
-
-                Button(
-                    onClick = onClickFinish,
-                    modifier = Modifier
-                        .padding(24.dp)
-                        .align(Alignment.CenterHorizontally)
-                ) {
-                    Text(text = "終了")
-                }
-            }
+          )
         }
+      )
     }
+  ) { innerPadding ->
+    Box(
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(innerPadding),
+    ) {
+      Column(
+        modifier = Modifier.align(Alignment.BottomCenter)
+      ) {
+        ClauseWithoutDate(
+          games = afterGameInfo.games,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+        )
+
+        Ranking(
+          rankings = afterGameInfo.rankings,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+        )
+
+        Button(
+          onClick = onClickFinish,
+          modifier = Modifier
+            .padding(24.dp)
+            .align(Alignment.CenterHorizontally)
+        ) {
+          Text(text = "終了")
+        }
+      }
+    }
+  }
 }
 
 @Composable
 private fun SingleTeamPitcherResults(
-    pitcherResults: List<PitcherResult>,
-    modifier: Modifier = Modifier
+  pitcherResults: List<PitcherResult>,
+  modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-    ) {
-        pitcherResults.forEach { pitcherResult ->
-            PitcherResultItem(
-                pitcherResult = pitcherResult,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-        }
+  Column(
+    modifier = modifier
+  ) {
+    pitcherResults.forEach { pitcherResult ->
+      PitcherResultItem(
+        pitcherResult = pitcherResult,
+        modifier = Modifier
+          .fillMaxWidth()
+      )
     }
+  }
 }
 
 private fun displayPitcherResults(pitcherResult: PitcherResult): String {
-    val sb = StringBuilder()
-    sb.append(pitcherResult.displayName)
-    if (pitcherResult.wins > 0) {
-        sb.append(" ${pitcherResult.wins}勝")
-    }
-    if (pitcherResult.losses > 0) {
-        sb.append(" ${pitcherResult.losses}敗")
-    }
-    if (pitcherResult.holds > 0) {
-        sb.append(" ${pitcherResult.holds}H")
-    }
-    if (pitcherResult.saves > 0) {
-        sb.append(" ${pitcherResult.saves}S")
-    }
-    return sb.toString()
+  val sb = StringBuilder()
+  sb.append(pitcherResult.displayName)
+  if (pitcherResult.wins > 0) {
+    sb.append(" ${pitcherResult.wins}勝")
+  }
+  if (pitcherResult.losses > 0) {
+    sb.append(" ${pitcherResult.losses}敗")
+  }
+  if (pitcherResult.holds > 0) {
+    sb.append(" ${pitcherResult.holds}H")
+  }
+  if (pitcherResult.saves > 0) {
+    sb.append(" ${pitcherResult.saves}S")
+  }
+  return sb.toString()
 }
 
 @Composable
 private fun PitcherResultItem(
-    pitcherResult: PitcherResult,
-    modifier: Modifier = Modifier
+  pitcherResult: PitcherResult,
+  modifier: Modifier = Modifier
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-    ) {
-        if (pitcherResult.isWin) {
-            Text(
-                text = "勝",
-                fontSize = 16.sp,
-                modifier = Modifier
-                    .background(errorContainerLight)
-                    .padding(horizontal = 4.dp)
-            )
-        } else if (pitcherResult.isLoss) {
-            Text(
-                text = "敗",
-                fontSize = 16.sp,
-                modifier = Modifier
-                    .background(primaryContainerLight)
-                    .padding(horizontal = 4.dp)
-            )
-        } else if (pitcherResult.isHold) {
-            Text(
-                text = "Ｈ",
-                fontSize = 16.sp,
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-            )
-        } else if (pitcherResult.isSave) {
-            Text(
-                text = "Ｓ",
-                fontSize = 16.sp,
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-            )
-        } else {
-            Text(
-                text = "　",
-                fontSize = 16.sp,
-                modifier = Modifier
-                    .padding(horizontal = 4.dp)
-            )
-        }
-        Text(
-            text = displayPitcherResults(pitcherResult),
-            fontSize = 16.sp,
-            modifier = Modifier
-                .weight(1f)
-        )
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier
+  ) {
+    if (pitcherResult.isWin) {
+      Text(
+        text = "勝",
+        fontSize = 16.sp,
+        modifier = Modifier
+          .background(errorContainerLight)
+          .padding(horizontal = 4.dp)
+      )
+    } else if (pitcherResult.isLoss) {
+      Text(
+        text = "敗",
+        fontSize = 16.sp,
+        modifier = Modifier
+          .background(primaryContainerLight)
+          .padding(horizontal = 4.dp)
+      )
+    } else if (pitcherResult.isHold) {
+      Text(
+        text = "Ｈ",
+        fontSize = 16.sp,
+        modifier = Modifier
+          .padding(horizontal = 4.dp)
+      )
+    } else if (pitcherResult.isSave) {
+      Text(
+        text = "Ｓ",
+        fontSize = 16.sp,
+        modifier = Modifier
+          .padding(horizontal = 4.dp)
+      )
+    } else {
+      Text(
+        text = "　",
+        fontSize = 16.sp,
+        modifier = Modifier
+          .padding(horizontal = 4.dp)
+      )
     }
+    Text(
+      text = displayPitcherResults(pitcherResult),
+      fontSize = 16.sp,
+      modifier = Modifier
+        .weight(1f)
+    )
+  }
 }
 
 @Composable
 private fun SingleTeamFielderResults(
-    fielderResults: List<FielderResult>,
-    modifier: Modifier = Modifier
+  fielderResults: List<FielderResult>,
+  modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-    ) {
-        fielderResults.forEach { fielderResult ->
-            FielderResultItem(
-                fielderResult = fielderResult,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-        }
+  Column(
+    modifier = modifier
+  ) {
+    fielderResults.forEach { fielderResult ->
+      FielderResultItem(
+        fielderResult = fielderResult,
+        modifier = Modifier
+          .fillMaxWidth()
+      )
     }
+  }
 }
 
 @Composable
 private fun FielderResultItem(
-    fielderResult: FielderResult,
-    modifier: Modifier = Modifier
+  fielderResult: FielderResult,
+  modifier: Modifier = Modifier
 ) {
-    Text(
-        text = "${fielderResult.displayName} ${fielderResult.inning}回 ${fielderResult.numberOfHomeRuns}号 ${fielderResult.type.toStringJp()}",
-        fontSize = 16.sp,
-        modifier = modifier
-            .padding(horizontal = 4.dp, vertical = 2.dp)
-    )
+  Text(
+    text = "${fielderResult.displayName} ${fielderResult.inning}回 ${fielderResult.numberOfHomeRuns}号 ${fielderResult.type.toStringJp()}",
+    fontSize = 16.sp,
+    modifier = modifier
+      .padding(horizontal = 4.dp, vertical = 2.dp)
+  )
 }
 
 private val SAMPLE_HOME_INNING_SCORES = listOf(
-    InningScore(fixtureId = 0, teamId = 0, inning = 1, score = 0),
-    InningScore(fixtureId = 0, teamId = 0, inning = 2, score = 1),
-    InningScore(fixtureId = 0, teamId = 0, inning = 3, score = 0),
-    InningScore(fixtureId = 0, teamId = 0, inning = 4, score = 2),
-    InningScore(fixtureId = 0, teamId = 0, inning = 5, score = 0),
-    InningScore(fixtureId = 0, teamId = 0, inning = 6, score = 0),
-    InningScore(fixtureId = 0, teamId = 0, inning = 7, score = 0),
-    InningScore(fixtureId = 0, teamId = 0, inning = 8, score = 1),
-    InningScore(fixtureId = 0, teamId = 0, inning = 9, score = 0),
+  InningScore(fixtureId = 0, teamId = 0, inning = 1, score = 0),
+  InningScore(fixtureId = 0, teamId = 0, inning = 2, score = 1),
+  InningScore(fixtureId = 0, teamId = 0, inning = 3, score = 0),
+  InningScore(fixtureId = 0, teamId = 0, inning = 4, score = 2),
+  InningScore(fixtureId = 0, teamId = 0, inning = 5, score = 0),
+  InningScore(fixtureId = 0, teamId = 0, inning = 6, score = 0),
+  InningScore(fixtureId = 0, teamId = 0, inning = 7, score = 0),
+  InningScore(fixtureId = 0, teamId = 0, inning = 8, score = 1),
+  InningScore(fixtureId = 0, teamId = 0, inning = 9, score = 0),
 )
 
 private val SAMPLE_AWAY_INNING_SCORES = listOf(
-    InningScore(fixtureId = 0, teamId = 1, inning = 1, score = 0),
-    InningScore(fixtureId = 0, teamId = 1, inning = 2, score = 0),
-    InningScore(fixtureId = 0, teamId = 1, inning = 3, score = 0),
-    InningScore(fixtureId = 0, teamId = 1, inning = 4, score = 0),
-    InningScore(fixtureId = 0, teamId = 1, inning = 5, score = 1),
-    InningScore(fixtureId = 0, teamId = 1, inning = 6, score = 0),
-    InningScore(fixtureId = 0, teamId = 1, inning = 7, score = 0),
-    InningScore(fixtureId = 0, teamId = 1, inning = 8, score = 0),
-    InningScore(fixtureId = 0, teamId = 1, inning = 9, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 1, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 2, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 3, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 4, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 5, score = 1),
+  InningScore(fixtureId = 0, teamId = 1, inning = 6, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 7, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 8, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 9, score = 0),
 )
 
 private val SAMPLE_WIN_PITCHER_RESULTS = listOf(
-    PitcherResult(
-        displayName = "高橋",
-        number = 1,
-        wins = 12,
-        losses = 3,
-        holds = 0,
-        saves = 0,
-        isWin = true,
-        isLoss = false,
-        isHold = false,
-        isSave = false
-    ),
-    PitcherResult(
-        displayName = "田中",
-        number = 2,
-        wins = 5,
-        losses = 2,
-        holds = 14,
-        saves = 0,
-        isWin = false,
-        isLoss = false,
-        isHold = true,
-        isSave = false
-    ),
-    PitcherResult(
-        displayName = "鈴木",
-        number = 3,
-        wins = 3,
-        losses = 4,
-        holds = 0,
-        saves = 25,
-        isWin = false,
-        isLoss = false,
-        isHold = false,
-        isSave = true
-    ),
+  PitcherResult(
+    displayName = "高橋",
+    number = 1,
+    wins = 12,
+    losses = 3,
+    holds = 0,
+    saves = 0,
+    isWin = true,
+    isLoss = false,
+    isHold = false,
+    isSave = false
+  ),
+  PitcherResult(
+    displayName = "田中",
+    number = 2,
+    wins = 5,
+    losses = 2,
+    holds = 14,
+    saves = 0,
+    isWin = false,
+    isLoss = false,
+    isHold = true,
+    isSave = false
+  ),
+  PitcherResult(
+    displayName = "鈴木",
+    number = 3,
+    wins = 3,
+    losses = 4,
+    holds = 0,
+    saves = 25,
+    isWin = false,
+    isLoss = false,
+    isHold = false,
+    isSave = true
+  ),
 )
 
 private val SAMPLE_LOSE_PITCHER_RESULTS = listOf(
-    PitcherResult(
-        displayName = "佐藤",
-        number = 4,
-        wins = 8,
-        losses = 7,
-        holds = 0,
-        saves = 0,
-        isWin = false,
-        isLoss = true,
-        isHold = false,
-        isSave = false
-    ),
-    PitcherResult(
-        displayName = "山田",
-        number = 5,
-        wins = 2,
-        losses = 6,
-        holds = 0,
-        saves = 0,
-        isWin = false,
-        isLoss = false,
-        isHold = false,
-        isSave = false
-    ),
+  PitcherResult(
+    displayName = "佐藤",
+    number = 4,
+    wins = 8,
+    losses = 7,
+    holds = 0,
+    saves = 0,
+    isWin = false,
+    isLoss = true,
+    isHold = false,
+    isSave = false
+  ),
+  PitcherResult(
+    displayName = "山田",
+    number = 5,
+    wins = 2,
+    losses = 6,
+    holds = 0,
+    saves = 0,
+    isWin = false,
+    isLoss = false,
+    isHold = false,
+    isSave = false
+  ),
 )
 
 private val SAMPLE_FIELDER_RESULTS = listOf(
-    FielderResult(
-        displayName = "渡辺",
-        inning = 6,
-        numberOfHomeRuns = 13,
-        type = HomeRunType.TWO_RUN
-    ),
+  FielderResult(
+    displayName = "渡辺",
+    inning = 6,
+    numberOfHomeRuns = 13,
+    type = HomeRunType.TWO_RUN
+  ),
 )
 
 @Preview
 @Composable
 private fun SingleTeamPitcherResultsPreview() {
-    SingleTeamPitcherResults(
-        pitcherResults = SAMPLE_WIN_PITCHER_RESULTS,
-        modifier = Modifier
-            .fillMaxWidth()
-    )
+  SingleTeamPitcherResults(
+    pitcherResults = SAMPLE_WIN_PITCHER_RESULTS,
+    modifier = Modifier
+      .fillMaxWidth()
+  )
 }
 
 @Preview
 @Composable
 private fun SingleTeamFielderResultsPreview() {
-    SingleTeamFielderResults(
-        fielderResults = SAMPLE_FIELDER_RESULTS,
-        modifier = Modifier
-            .fillMaxWidth()
-    )
+  SingleTeamFielderResults(
+    fielderResults = SAMPLE_FIELDER_RESULTS,
+    modifier = Modifier
+      .fillMaxWidth()
+  )
 }
 
 @Preview
 @Composable
 private fun AfterGameContentPreview() {
-    AfterGameContent(
-        date = LocalDate.of(2024, 4, 1),
-        afterGameInfo = AfterGameInfo(
-            homeScores = SAMPLE_HOME_INNING_SCORES,
-            awayScores = SAMPLE_AWAY_INNING_SCORES,
-            homePitcherResults = SAMPLE_WIN_PITCHER_RESULTS,
-            awayPitcherResults = SAMPLE_LOSE_PITCHER_RESULTS,
-            homeFielderResults = SAMPLE_FIELDER_RESULTS,
-            awayFielderResults = emptyList(),
-            rankings = DataSource.rankings,
-            games = listOf(
-                GameUiInfo(
-                    homeTeamIcon = R.drawable.team1_icon,
-                    homeTeamScore = 3,
-                    awayTeamIcon = R.drawable.team2_icon,
-                    awayTeamScore = 1,
-                    isGameFinished = true
-                ),
-                GameUiInfo(
-                    homeTeamIcon = R.drawable.team3_icon,
-                    homeTeamScore = 2,
-                    awayTeamIcon = R.drawable.team4_icon,
-                    awayTeamScore = 2,
-                    isGameFinished = true
-                ),
-                GameUiInfo(
-                    homeTeamIcon = R.drawable.team5_icon,
-                    homeTeamScore = 0,
-                    awayTeamIcon = R.drawable.team6_icon,
-                    awayTeamScore = 1,
-                    isGameFinished = true
-                ),
-                GameUiInfo(
-                    homeTeamIcon = R.drawable.team7_icon,
-                    homeTeamScore = 0,
-                    awayTeamIcon = R.drawable.team8_icon,
-                    awayTeamScore = 3,
-                    isGameFinished = true
-                ),
-                GameUiInfo(
-                    homeTeamIcon = R.drawable.team9_icon,
-                    homeTeamScore = 1,
-                    awayTeamIcon = R.drawable.team10_icon,
-                    awayTeamScore = 0,
-                    isGameFinished = true
-                ),
-                GameUiInfo(
-                    homeTeamIcon = R.drawable.team11_icon,
-                    homeTeamScore = 2,
-                    awayTeamIcon = R.drawable.team12_icon,
-                    awayTeamScore = 2,
-                    isGameFinished = true
-                )
-            ),
+  AfterGameContent(
+    date = LocalDate.of(2024, 4, 1),
+    afterGameInfo = AfterGameInfo(
+      homeScores = SAMPLE_HOME_INNING_SCORES,
+      awayScores = SAMPLE_AWAY_INNING_SCORES,
+      homePitcherResults = SAMPLE_WIN_PITCHER_RESULTS,
+      awayPitcherResults = SAMPLE_LOSE_PITCHER_RESULTS,
+      homeFielderResults = SAMPLE_FIELDER_RESULTS,
+      awayFielderResults = emptyList(),
+      rankings = DataSource.rankings,
+      games = listOf(
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team1_icon,
+          homeTeamScore = 3,
+          awayTeamIcon = R.drawable.team2_icon,
+          awayTeamScore = 1,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team3_icon,
+          homeTeamScore = 2,
+          awayTeamIcon = R.drawable.team4_icon,
+          awayTeamScore = 2,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team5_icon,
+          homeTeamScore = 0,
+          awayTeamIcon = R.drawable.team6_icon,
+          awayTeamScore = 1,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team7_icon,
+          homeTeamScore = 0,
+          awayTeamIcon = R.drawable.team8_icon,
+          awayTeamScore = 3,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team9_icon,
+          homeTeamScore = 1,
+          awayTeamIcon = R.drawable.team10_icon,
+          awayTeamScore = 0,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team11_icon,
+          homeTeamScore = 2,
+          awayTeamIcon = R.drawable.team12_icon,
+          awayTeamScore = 2,
+          isGameFinished = true
         )
+      ),
     )
+  )
 }
 
 @Preview
 @Composable
 private fun AfterGameContentWithoutGameResultPreview() {
-    AfterGameContentWithoutGameResult(
-        date = LocalDate.of(2024, 4, 1),
-        afterGameInfo = AfterGameInfo(
-            homeScores = SAMPLE_HOME_INNING_SCORES,
-            awayScores = SAMPLE_AWAY_INNING_SCORES,
-            homePitcherResults = SAMPLE_WIN_PITCHER_RESULTS,
-            awayPitcherResults = SAMPLE_LOSE_PITCHER_RESULTS,
-            homeFielderResults = SAMPLE_FIELDER_RESULTS,
-            awayFielderResults = emptyList(),
-            rankings = DataSource.rankings,
-            games = listOf(
-                GameUiInfo(
-                    homeTeamIcon = R.drawable.team1_icon,
-                    homeTeamScore = 3,
-                    awayTeamIcon = R.drawable.team2_icon,
-                    awayTeamScore = 1,
-                    isGameFinished = true
-                ),
-                GameUiInfo(
-                    homeTeamIcon = R.drawable.team3_icon,
-                    homeTeamScore = 2,
-                    awayTeamIcon = R.drawable.team4_icon,
-                    awayTeamScore = 2,
-                    isGameFinished = true
-                ),
-                GameUiInfo(
-                    homeTeamIcon = R.drawable.team5_icon,
-                    homeTeamScore = 0,
-                    awayTeamIcon = R.drawable.team6_icon,
-                    awayTeamScore = 1,
-                    isGameFinished = true
-                ),
-                GameUiInfo(
-                    homeTeamIcon = R.drawable.team7_icon,
-                    homeTeamScore = 0,
-                    awayTeamIcon = R.drawable.team8_icon,
-                    awayTeamScore = 3,
-                    isGameFinished = true
-                ),
-                GameUiInfo(
-                    homeTeamIcon = R.drawable.team9_icon,
-                    homeTeamScore = 1,
-                    awayTeamIcon = R.drawable.team10_icon,
-                    awayTeamScore = 0,
-                    isGameFinished = true
-                ),
-                GameUiInfo(
-                    homeTeamIcon = R.drawable.team11_icon,
-                    homeTeamScore = 2,
-                    awayTeamIcon = R.drawable.team12_icon,
-                    awayTeamScore = 2,
-                    isGameFinished = true
-                )
-            ),
+  AfterGameContentWithoutGameResult(
+    date = LocalDate.of(2024, 4, 1),
+    afterGameInfo = AfterGameInfo(
+      homeScores = SAMPLE_HOME_INNING_SCORES,
+      awayScores = SAMPLE_AWAY_INNING_SCORES,
+      homePitcherResults = SAMPLE_WIN_PITCHER_RESULTS,
+      awayPitcherResults = SAMPLE_LOSE_PITCHER_RESULTS,
+      homeFielderResults = SAMPLE_FIELDER_RESULTS,
+      awayFielderResults = emptyList(),
+      rankings = DataSource.rankings,
+      games = listOf(
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team1_icon,
+          homeTeamScore = 3,
+          awayTeamIcon = R.drawable.team2_icon,
+          awayTeamScore = 1,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team3_icon,
+          homeTeamScore = 2,
+          awayTeamIcon = R.drawable.team4_icon,
+          awayTeamScore = 2,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team5_icon,
+          homeTeamScore = 0,
+          awayTeamIcon = R.drawable.team6_icon,
+          awayTeamScore = 1,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team7_icon,
+          homeTeamScore = 0,
+          awayTeamIcon = R.drawable.team8_icon,
+          awayTeamScore = 3,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team9_icon,
+          homeTeamScore = 1,
+          awayTeamIcon = R.drawable.team10_icon,
+          awayTeamScore = 0,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team11_icon,
+          homeTeamScore = 2,
+          awayTeamIcon = R.drawable.team12_icon,
+          awayTeamScore = 2,
+          isGameFinished = true
         )
+      ),
     )
+  )
 }

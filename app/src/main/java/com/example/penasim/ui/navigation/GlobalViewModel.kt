@@ -14,31 +14,31 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GlobalViewModel @Inject constructor(
-    private val gameInfoUseCase: GameInfoUseCase
-): ViewModel() {
-    private val _state = MutableStateFlow(GlobalState())
-    val state: StateFlow<GlobalState> = _state.asStateFlow()
+  private val gameInfoUseCase: GameInfoUseCase
+) : ViewModel() {
+  private val _state = MutableStateFlow(GlobalState())
+  val state: StateFlow<GlobalState> = _state.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            val gameInfos = gameInfoUseCase.getAll()
-            val currentDay = gameInfos.maxOfOrNull { it.fixture.date }?.plusDays(1)
-                ?: Constants.START
+  init {
+    viewModelScope.launch {
+      val gameInfos = gameInfoUseCase.getAll()
+      val currentDay = gameInfos.maxOfOrNull { it.fixture.date }?.plusDays(1)
+        ?: Constants.START
 
-            _state.update { currentState ->
-                currentState.copy(
-                    currentDay = currentDay
-                )
-            }
-        }
+      _state.update { currentState ->
+        currentState.copy(
+          currentDay = currentDay
+        )
+      }
     }
+  }
 
-    fun nextDay() {
-        println("Next Day Called: ${_state.value.currentDay}")
-        _state.update { currentState ->
-            currentState.copy(
-                currentDay = currentState.currentDay.plusDays(1)
-            )
-        }
+  fun nextDay() {
+    println("Next Day Called: ${_state.value.currentDay}")
+    _state.update { currentState ->
+      currentState.copy(
+        currentDay = currentState.currentDay.plusDays(1)
+      )
     }
+  }
 }

@@ -20,76 +20,76 @@ import com.example.penasim.domain.toLeague
 
 @Composable
 fun Ranking(
-    rankings: List<RankingUiInfo>,
-    modifier: Modifier = Modifier
+  rankings: List<RankingUiInfo>,
+  modifier: Modifier = Modifier
 ) {
-    assert(rankings.size == 12)
-    Column(
-        modifier = modifier
-    ) {
-        repeat(2) {
-            LeagueRanking(
-                rankings = rankings.filter { ranking -> ranking.league == it.toLeague() },
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-        }
+  assert(rankings.size == 12)
+  Column(
+    modifier = modifier
+  ) {
+    repeat(2) {
+      LeagueRanking(
+        rankings = rankings.filter { ranking -> ranking.league == it.toLeague() },
+        modifier = Modifier
+          .fillMaxWidth()
+      )
     }
+  }
 }
 
 @Composable
 private fun LeagueRanking(
-    rankings: List<RankingUiInfo>,
-    modifier: Modifier = Modifier
+  rankings: List<RankingUiInfo>,
+  modifier: Modifier = Modifier
 ) {
-    assert(rankings.size == 6)
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        repeat(6) {
-            RankingTeam(
-                teamLogo = rankings[it].teamIcon,
-                gamesBack = rankings[it].gameBack,
-                isMyTeam = rankings[it].isMyTeam,
-                modifier = Modifier
-            )
-        }
+  assert(rankings.size == 6)
+  Row(
+    modifier = modifier,
+    horizontalArrangement = Arrangement.SpaceBetween
+  ) {
+    repeat(6) {
+      RankingTeam(
+        teamLogo = rankings[it].teamIcon,
+        gamesBack = rankings[it].gameBack,
+        isMyTeam = rankings[it].isMyTeam,
+        modifier = Modifier
+      )
     }
+  }
 }
 
 @Composable
 private fun RankingTeam(
-    @DrawableRes teamLogo: Int,
-    gamesBack: Double,
-    isMyTeam: Boolean,
-    modifier: Modifier = Modifier
+  @DrawableRes teamLogo: Int,
+  gamesBack: Double,
+  isMyTeam: Boolean,
+  modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
-            .then(
-                if (isMyTeam) {
-                    Modifier.border(
-                        width = 2.dp,
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = MaterialTheme.shapes.small
-                    )
-                } else {
-                    Modifier
-                }
-            )
-            .padding(4.dp)
-    ) {
-        Image(
-            painter = painterResource(id = teamLogo),
-            contentDescription = "team icon",
-            modifier = Modifier
-                .size(18.dp)
-                .align(Alignment.CenterVertically)
-        )
-        Text(
-            text = gamesBack.toString(),
-            modifier = Modifier
-        )
-    }
+  Row(
+    modifier = modifier
+      .then(
+        if (isMyTeam) {
+          Modifier.border(
+            width = 2.dp,
+            color = MaterialTheme.colorScheme.primary,
+            shape = MaterialTheme.shapes.small
+          )
+        } else {
+          Modifier
+        }
+      )
+      .padding(4.dp)
+  ) {
+    Image(
+      painter = painterResource(id = teamLogo),
+      contentDescription = "team icon",
+      modifier = Modifier
+        .size(18.dp)
+        .align(Alignment.CenterVertically)
+    )
+    Text(
+      text = gamesBack.toString(),
+      modifier = Modifier
+    )
+  }
 }

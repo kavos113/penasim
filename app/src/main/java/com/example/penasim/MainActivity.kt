@@ -25,47 +25,47 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            PenasimTheme {
-                Surface(
-                    color = MaterialTheme.colorScheme.background,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    PenasimApp()
-                }
-            }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    enableEdgeToEdge()
+    setContent {
+      PenasimTheme {
+        Surface(
+          color = MaterialTheme.colorScheme.background,
+          modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+        ) {
+          PenasimApp()
         }
+      }
     }
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PenasimTopAppBar(modifier: Modifier = Modifier) {
-    CenterAlignedTopAppBar(
-        title = {
-            Text(
-                text = stringResource(id = R.string.app_name),
-            )
-        },
-        modifier = modifier
-    )
+  CenterAlignedTopAppBar(
+    title = {
+      Text(
+        text = stringResource(id = R.string.app_name),
+      )
+    },
+    modifier = modifier
+  )
 }
 
 @Composable
 fun PenasimApp(navHostController: NavHostController = rememberNavController()) {
-    Scaffold(
-        topBar = {
-            PenasimTopAppBar()
-        }
-    ) { contentPadding ->
-        PenasimNavHost(
-            navController = navHostController,
-            modifier = Modifier.padding(contentPadding)
-        )
+  Scaffold(
+    topBar = {
+      PenasimTopAppBar()
     }
+  ) { contentPadding ->
+    PenasimNavHost(
+      navController = navHostController,
+      modifier = Modifier.padding(contentPadding)
+    )
+  }
 }

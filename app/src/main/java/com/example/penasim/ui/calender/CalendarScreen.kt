@@ -35,112 +35,112 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 object CalenderDestination : NavigationDestination {
-    override val route: String = "calendar"
-    override val titleResId: Int = R.string.calender
+  override val route: String = "calendar"
+  override val titleResId: Int = R.string.calender
 }
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun CalendarScreen(
-    modifier: Modifier = Modifier,
-    calendarViewModel: CalendarViewModel = hiltViewModel(),
-    onNextGame: () -> Unit = {},
-    currentDay: LocalDate
+  modifier: Modifier = Modifier,
+  calendarViewModel: CalendarViewModel = hiltViewModel(),
+  onNextGame: () -> Unit = {},
+  currentDay: LocalDate
 ) {
-    val uiState by calendarViewModel.uiState.collectAsState()
+  val uiState by calendarViewModel.uiState.collectAsState()
 
-    LaunchedEffect(currentDay) {
-        calendarViewModel.setCurrentDay(currentDay)
-    }
+  LaunchedEffect(currentDay) {
+    calendarViewModel.setCurrentDay(currentDay)
+  }
 
-    CalendarContent(
-        uiState = uiState,
-        onNextGame = {
-            calendarViewModel.nextGame()
-            onNextGame()
-         },
-        modifier = modifier
-    )
+  CalendarContent(
+    uiState = uiState,
+    onNextGame = {
+      calendarViewModel.nextGame()
+      onNextGame()
+    },
+    modifier = modifier
+  )
 }
 
 @Composable
 private fun CalendarContent(
-    uiState: CalendarUiState,
-    onNextGame: () -> Unit,
-    modifier: Modifier = Modifier
+  uiState: CalendarUiState,
+  onNextGame: () -> Unit,
+  modifier: Modifier = Modifier
 ) {
-    val listState = rememberLazyListState()
+  val listState = rememberLazyListState()
 
-    LaunchedEffect(uiState.currentDay) {
-        if (uiState.currentDay >= Constants.START.plusDays(4)) {
-            listState.animateScrollToItem(
-                index = (ChronoUnit.DAYS.between(Constants.START, uiState.currentDay) - 2).toInt(),
-                scrollOffset = 0
-            )
-        }
+  LaunchedEffect(uiState.currentDay) {
+    if (uiState.currentDay >= Constants.START.plusDays(4)) {
+      listState.animateScrollToItem(
+        index = (ChronoUnit.DAYS.between(Constants.START, uiState.currentDay) - 2).toInt(),
+        scrollOffset = 0
+      )
     }
+  }
 
-    Box {
-        Column(modifier = modifier) {
-            Ranking(rankings = uiState.rankings)
-            Spacer(modifier = Modifier.size(16.dp))
-            LazyColumn(
-                state = listState
-            ) {
-                items(
-                    items = uiState.games.entries.sortedBy { it.key }.toList()
-                ) { game ->
-                    Clause(
-                        currentDay = game.key,
-                        games = game.value,
-                        modifier = Modifier
-                            .padding(8.dp),
-                        focusTeamIcon = R.drawable.team1_icon // TODO fix
-                    )
-                }
-            }
-        }
-        NextGameButton(
-            onClick = onNextGame,
+  Box {
+    Column(modifier = modifier) {
+      Ranking(rankings = uiState.rankings)
+      Spacer(modifier = Modifier.size(16.dp))
+      LazyColumn(
+        state = listState
+      ) {
+        items(
+          items = uiState.games.entries.sortedBy { it.key }.toList()
+        ) { game ->
+          Clause(
+            currentDay = game.key,
+            games = game.value,
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-        )
+              .padding(8.dp),
+            focusTeamIcon = R.drawable.team1_icon // TODO fix
+          )
+        }
+      }
     }
+    NextGameButton(
+      onClick = onNextGame,
+      modifier = Modifier
+        .align(Alignment.BottomEnd)
+        .padding(16.dp)
+    )
+  }
 }
 
 @Composable
 private fun NextGameButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier
 ) {
-    Button(
-        onClick = onClick,
-        modifier = modifier
-    ) {
-        Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-            contentDescription = "Next Game"
-        )
-    }
+  Button(
+    onClick = onClick,
+    modifier = modifier
+  ) {
+    Icon(
+      imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+      contentDescription = "Next Game"
+    )
+  }
 }
 
 @Preview
 @Composable
 fun PreviewCalendarScreen() {
-    PenasimTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            CalendarContent(
-                uiState = CalendarUiState(),
-                onNextGame = {},
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-            )
-        }
+  PenasimTheme {
+    Surface(
+      color = MaterialTheme.colorScheme.background,
+      modifier = Modifier
+        .fillMaxSize()
+    ) {
+      CalendarContent(
+        uiState = CalendarUiState(),
+        onNextGame = {},
+        modifier = Modifier
+          .fillMaxSize()
+          .padding(16.dp)
+      )
     }
+  }
 }

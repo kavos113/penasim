@@ -15,18 +15,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InGameViewModel @Inject constructor(
-    private val executeGameByOne: ExecuteGameByOne,
-    private val playerInfoUseCase: PlayerInfoUseCase,
-    private val gameScheduleUseCase: GameScheduleUseCase
-): ViewModel() {
-    private val _uiState = MutableStateFlow(InGameInfo())
-    val uiState: StateFlow<InGameInfo> = _uiState.asStateFlow()
+  private val executeGameByOne: ExecuteGameByOne,
+  private val playerInfoUseCase: PlayerInfoUseCase,
+  private val gameScheduleUseCase: GameScheduleUseCase
+) : ViewModel() {
+  private val _uiState = MutableStateFlow(InGameInfo())
+  val uiState: StateFlow<InGameInfo> = _uiState.asStateFlow()
 
-    private lateinit var schedule: GameSchedule
+  private lateinit var schedule: GameSchedule
 
-    init {
-        viewModelScope.launch {
+  init {
+    viewModelScope.launch {
 
-        }
     }
+  }
 }

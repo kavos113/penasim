@@ -11,46 +11,46 @@ import com.example.penasim.domain.toTotalPitchingStats
 import javax.inject.Inject
 
 class PlayerInfoUseCase @Inject constructor(
-    private val playerRepository: PlayerRepository,
-    private val playerPositionRepository: PlayerPositionRepository,
-    private val teamRepository: TeamRepository,
-    private val battingStatRepository: BattingStatRepository,
-    private val pitchingStatRepository: PitchingStatRepository
+  private val playerRepository: PlayerRepository,
+  private val playerPositionRepository: PlayerPositionRepository,
+  private val teamRepository: TeamRepository,
+  private val battingStatRepository: BattingStatRepository,
+  private val pitchingStatRepository: PitchingStatRepository
 ) {
-    suspend fun getByPlayerId(playerId: Int): PlayerInfo {
-        val player = playerRepository.getPlayer(playerId)
-            ?: throw IllegalArgumentException("Player with id $playerId not found")
-        val team = teamRepository.getTeam(player.teamId)
-            ?: throw IllegalArgumentException("Team with id ${player.teamId} not found")
-        val positions = playerPositionRepository.getPlayerPositions(playerId)
+  suspend fun getByPlayerId(playerId: Int): PlayerInfo {
+    val player = playerRepository.getPlayer(playerId)
+      ?: throw IllegalArgumentException("Player with id $playerId not found")
+    val team = teamRepository.getTeam(player.teamId)
+      ?: throw IllegalArgumentException("Team with id ${player.teamId} not found")
+    val positions = playerPositionRepository.getPlayerPositions(playerId)
 
-        val battingStats = battingStatRepository.getByPlayerId(playerId).toTotalBattingStats()
-        val pitchingStats = pitchingStatRepository.getByPlayerId(playerId).toTotalPitchingStats()
+    val battingStats = battingStatRepository.getByPlayerId(playerId).toTotalBattingStats()
+    val pitchingStats = pitchingStatRepository.getByPlayerId(playerId).toTotalPitchingStats()
 
-        return PlayerInfo(
-            player = player,
-            positions = positions,
-            team = team,
-            battingStat = battingStats,
-            pitchingStat = pitchingStats
-        )
+    return PlayerInfo(
+      player = player,
+      positions = positions,
+      team = team,
+      battingStat = battingStats,
+      pitchingStat = pitchingStats
+    )
+  }
+
+  suspend fun getByTeamId(teamId: Int): List<PlayerInfo> {
+    val team = teamRepository.getTeam(teamId)
+      ?: throw IllegalArgumentException("Team with id $teamId not found")
+    val players = playerRepository.getPlayers(teamId)
+    return players.map { player ->
+      val positions = playerPositionRepository.getPlayerPositions(player.id)
+      val battingStats = battingStatRepository.getByPlayerId(player.id).toTotalBattingStats()
+      val pitchingStats = pitchingStatRepository.getByPlayerId(player.id).toTotalPitchingStats()
+      PlayerInfo(
+        player = player,
+        team = team,
+        battingStat = battingStats,
+        pitchingStat = pitchingStats,
+        positions = positions
+      )
     }
-
-    suspend fun getByTeamId(teamId: Int): List<PlayerInfo> {
-        val team = teamRepository.getTeam(teamId)
-            ?: throw IllegalArgumentException("Team with id $teamId not found")
-        val players = playerRepository.getPlayers(teamId)
-        return players.map { player ->
-            val positions = playerPositionRepository.getPlayerPositions(player.id)
-            val battingStats = battingStatRepository.getByPlayerId(player.id).toTotalBattingStats()
-            val pitchingStats = pitchingStatRepository.getByPlayerId(player.id).toTotalPitchingStats()
-            PlayerInfo(
-                player = player,
-                team = team,
-                battingStat = battingStats,
-                pitchingStat = pitchingStats,
-                positions = positions
-            )
-        }
-    }
+  }
 }

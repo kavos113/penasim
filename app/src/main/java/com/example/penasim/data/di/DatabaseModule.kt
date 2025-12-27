@@ -14,54 +14,54 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
-    @Provides
-    @Singleton
-    fun provideDatabase(
-        @ApplicationContext context: Context
-    ): PennantDatabase {
-        return Room.databaseBuilder(
-            context,
-            PennantDatabase::class.java,
-            "pennant_database"
-        )
-            .createFromAsset("databases/pennant_database.db")
-            .fallbackToDestructiveMigration(false)
-            .build()
-    }
+  @Provides
+  @Singleton
+  fun provideDatabase(
+    @ApplicationContext context: Context
+  ): PennantDatabase {
+    return Room.databaseBuilder(
+      context,
+      PennantDatabase::class.java,
+      "pennant_database"
+    )
+      .createFromAsset("databases/pennant_database.db")
+      .fallbackToDestructiveMigration(false)
+      .build()
+  }
 
-    @Provides
-    fun provideTeamDao(database: PennantDatabase) = database.teamDao()
+  @Provides
+  fun provideTeamDao(database: PennantDatabase) = database.teamDao()
 
-    @Provides
-    fun provideGameFixtureDao(database: PennantDatabase) = database.gameFixtureDao()
+  @Provides
+  fun provideGameFixtureDao(database: PennantDatabase) = database.gameFixtureDao()
 
-    @Provides
-    fun provideGameResultDao(database: PennantDatabase) = database.gameResultDao()
+  @Provides
+  fun provideGameResultDao(database: PennantDatabase) = database.gameResultDao()
 
-    @Provides
-    fun providePlayerDao(database: PennantDatabase) = database.playerDao()
+  @Provides
+  fun providePlayerDao(database: PennantDatabase) = database.playerDao()
 
-    @Provides
-    fun providePlayerPositionDao(database: PennantDatabase) = database.playerPositionDao()
+  @Provides
+  fun providePlayerPositionDao(database: PennantDatabase) = database.playerPositionDao()
 
-    @Provides
-    fun provideFielderAppointmentDao(database: PennantDatabase) = database.fielderAppointmentDao()
+  @Provides
+  fun provideFielderAppointmentDao(database: PennantDatabase) = database.fielderAppointmentDao()
 
-    @Provides
-    fun providePitcherAppointmentDao(database: PennantDatabase) = database.pitcherAppointmentDao()
+  @Provides
+  fun providePitcherAppointmentDao(database: PennantDatabase) = database.pitcherAppointmentDao()
 
-    @Provides
-    fun provideMainMemberDao(database: PennantDatabase) = database.mainMemberDao()
+  @Provides
+  fun provideMainMemberDao(database: PennantDatabase) = database.mainMemberDao()
 
-    @Provides
-    fun provideInningScoreDao(database: PennantDatabase) = database.inningScoreDao()
+  @Provides
+  fun provideInningScoreDao(database: PennantDatabase) = database.inningScoreDao()
 
-    @Provides
-    fun provideBattingStatDao(database: PennantDatabase) = database.battingStatDao()
+  @Provides
+  fun provideBattingStatDao(database: PennantDatabase) = database.battingStatDao()
 
-    @Provides
-    fun providePitchingStatDao(database: PennantDatabase) = database.pitchingStatDao()
+  @Provides
+  fun providePitchingStatDao(database: PennantDatabase) = database.pitchingStatDao()
 
-    @Provides
-    fun provideHomeRunDao(database: PennantDatabase) = database.homeRunDao()
+  @Provides
+  fun provideHomeRunDao(database: PennantDatabase) = database.homeRunDao()
 }

@@ -20,96 +20,96 @@ import javax.inject.Inject
 
 // 一打席ずつ実行する用
 class ExecuteGameByOne @Inject constructor(
-    private val executeGameUseCase: ExecuteGameUseCase,
-    private val teamUseCase: TeamUseCase,
-    private val gameScheduleUseCase: GameScheduleUseCase,
-    private val gameInfoUseCase: GameInfoUseCase,
-    private val battingStatUseCase: BattingStatUseCase,
-    private val pitchingStatUseCase: PitchingStatUseCase,
-    private val inningScoreUseCase: InningScoreUseCase,
-    private val homeRunUseCase: HomeRunUseCase,
-    private val transactionProvider: TransactionProvider
+  private val executeGameUseCase: ExecuteGameUseCase,
+  private val teamUseCase: TeamUseCase,
+  private val gameScheduleUseCase: GameScheduleUseCase,
+  private val gameInfoUseCase: GameInfoUseCase,
+  private val battingStatUseCase: BattingStatUseCase,
+  private val pitchingStatUseCase: PitchingStatUseCase,
+  private val inningScoreUseCase: InningScoreUseCase,
+  private val homeRunUseCase: HomeRunUseCase,
+  private val transactionProvider: TransactionProvider
 ) {
-    private lateinit var match: Match
-    private lateinit var myTeam: Team
-    private lateinit var date: LocalDate
+  private lateinit var match: Match
+  private lateinit var myTeam: Team
+  private lateinit var date: LocalDate
 
-    suspend fun start(myTeam: Team, date: LocalDate) {
-        this.myTeam = myTeam
-        this.date = date
+  suspend fun start(myTeam: Team, date: LocalDate) {
+    this.myTeam = myTeam
+    this.date = date
 
-        executeOtherGame()
+    executeOtherGame()
 
-        val schedule = gameScheduleUseCase
-            .getByDate(date)
-            .find { it.homeTeam == myTeam || it.awayTeam == myTeam }
-        if (schedule == null) {
-            println("today has no game for your team")
-            return
-        }
-
-        val homeTeamPlayers = teamUseCase.getTeamPlayers(schedule.homeTeam.id)
-        val awayTeamPlayers = teamUseCase.getTeamPlayers(schedule.awayTeam.id)
-
-        match = Match(schedule, homeTeamPlayers, awayTeamPlayers)
+    val schedule = gameScheduleUseCase
+      .getByDate(date)
+      .find { it.homeTeam == myTeam || it.awayTeam == myTeam }
+    if (schedule == null) {
+      println("today has no game for your team")
+      return
     }
 
-    fun next(): Boolean = match.next()
+    val homeTeamPlayers = teamUseCase.getTeamPlayers(schedule.homeTeam.id)
+    val awayTeamPlayers = teamUseCase.getTeamPlayers(schedule.awayTeam.id)
 
-    suspend fun postFinishGame(): List<GameInfo> {
-        match.postFinishGame()
+    match = Match(schedule, homeTeamPlayers, awayTeamPlayers)
+  }
 
-        val result = match.result()
+  fun next(): Boolean = match.next()
 
-        transactionProvider.runInTransaction {
+  suspend fun postFinishGame(): List<GameInfo> {
+    match.postFinishGame()
+
+    val result = match.result()
+
+    transactionProvider.runInTransaction {
+      inningScoreUseCase.insertAll(match.inningScores())
+      battingStatUseCase.insertAll(match.battingStats())
+      pitchingStatUseCase.insertAll(match.pitchingStats())
+      homeRunUseCase.insert(match.homeRuns())
+
+      executeGameUseCase.execute(
+        fixtureId = result.fixtureId,
+        homeScore = result.homeScore,
+        awayScore = result.awayScore
+      )
+    }
+
+    return gameInfoUseCase.getByDate(date)
+  }
+
+  suspend fun executeOtherGame(): List<GameInfo> {
+    val schedules = gameScheduleUseCase
+      .getByDate(date)
+      .filterNot { it.homeTeam == myTeam || it.awayTeam == myTeam }
+    println("Executing games for date: $date, total schedules: ${schedules.size}")
+
+    return supervisorScope {
+      val deferredResults = schedules.map { schedule ->
+        async(Dispatchers.Default) {
+          val homeTeamPlayers = teamUseCase.getTeamPlayers(schedule.homeTeam.id)
+          val awayTeamPlayers = teamUseCase.getTeamPlayers(schedule.awayTeam.id)
+
+          val match = Match(schedule, homeTeamPlayers, awayTeamPlayers)
+          match.play()
+
+          val result = match.result()
+
+          transactionProvider.runInTransaction {
             inningScoreUseCase.insertAll(match.inningScores())
             battingStatUseCase.insertAll(match.battingStats())
             pitchingStatUseCase.insertAll(match.pitchingStats())
             homeRunUseCase.insert(match.homeRuns())
 
             executeGameUseCase.execute(
-                fixtureId = result.fixtureId,
-                homeScore = result.homeScore,
-                awayScore = result.awayScore
+              fixtureId = result.fixtureId,
+              homeScore = result.homeScore,
+              awayScore = result.awayScore
             )
+          }
         }
+      }
 
-        return gameInfoUseCase.getByDate(date)
+      deferredResults.awaitAll()
     }
-
-    suspend fun executeOtherGame(): List<GameInfo> {
-        val schedules = gameScheduleUseCase
-            .getByDate(date)
-            .filterNot { it.homeTeam == myTeam || it.awayTeam == myTeam }
-        println("Executing games for date: $date, total schedules: ${schedules.size}")
-
-        return supervisorScope {
-            val deferredResults = schedules.map { schedule ->
-                async(Dispatchers.Default) {
-                    val homeTeamPlayers = teamUseCase.getTeamPlayers(schedule.homeTeam.id)
-                    val awayTeamPlayers = teamUseCase.getTeamPlayers(schedule.awayTeam.id)
-
-                    val match = Match(schedule, homeTeamPlayers, awayTeamPlayers)
-                    match.play()
-
-                    val result = match.result()
-
-                    transactionProvider.runInTransaction {
-                        inningScoreUseCase.insertAll(match.inningScores())
-                        battingStatUseCase.insertAll(match.battingStats())
-                        pitchingStatUseCase.insertAll(match.pitchingStats())
-                        homeRunUseCase.insert(match.homeRuns())
-
-                        executeGameUseCase.execute(
-                            fixtureId = result.fixtureId,
-                            homeScore = result.homeScore,
-                            awayScore = result.awayScore
-                        )
-                    }
-                }
-            }
-
-            deferredResults.awaitAll()
-        }
-    }
+  }
 }

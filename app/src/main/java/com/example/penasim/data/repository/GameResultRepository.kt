@@ -8,37 +8,39 @@ import com.example.penasim.domain.repository.GameResultRepository
 import javax.inject.Inject
 
 class GameResultRepository @Inject constructor(
-    private val gameResultDao: GameResultDao
-): GameResultRepository {
-    override suspend fun getGameByFixtureId(fixtureId: Int): GameResult?
-        = gameResultDao.getByGameFixtureId(fixtureId)?.toDomain()
+  private val gameResultDao: GameResultDao
+) : GameResultRepository {
+  override suspend fun getGameByFixtureId(fixtureId: Int): GameResult? =
+    gameResultDao.getByGameFixtureId(fixtureId)?.toDomain()
 
-    override suspend fun getGamesByFixtureIds(fixtureIds: List<Int>): List<GameResult>
-        = gameResultDao.getByGameFixtureIds(fixtureIds).map { it.toDomain() }
+  override suspend fun getGamesByFixtureIds(fixtureIds: List<Int>): List<GameResult> =
+    gameResultDao.getByGameFixtureIds(fixtureIds).map { it.toDomain() }
 
-    override suspend fun getAllGames(): List<GameResult>
-        = gameResultDao.getAll().map { it.toDomain() }
+  override suspend fun getAllGames(): List<GameResult> =
+    gameResultDao.getAll().map { it.toDomain() }
 
-    override suspend fun deleteAllGames() {
-        gameResultDao.deleteAll()
+  override suspend fun deleteAllGames() {
+    gameResultDao.deleteAll()
+  }
+
+  override suspend fun createGame(
+    fixtureId: Int,
+    homeScore: Int,
+    awayScore: Int
+  ): GameResult? {
+    if (getGameByFixtureId(fixtureId) != null) {
+      // Game already exists for this fixture
+      return null
     }
 
-    override suspend fun createGame(
-        fixtureId: Int,
-        homeScore: Int,
-        awayScore: Int
-    ): GameResult? {
-        if (getGameByFixtureId(fixtureId) != null) {
-            // Game already exists for this fixture
-            return null
-        }
+    gameResultDao.insert(
+      GameResultEntity(
+        gameFixtureId = fixtureId,
+        homeScore = homeScore,
+        awayScore = awayScore
+      )
+    )
 
-        gameResultDao.insert(GameResultEntity(
-            gameFixtureId = fixtureId,
-            homeScore = homeScore,
-            awayScore = awayScore
-        ))
-
-        return getGameByFixtureId(fixtureId)
-    }
+    return getGameByFixtureId(fixtureId)
+  }
 }

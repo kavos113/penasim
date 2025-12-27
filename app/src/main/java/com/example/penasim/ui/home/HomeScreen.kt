@@ -26,148 +26,147 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.penasim.R
-import com.example.penasim.ui.navigation.GlobalViewModel
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.PenasimTheme
 import java.time.LocalDate
 
 object HomeDestination : NavigationDestination {
-    override val route: String = "home"
-    override val titleResId: Int = R.string.app_name
+  override val route: String = "home"
+  override val titleResId: Int = R.string.app_name
 }
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier,
-    onGameClick: () -> Unit = {},
-    onNoGameDayClick: () -> Unit = {},
-    onCalenderClick: () -> Unit = {},
-    onCommandClick: () -> Unit = {},
-    homeViewModel: HomeViewModel = hiltViewModel(),
-    teamId: Int,
-    currentDay: LocalDate,
-    lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+  modifier: Modifier = Modifier,
+  onGameClick: () -> Unit = {},
+  onNoGameDayClick: () -> Unit = {},
+  onCalenderClick: () -> Unit = {},
+  onCommandClick: () -> Unit = {},
+  homeViewModel: HomeViewModel = hiltViewModel(),
+  teamId: Int,
+  currentDay: LocalDate,
+  lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 ) {
-    val uiState by homeViewModel.uiState.collectAsState()
+  val uiState by homeViewModel.uiState.collectAsState()
 
-    LaunchedEffect(teamId, currentDay) {
-        homeViewModel.setTeamId(teamId)
-        homeViewModel.setCurrentDay(currentDay)
+  LaunchedEffect(teamId, currentDay) {
+    homeViewModel.setTeamId(teamId)
+    homeViewModel.setCurrentDay(currentDay)
+    homeViewModel.update()
+  }
+
+  DisposableEffect(lifeCycleOwner) {
+    val observer = LifecycleEventObserver { _, event ->
+      if (event == Lifecycle.Event.ON_RESUME) {
         homeViewModel.update()
+      }
     }
 
-    DisposableEffect(lifeCycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) {
-                homeViewModel.update()
-            }
-        }
+    lifeCycleOwner.lifecycle.addObserver(observer)
 
-        lifeCycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifeCycleOwner.lifecycle.removeObserver(observer)
-        }
+    onDispose {
+      lifeCycleOwner.lifecycle.removeObserver(observer)
     }
+  }
 
-    Column(
-        modifier = modifier
-            .padding(30.dp)
-    ) {
-        HomeInformation(
-            date = uiState.currentDay,
-            rank = uiState.rank,
-            modifier = Modifier
-                .align(alignment = Alignment.CenterHorizontally)
-        )
-        HomeMenu(
-            isGameDay = uiState.isGameDay,
-            onGameClick = onGameClick,
-            onNoGameDayClick = onNoGameDayClick,
-            onCalenderClick = onCalenderClick,
-            onCommandClick = onCommandClick,
-            modifier = Modifier
-        )
-    }
+  Column(
+    modifier = modifier
+      .padding(30.dp)
+  ) {
+    HomeInformation(
+      date = uiState.currentDay,
+      rank = uiState.rank,
+      modifier = Modifier
+        .align(alignment = Alignment.CenterHorizontally)
+    )
+    HomeMenu(
+      isGameDay = uiState.isGameDay,
+      onGameClick = onGameClick,
+      onNoGameDayClick = onNoGameDayClick,
+      onCalenderClick = onCalenderClick,
+      onCommandClick = onCommandClick,
+      modifier = Modifier
+    )
+  }
 }
 
 @Composable
 fun HomeInformation(
-    date: LocalDate,
-    rank: Int,
-    modifier: Modifier = Modifier,
+  date: LocalDate,
+  rank: Int,
+  modifier: Modifier = Modifier,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier
-    ) {
-        Text(stringResource(R.string.date, date.month.value, date.dayOfMonth))
-        Text(stringResource(R.string.rank, rank))
-    }
+  Row(
+    horizontalArrangement = Arrangement.spacedBy(16.dp),
+    modifier = modifier
+  ) {
+    Text(stringResource(R.string.date, date.month.value, date.dayOfMonth))
+    Text(stringResource(R.string.rank, rank))
+  }
 }
 
 @Composable
 fun HomeMenu(
-    isGameDay: Boolean = true,
-    onGameClick: () -> Unit = {},
-    onNoGameDayClick: () -> Unit = {},
-    onCalenderClick: () -> Unit = {},
-    onCommandClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+  isGameDay: Boolean = true,
+  onGameClick: () -> Unit = {},
+  onNoGameDayClick: () -> Unit = {},
+  onCalenderClick: () -> Unit = {},
+  onCommandClick: () -> Unit = {},
+  modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-    ) {
-        if (isGameDay) {
-            Button(
-                onClick = onGameClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Text(stringResource(R.string.game))
-            }
-        } else {
-            Button(
-                onClick = onNoGameDayClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Text(stringResource(R.string.next_day))
-            }
-        }
-        Button(
-            onClick = onCalenderClick,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.calender))
-        }
-        Button(
-            onClick = onCommandClick,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.command))
-        }
+  Column(
+    modifier = modifier
+  ) {
+    if (isGameDay) {
+      Button(
+        onClick = onGameClick,
+        modifier = Modifier
+          .fillMaxWidth()
+      ) {
+        Text(stringResource(R.string.game))
+      }
+    } else {
+      Button(
+        onClick = onNoGameDayClick,
+        modifier = Modifier
+          .fillMaxWidth()
+      ) {
+        Text(stringResource(R.string.next_day))
+      }
     }
+    Button(
+      onClick = onCalenderClick,
+      modifier = Modifier
+        .fillMaxWidth()
+    ) {
+      Text(stringResource(R.string.calender))
+    }
+    Button(
+      onClick = onCommandClick,
+      modifier = Modifier
+        .fillMaxWidth()
+    ) {
+      Text(stringResource(R.string.command))
+    }
+  }
 }
 
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    PenasimTheme {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            HomeScreen(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                teamId = 1,
-                currentDay = LocalDate.now()
-            )
-        }
+  PenasimTheme {
+    Surface(
+      color = MaterialTheme.colorScheme.background,
+      modifier = Modifier
+        .fillMaxSize()
+    ) {
+      HomeScreen(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        teamId = 1,
+        currentDay = LocalDate.now()
+      )
     }
+  }
 }

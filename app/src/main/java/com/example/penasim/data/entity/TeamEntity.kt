@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "teams")
 data class TeamEntity(
-    @PrimaryKey val id: Int,
-    val name: String,
-    val leagueId: Int
+  @PrimaryKey val id: Int,
+  val name: String,
+  val leagueId: Int
 )
