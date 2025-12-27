@@ -46,6 +46,7 @@ object BeforeGameDestination : NavigationDestination {
 fun BeforeGameScreen(
     modifier: Modifier = Modifier,
     navToAfterGame: () -> Unit = {},
+    navToInGame: () -> Unit = {},
     gameViewModel: GameViewModel,
     currentDay: LocalDate
 ) {
@@ -67,6 +68,7 @@ fun BeforeGameScreen(
                 gameViewModel.startGame()
                 navToAfterGame()
             },
+            onClickInGame = navToInGame,
             modifier = modifier
         )
     }
@@ -79,6 +81,7 @@ private fun BeforeGameContent(
     beforeGameInfo: BeforeGameInfo,
     modifier: Modifier = Modifier,
     onClickStartGame: () -> Unit = { },
+    onClickInGame: () -> Unit = { }
 ) {
     Scaffold(
         topBar = {
@@ -120,13 +123,24 @@ private fun BeforeGameContent(
                         .padding(16.dp)
                 )
             }
-            Button(
-                onClick = onClickStartGame,
+            Row(
                 modifier = Modifier
-                    .padding(24.dp)
                     .align(Alignment.CenterHorizontally)
             ) {
-                Text(text = "試合開始")
+                Button(
+                    onClick = onClickInGame,
+                    modifier = Modifier
+                        .padding(24.dp)
+                ) {
+                    Text(text = "試合開始")
+                }
+                Button(
+                    onClick = onClickStartGame,
+                    modifier = Modifier
+                        .padding(24.dp)
+                ) {
+                    Text(text = "スキップ")
+                }
             }
         }
     }
