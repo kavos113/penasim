@@ -76,6 +76,7 @@ class AfterGameViewModel @Inject constructor(
       val awayPlayers = playerInfoUseCase.getByTeamId(mySchedule.awayTeam.id)
 
       val inningScores = inningScoreUseCase.getByFixtureId(mySchedule.fixture.id)
+      println(inningScores)
       val pitchingStats = pitchingScoreUseCase.getByFixtureId(mySchedule.fixture.id)
       val ranking = rankingUseCase.getAll()
         .map { it.toRankingUiInfo() }

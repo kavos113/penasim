@@ -63,6 +63,9 @@ fun AfterGameScreen(
 
   LaunchedEffect(currentDay) {
     viewModel.setDate(currentDay)
+  }
+
+  LaunchedEffect(Unit) {
     if (isSkipped) {
       viewModel.runGame()
     }
@@ -92,6 +95,9 @@ fun AfterGameScreenWithoutGameResult(
 
   LaunchedEffect(currentDay) {
     viewModel.setDate(currentDay)
+  }
+
+  LaunchedEffect(Unit) {
     viewModel.runGame()
     viewModel.skipGame()
   }
