@@ -1,9 +1,12 @@
 package com.example.penasim.ui.game
 
+import com.example.penasim.const.Constants
 import com.example.penasim.domain.TeamStanding
 import com.example.penasim.ui.common.DisplayFielder
+import java.time.LocalDate
 
 data class BeforeGameInfo(
+  val date: LocalDate = Constants.START,
   val homeTeam: TeamStanding = TeamStanding(),
   val awayTeam: TeamStanding = TeamStanding(),
   val homeStartingPlayers: List<DisplayFielder> = emptyList(),
