@@ -55,9 +55,19 @@ object AfterGameWithoutGameResultDestination : NavigationDestination {
 fun AfterGameScreen(
   modifier: Modifier = Modifier,
   onClickFinish: () -> Unit = { },
-  gameViewModel: GameViewModel,
+  viewModel: AfterGameViewModel,
+  currentDay: LocalDate,
+  isSkipped: Boolean
 ) {
-  val uiState by gameViewModel.uiState.collectAsState()
+  val uiState by viewModel.uiState.collectAsState()
+
+  LaunchedEffect(currentDay) {
+    viewModel.setDate(currentDay)
+    if (isSkipped) {
+      viewModel.runGame()
+    }
+    viewModel.initData()
+  }
 
   BackHandler(
     enabled = true,
@@ -65,8 +75,7 @@ fun AfterGameScreen(
   )
 
   AfterGameContent(
-    date = uiState.date,
-    afterGameInfo = uiState.afterGameInfo,
+    afterGameInfo = uiState,
     modifier = modifier,
     onClickFinish = onClickFinish
   )
@@ -76,13 +85,15 @@ fun AfterGameScreen(
 fun AfterGameScreenWithoutGameResult(
   modifier: Modifier = Modifier,
   onClickFinish: () -> Unit = { },
-  gameViewModel: GameViewModel,
+  viewModel: AfterGameViewModel,
   currentDay: LocalDate
 ) {
-  val uiState by gameViewModel.uiState.collectAsState()
+  val uiState by viewModel.uiState.collectAsState()
 
   LaunchedEffect(currentDay) {
-    gameViewModel.setDate(currentDay)
+    viewModel.setDate(currentDay)
+    viewModel.runGame()
+    viewModel.skipGame()
   }
 
   BackHandler(
@@ -91,8 +102,7 @@ fun AfterGameScreenWithoutGameResult(
   )
 
   AfterGameContentWithoutGameResult(
-    date = uiState.date,
-    afterGameInfo = uiState.afterGameInfo,
+    afterGameInfo = uiState,
     modifier = modifier,
     onClickFinish = onClickFinish
   )
@@ -101,7 +111,6 @@ fun AfterGameScreenWithoutGameResult(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AfterGameContent(
-  date: LocalDate,
   afterGameInfo: AfterGameInfo,
   modifier: Modifier = Modifier,
   onClickFinish: () -> Unit = { }
@@ -111,7 +120,7 @@ private fun AfterGameContent(
       CenterAlignedTopAppBar(
         title = {
           Text(
-            text = "${date.monthValue}月${date.dayOfMonth}日",
+            text = "${afterGameInfo.date.monthValue}月${afterGameInfo.date.dayOfMonth}日",
             fontSize = 20.sp,
             modifier = Modifier
           )
@@ -218,7 +227,6 @@ private fun AfterGameContent(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AfterGameContentWithoutGameResult(
-  date: LocalDate,
   afterGameInfo: AfterGameInfo,
   modifier: Modifier = Modifier,
   onClickFinish: () -> Unit = { }
@@ -228,7 +236,7 @@ private fun AfterGameContentWithoutGameResult(
       CenterAlignedTopAppBar(
         title = {
           Text(
-            text = "${date.monthValue}月${date.dayOfMonth}日",
+            text = "${afterGameInfo.date.monthValue}月${afterGameInfo.date.dayOfMonth}日",
             fontSize = 20.sp,
             modifier = Modifier
           )
@@ -517,8 +525,8 @@ private fun SingleTeamFielderResultsPreview() {
 @Composable
 private fun AfterGameContentPreview() {
   AfterGameContent(
-    date = LocalDate.of(2024, 4, 1),
     afterGameInfo = AfterGameInfo(
+      date = LocalDate.of(2024, 4, 1),
       homeScores = SAMPLE_HOME_INNING_SCORES,
       awayScores = SAMPLE_AWAY_INNING_SCORES,
       homePitcherResults = SAMPLE_WIN_PITCHER_RESULTS,
@@ -578,8 +586,8 @@ private fun AfterGameContentPreview() {
 @Composable
 private fun AfterGameContentWithoutGameResultPreview() {
   AfterGameContentWithoutGameResult(
-    date = LocalDate.of(2024, 4, 1),
     afterGameInfo = AfterGameInfo(
+      date = LocalDate.of(2024, 4, 1),
       homeScores = SAMPLE_HOME_INNING_SCORES,
       awayScores = SAMPLE_AWAY_INNING_SCORES,
       homePitcherResults = SAMPLE_WIN_PITCHER_RESULTS,

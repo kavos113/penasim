@@ -3,14 +3,12 @@ package com.example.penasim.ui.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navigation
 import com.example.penasim.ui.calender.CalendarScreen
 import com.example.penasim.ui.calender.CalenderDestination
 import com.example.penasim.ui.command.CommandDestination
@@ -21,7 +19,6 @@ import com.example.penasim.ui.game.AfterGameScreenWithoutGameResult
 import com.example.penasim.ui.game.AfterGameWithoutGameResultDestination
 import com.example.penasim.ui.game.BeforeGameDestination
 import com.example.penasim.ui.game.BeforeGameScreen
-import com.example.penasim.ui.game.GameViewModel
 import com.example.penasim.ui.home.HomeDestination
 import com.example.penasim.ui.home.HomeScreen
 
@@ -49,40 +46,29 @@ fun PenasimNavHost(
         currentDay = globalState.value.currentDay
       )
     }
-    navigation(
-      startDestination = BeforeGameDestination.route,
-      route = "game_graph"
-    ) {
-      composable(route = BeforeGameDestination.route) { navBackStackEntry ->
-        val parentEntity = remember(navBackStackEntry) {
-          navController.getBackStackEntry("game_graph")
-        }
-        val gameViewModel: GameViewModel = hiltViewModel(parentEntity)
-        BeforeGameScreen(
-          gameViewModel = gameViewModel,
-          navToAfterGame = { navController.navigate(route = AfterGameDestination.route) },
-          modifier = Modifier.fillMaxSize(),
-          currentDay = globalState.value.currentDay
-        )
-      }
-      composable(route = AfterGameDestination.route) {
-        val parentEntity = remember(it) {
-          navController.getBackStackEntry("game_graph")
-        }
-        val gameViewModel: GameViewModel = hiltViewModel(parentEntity)
-        AfterGameScreen(
-          gameViewModel = gameViewModel,
-          onClickFinish = {
-            navController.navigate(HomeDestination.route)
-            globalViewModel.nextDay()
-          },
-          modifier = Modifier.fillMaxSize()
-        )
-      }
+    composable(route = BeforeGameDestination.route) {
+      BeforeGameScreen(
+        viewModel = hiltViewModel(),
+        navToAfterGame = { navController.navigate(route = AfterGameDestination.route) },
+        modifier = Modifier.fillMaxSize(),
+        currentDay = globalState.value.currentDay
+      )
+    }
+    composable(route = AfterGameDestination.route) {
+      AfterGameScreen(
+        viewModel = hiltViewModel(),
+        onClickFinish = {
+          navController.navigate(HomeDestination.route)
+          globalViewModel.nextDay()
+        },
+        modifier = Modifier.fillMaxSize(),
+        currentDay = globalState.value.currentDay,
+        isSkipped = true
+      )
     }
     composable(route = AfterGameWithoutGameResultDestination.route) {
       AfterGameScreenWithoutGameResult(
-        gameViewModel = hiltViewModel(),
+        viewModel = hiltViewModel(),
         onClickFinish = {
           navController.navigate(HomeDestination.route)
           globalViewModel.nextDay()

@@ -47,13 +47,13 @@ fun BeforeGameScreen(
   modifier: Modifier = Modifier,
   navToAfterGame: () -> Unit = {},
   navToInGame: () -> Unit = {},
-  gameViewModel: GameViewModel,
+  viewModel: BeforeGameViewModel,
   currentDay: LocalDate
 ) {
-  val uiState by gameViewModel.uiState.collectAsState()
+  val uiState by viewModel.uiState.collectAsState()
 
   LaunchedEffect(currentDay) {
-    gameViewModel.setDate(currentDay)
+    viewModel.setDate(currentDay)
   }
 
   Column(
@@ -62,13 +62,9 @@ fun BeforeGameScreen(
     verticalArrangement = Arrangement.SpaceBetween
   ) {
     BeforeGameContent(
-      date = uiState.date,
-      beforeGameInfo = uiState.beforeGameInfo,
-      onClickStartGame = {
-        gameViewModel.startGame()
-        navToAfterGame()
-      },
-      onClickInGame = navToInGame,
+      beforeGameInfo = uiState,
+      onClickSkipGame = navToAfterGame,
+      onClickStartGame = navToInGame,
       modifier = modifier
     )
   }
@@ -77,18 +73,17 @@ fun BeforeGameScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BeforeGameContent(
-  date: LocalDate,
   beforeGameInfo: BeforeGameInfo,
   modifier: Modifier = Modifier,
-  onClickStartGame: () -> Unit = { },
-  onClickInGame: () -> Unit = { }
+  onClickSkipGame: () -> Unit = { },
+  onClickStartGame: () -> Unit = { }
 ) {
   Scaffold(
     topBar = {
       CenterAlignedTopAppBar(
         title = {
           Text(
-            text = "${date.monthValue}月${date.dayOfMonth}日",
+            text = "${beforeGameInfo.date.monthValue}月${beforeGameInfo.date.dayOfMonth}日",
             fontSize = 20.sp,
             modifier = Modifier
           )
@@ -128,14 +123,14 @@ private fun BeforeGameContent(
           .align(Alignment.CenterHorizontally)
       ) {
         Button(
-          onClick = onClickInGame,
+          onClick = onClickStartGame,
           modifier = Modifier
             .padding(24.dp)
         ) {
           Text(text = "試合開始")
         }
         Button(
-          onClick = onClickStartGame,
+          onClick = onClickSkipGame,
           modifier = Modifier
             .padding(24.dp)
         ) {
@@ -275,8 +270,8 @@ private val SAMPLE_TEAM_STANDING = TeamStanding(
 @Composable
 private fun BeforeGameContentPreview() {
   BeforeGameContent(
-    date = LocalDate.of(2024, 4, 1),
     beforeGameInfo = BeforeGameInfo(
+      date = LocalDate.of(2024, 4, 1),
       homeTeam = SAMPLE_TEAM_STANDING,
       awayTeam = SAMPLE_TEAM_STANDING,
       homeStartingPlayers = SAMPLE_FIELDERS,

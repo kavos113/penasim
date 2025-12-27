@@ -80,8 +80,8 @@ class Match(
   private fun Half.toStr() = if (this == Half.INNING_TOP) "表" else "裏"
 
   fun play() {
-    while (next())
-      postFinishGame()
+    while (next()) {}
+    postFinishGame()
   }
 
   // 続くならtrue

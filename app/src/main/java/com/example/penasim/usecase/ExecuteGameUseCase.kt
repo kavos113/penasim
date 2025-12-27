@@ -14,7 +14,7 @@ class ExecuteGameUseCase @Inject constructor(
 ) {
   suspend fun execute(fixtureId: Int, homeScore: Int, awayScore: Int): GameInfo {
     val result = gameResultRepository.createGame(fixtureId, homeScore, awayScore)
-      ?: throw IllegalArgumentException("this fixtureId is already used")
+      ?: throw IllegalArgumentException("this fixtureId is already used: $fixtureId")
 
     val fixture = gameFixtureRepository.getGameFixture(fixtureId)
       ?: throw IllegalArgumentException("no fixture for id $fixtureId")

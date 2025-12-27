@@ -50,6 +50,21 @@ class AfterGameViewModel @Inject constructor(
     }
   }
 
+  fun skipGame() {
+    viewModelScope.launch {
+      val ranking = rankingUseCase.getAll()
+        .map { it.toRankingUiInfo() }
+      val recentGames = gameInfoUseCase.getByDate(uiState.value.date)
+
+      _uiState.update { currentState ->
+        currentState.copy(
+          rankings = ranking,
+          games = recentGames.map { it.toGameUiInfo() }
+        )
+      }
+    }
+  }
+
   fun initData() {
     viewModelScope.launch {
       val schedules = gameScheduleUseCase.getByDate(uiState.value.date)
