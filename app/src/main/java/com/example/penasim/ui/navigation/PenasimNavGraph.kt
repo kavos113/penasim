@@ -52,6 +52,7 @@ fun PenasimNavHost(
       BeforeGameScreen(
         viewModel = hiltViewModel(),
         navToAfterGame = { navController.navigate(route = AfterGameDestination.route) },
+        navToInGame = { navController.navigate(InGameDestination.route) },
         modifier = Modifier.fillMaxSize(),
         currentDay = globalState.value.currentDay
       )

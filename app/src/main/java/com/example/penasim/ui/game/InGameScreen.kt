@@ -68,7 +68,8 @@ fun InGameScreen(
     },
     onClickSkip = {
       viewModel.skip()
-    }
+    },
+    modifier = modifier
   )
 }
 
@@ -82,7 +83,7 @@ private fun InGameContent(
   onClickChange: () -> Unit = { }
 ) {
   Column(
-    verticalArrangement = Arrangement.SpaceBetween,
+    verticalArrangement = Arrangement.spacedBy(2.dp),
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
     InningScoresTable(
@@ -165,11 +166,11 @@ private fun BaseInfo(
 ) {
   Box(
     modifier = modifier
-      .fillMaxHeight()
   ) {
     Column(
       verticalArrangement = Arrangement.spacedBy(100.dp),
       modifier = Modifier
+        .padding(top = 100.dp)
         .align(Alignment.Center)
     ) {
       Box(
@@ -506,5 +507,38 @@ private fun FooterItemsPreview() {
       1,
       pitcherColor
     ),
+  )
+}
+
+@Preview
+@Composable
+private fun InGameContentPreview() {
+  InGameContent(
+    inGameInfo = InGameInfo(
+      homeTeam = InGameTeamInfo(
+        players = SAMPLE_ORDER,
+        activePlayerId = 1,
+        activeNumber = 2
+      ),
+      awayTeam = InGameTeamInfo(
+        players = SAMPLE_ORDER
+      ),
+      firstBase = null,
+      secondBase = DisplayFielder(
+        7,
+        "Player 8",
+        Position.CENTER_FIELDER,
+        8,
+        outfielderColor
+      ),
+      thirdBase = DisplayFielder(
+        8,
+        "Player 9",
+        Position.RIGHT_FIELDER,
+        9,
+        outfielderColor
+      ),
+      outCount = 1
+    )
   )
 }

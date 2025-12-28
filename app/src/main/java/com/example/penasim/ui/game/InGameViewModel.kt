@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.penasim.const.Constants
 import com.example.penasim.domain.GameSchedule
 import com.example.penasim.domain.OrderType
+import com.example.penasim.domain.Position
 import com.example.penasim.game.ExecuteGameByOne
 import com.example.penasim.ui.common.GetDisplayFielder
 import com.example.penasim.usecase.GameScheduleUseCase
@@ -50,10 +51,11 @@ class InGameViewModel @Inject constructor(
         currentState.copy(
           homeTeam = InGameTeamInfo(
             players = homePlayers,
+            activePlayerId = homePlayers.find { it.position == Position.PITCHER }?.id ?: 0
           ),
           awayTeam = InGameTeamInfo(
             players = awayPlayers,
-            activePlayerId = awayPlayers.find { it.number == 1 }?.id,
+            activePlayerId = awayPlayers.find { it.number == 1 }?.id ?: 0,
             activeNumber = 1
           )
         )

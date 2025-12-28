@@ -20,7 +20,7 @@ data class InGameInfo(
 data class InGameTeamInfo(
   val inningScores: List<InningScore> = emptyList(),
   val players: List<DisplayFielder> = emptyList(),
-  val activePlayerId: Int? = null,
+  val activePlayerId: Int = 0, // 打線 or pitcher
   val activeNumber: Int? = null // activeな打順
 ) {
   val mainFielders: List<DisplayFielder>
