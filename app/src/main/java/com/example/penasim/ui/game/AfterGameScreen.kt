@@ -39,17 +39,14 @@ import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.errorContainerLight
 import com.example.penasim.ui.theme.playerBorderColor
 import com.example.penasim.ui.theme.primaryContainerLight
+import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
-object AfterGameDestination : NavigationDestination {
-  override val route: String = "after_game"
-  override val titleResId: Int = R.string.game
-}
+@Serializable
+data class AfterGameDestination(val isSkipped: Boolean)
 
-object AfterGameWithoutGameResultDestination : NavigationDestination {
-  override val route: String = "after_game_without_game_result"
-  override val titleResId: Int = R.string.game
-}
+@Serializable
+object AfterGameWithoutGameResultDestination
 
 @Composable
 fun AfterGameScreen(

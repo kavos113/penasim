@@ -24,20 +24,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.penasim.R
 import com.example.penasim.const.Constants
 import com.example.penasim.ui.common.Clause
 import com.example.penasim.ui.common.Ranking
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.PenasimTheme
+import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-object CalenderDestination : NavigationDestination {
-  override val route: String = "calendar"
-  override val titleResId: Int = R.string.calender
-}
+@Serializable
+object CalendarDestination
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable

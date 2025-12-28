@@ -9,8 +9,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
+import com.example.penasim.ui.calender.CalendarDestination
 import com.example.penasim.ui.calender.CalendarScreen
-import com.example.penasim.ui.calender.CalenderDestination
 import com.example.penasim.ui.command.CommandDestination
 import com.example.penasim.ui.command.CommandScreen
 import com.example.penasim.ui.game.AfterGameDestination
@@ -34,66 +35,67 @@ fun PenasimNavHost(
 
   NavHost(
     navController = navController,
-    startDestination = HomeDestination.route,
+    startDestination = HomeDestination,
     modifier = modifier
   ) {
-    composable(route = HomeDestination.route) {
+    composable<HomeDestination> {
       HomeScreen(
-        onGameClick = { navController.navigate(BeforeGameDestination.route) },
-        onNoGameDayClick = { navController.navigate(AfterGameWithoutGameResultDestination.route) },
-        onCalenderClick = { navController.navigate(CalenderDestination.route) },
-        onCommandClick = { navController.navigate(CommandDestination.route) },
+        onGameClick = { navController.navigate(BeforeGameDestination) },
+        onNoGameDayClick = { navController.navigate(AfterGameWithoutGameResultDestination) },
+        onCalenderClick = { navController.navigate(CalendarDestination) },
+        onCommandClick = { navController.navigate(CommandDestination) },
         modifier = Modifier.fillMaxSize(),
         teamId = globalState.value.teamId,
         currentDay = globalState.value.currentDay
       )
     }
-    composable(route = BeforeGameDestination.route) {
+    composable<BeforeGameDestination> {
       BeforeGameScreen(
         viewModel = hiltViewModel(),
-        navToAfterGame = { navController.navigate(route = AfterGameDestination.route) },
-        navToInGame = { navController.navigate(InGameDestination.route) },
+        navToAfterGame = { navController.navigate(route = AfterGameDestination(isSkipped = true)) },
+        navToInGame = { navController.navigate(InGameDestination) },
         modifier = Modifier.fillMaxSize(),
         currentDay = globalState.value.currentDay
       )
     }
-    composable(route = AfterGameDestination.route) {
+    composable<AfterGameDestination> { backStackEntry ->
+      val afterGameDestination: AfterGameDestination = backStackEntry.toRoute()
       AfterGameScreen(
         viewModel = hiltViewModel(),
         onClickFinish = {
-          navController.navigate(HomeDestination.route)
+          navController.navigate(HomeDestination)
           globalViewModel.nextDay()
         },
         modifier = Modifier.fillMaxSize(),
         currentDay = globalState.value.currentDay,
-        isSkipped = true
+        isSkipped = afterGameDestination.isSkipped
       )
     }
-    composable(route = AfterGameWithoutGameResultDestination.route) {
+    composable<AfterGameWithoutGameResultDestination> {
       AfterGameScreenWithoutGameResult(
         viewModel = hiltViewModel(),
         onClickFinish = {
-          navController.navigate(HomeDestination.route)
+          navController.navigate(HomeDestination)
           globalViewModel.nextDay()
         },
         modifier = Modifier.fillMaxSize(),
         currentDay = globalState.value.currentDay
       )
     }
-    composable(route = InGameDestination.route) {
+    composable<InGameDestination> {
       InGameScreen(
         viewModel = hiltViewModel(),
-        onGameFinish = { navController.navigate(AfterGameDestination.route) },
+        onGameFinish = { navController.navigate(AfterGameDestination(isSkipped = false)) },
         currentDay = globalState.value.currentDay
       )
     }
-    composable(route = CalenderDestination.route) {
+    composable<CalendarDestination> {
       CalendarScreen(
         currentDay = globalState.value.currentDay,
         onNextGame = { globalViewModel.nextDay() }
       )
     }
-    composable(route = CommandDestination.route) {
+    composable<CommandDestination> {
       CommandScreen(teamId = globalState.value.teamId)
     }
   }

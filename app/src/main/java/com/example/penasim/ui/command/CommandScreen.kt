@@ -19,11 +19,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.penasim.R
 import com.example.penasim.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
-object CommandDestination : NavigationDestination {
-  override val route: String = "command"
-  override val titleResId: Int = R.string.command
-}
+@Serializable
+object CommandDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

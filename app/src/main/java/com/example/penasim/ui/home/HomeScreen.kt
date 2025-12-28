@@ -28,12 +28,11 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.penasim.R
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.PenasimTheme
+import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
-object HomeDestination : NavigationDestination {
-  override val route: String = "home"
-  override val titleResId: Int = R.string.app_name
-}
+@Serializable
+object HomeDestination
 
 @Composable
 fun HomeScreen(

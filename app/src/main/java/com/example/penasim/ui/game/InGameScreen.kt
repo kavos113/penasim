@@ -39,12 +39,11 @@ import com.example.penasim.ui.theme.infielderColor
 import com.example.penasim.ui.theme.outColor
 import com.example.penasim.ui.theme.outfielderColor
 import com.example.penasim.ui.theme.pitcherColor
+import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
-object InGameDestination : NavigationDestination {
-  override val route: String = "in_game"
-  override val titleResId: Int = R.string.game
-}
+@Serializable
+object InGameDestination
 
 @Composable
 fun InGameScreen(

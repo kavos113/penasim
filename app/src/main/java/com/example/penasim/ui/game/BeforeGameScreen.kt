@@ -22,7 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.penasim.R
 import com.example.penasim.const.icon
 import com.example.penasim.domain.League
 import com.example.penasim.domain.Position
@@ -30,17 +29,15 @@ import com.example.penasim.domain.Team
 import com.example.penasim.domain.TeamStanding
 import com.example.penasim.ui.common.DisplayFielder
 import com.example.penasim.ui.common.OrderPlayerItem
-import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.catcherColor
 import com.example.penasim.ui.theme.infielderColor
 import com.example.penasim.ui.theme.outfielderColor
 import com.example.penasim.ui.theme.pitcherColor
+import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
-object BeforeGameDestination : NavigationDestination {
-  override val route: String = "before_game"
-  override val titleResId: Int = R.string.game
-}
+@Serializable
+object BeforeGameDestination
 
 @Composable
 fun BeforeGameScreen(
