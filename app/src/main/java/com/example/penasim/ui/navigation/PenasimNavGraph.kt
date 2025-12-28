@@ -19,6 +19,8 @@ import com.example.penasim.ui.game.AfterGameScreenWithoutGameResult
 import com.example.penasim.ui.game.AfterGameWithoutGameResultDestination
 import com.example.penasim.ui.game.BeforeGameDestination
 import com.example.penasim.ui.game.BeforeGameScreen
+import com.example.penasim.ui.game.InGameDestination
+import com.example.penasim.ui.game.InGameScreen
 import com.example.penasim.ui.home.HomeDestination
 import com.example.penasim.ui.home.HomeScreen
 
@@ -74,6 +76,13 @@ fun PenasimNavHost(
           globalViewModel.nextDay()
         },
         modifier = Modifier.fillMaxSize(),
+        currentDay = globalState.value.currentDay
+      )
+    }
+    composable(route = InGameDestination.route) {
+      InGameScreen(
+        viewModel = hiltViewModel(),
+        onGameFinish = { navController.navigate(InGameDestination.route) },
         currentDay = globalState.value.currentDay
       )
     }

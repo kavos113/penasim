@@ -15,6 +15,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -23,29 +26,60 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.penasim.R
 import com.example.penasim.domain.Position
 import com.example.penasim.ui.common.DisplayFielder
 import com.example.penasim.ui.common.InningScoresTable
 import com.example.penasim.ui.common.OrderPlayerItem
 import com.example.penasim.ui.common.SimplePlayerItem
+import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.blankColor
 import com.example.penasim.ui.theme.catcherColor
 import com.example.penasim.ui.theme.infielderColor
 import com.example.penasim.ui.theme.outColor
 import com.example.penasim.ui.theme.outfielderColor
 import com.example.penasim.ui.theme.pitcherColor
+import java.time.LocalDate
+
+object InGameDestination : NavigationDestination {
+  override val route: String = "in_game"
+  override val titleResId: Int = R.string.game
+}
 
 @Composable
 fun InGameScreen(
-
+  modifier: Modifier = Modifier,
+  onGameFinish: () -> Unit = { },
+  viewModel: InGameViewModel,
+  currentDay: LocalDate
 ) {
+  val uiState by viewModel.uiState.collectAsState()
 
+  LaunchedEffect(currentDay) {
+    viewModel.setDate(currentDay)
+  }
+
+  InGameContent(
+    inGameInfo = uiState,
+    onClickNext = {
+      if (viewModel.next()) {
+        onGameFinish()
+      }
+    },
+    onClickSkip = {
+      viewModel.skip()
+    }
+  )
 }
 
 @Composable
 private fun InGameContent(
   inGameInfo: InGameInfo,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  onClickNext: () -> Unit = { },
+  onClickFast: () -> Unit = { },
+  onClickSkip: () -> Unit = { },
+  onClickChange: () -> Unit = { }
 ) {
   Column(
     verticalArrangement = Arrangement.SpaceBetween,
@@ -67,7 +101,11 @@ private fun InGameContent(
     )
     FooterItems(
       homeActivePlayer = inGameInfo.homeTeam.activePlayer,
-      awayActivePlayer = inGameInfo.awayTeam.activePlayer
+      awayActivePlayer = inGameInfo.awayTeam.activePlayer,
+      onClickNext = onClickNext,
+      onClickFast = onClickFast,
+      onClickSkip = onClickSkip,
+      onClickChange = onClickChange
     )
   }
 }
@@ -259,7 +297,11 @@ private fun OrderList(
 private fun FooterItems(
   homeActivePlayer: DisplayFielder,
   awayActivePlayer: DisplayFielder,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  onClickNext: () -> Unit = { },
+  onClickFast: () -> Unit = { },
+  onClickSkip: () -> Unit = { },
+  onClickChange: () -> Unit = { }
 ) {
   Column(
     verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -292,22 +334,22 @@ private fun FooterItems(
         .align(Alignment.CenterHorizontally)
     ) {
       Button(
-        onClick = {}
+        onClick = onClickNext
       ) {
         Text("次へ")
       }
       Button(
-        onClick = {}
+        onClick = onClickFast
       ) {
         Text("高速")
       }
       Button(
-        onClick = {}
+        onClick = onClickSkip
       ) {
         Text("skip")
       }
       Button(
-        onClick = {}
+        onClick = onClickChange
       ) {
         Text("交代")
       }

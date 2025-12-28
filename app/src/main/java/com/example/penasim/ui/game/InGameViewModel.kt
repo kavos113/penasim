@@ -8,14 +8,12 @@ import com.example.penasim.domain.OrderType
 import com.example.penasim.game.ExecuteGameByOne
 import com.example.penasim.ui.common.GetDisplayFielder
 import com.example.penasim.usecase.GameScheduleUseCase
-import com.example.penasim.usecase.PlayerInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.lang.IllegalArgumentException
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -72,5 +70,12 @@ class InGameViewModel @Inject constructor(
       return true
     }
     return false
+  }
+
+  fun skip() {
+    while (executeGameByOne.next()) {}
+    viewModelScope.launch {
+      executeGameByOne.postFinishGame()
+    }
   }
 }
