@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,6 +30,7 @@ import com.example.penasim.domain.Position
 import com.example.penasim.ui.common.DisplayFielder
 import com.example.penasim.ui.common.InningScoresTable
 import com.example.penasim.ui.common.OrderPlayerItem
+import com.example.penasim.ui.common.PressingButton
 import com.example.penasim.ui.common.SimplePlayerItem
 import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.blankColor
@@ -69,6 +69,10 @@ fun InGameScreen(
     },
     onClickSkip = {
       viewModel.skip()
+      onGameFinish()
+    },
+    onClickFast = {
+      viewModel.next()
     },
     modifier = modifier
   )
@@ -349,11 +353,11 @@ private fun FooterItems(
       ) {
         Text("次へ")
       }
-      Button(
-        onClick = onClickFast
-      ) {
-        Text("高速")
-      }
+      PressingButton(
+        buttonText = "高速",
+        intervalMs = 200,
+        function = onClickFast
+      )
       Button(
         onClick = onClickSkip
       ) {
