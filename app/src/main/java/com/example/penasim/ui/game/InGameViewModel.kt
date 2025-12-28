@@ -71,10 +71,14 @@ class InGameViewModel @Inject constructor(
     _uiState.update { currentState ->
       currentState.copy(
         homeTeam = currentState.homeTeam.copy(
-          inningScores = homeScores
+          inningScores = homeScores,
+          activePlayerId = result.homeActiveId,
+          activeNumber = result.homeActiveNumber
         ),
         awayTeam = currentState.awayTeam.copy(
-          inningScores = awayScores
+          inningScores = awayScores,
+          activePlayerId = result.awayActiveId,
+          activeNumber = result.awayActiveNumber
         ),
         outCount = result.outCount,
         firstBase = result.firstBaseId?.let { currentState.getByPlayerId(it) },
@@ -101,10 +105,14 @@ class InGameViewModel @Inject constructor(
       _uiState.update { currentState ->
         currentState.copy(
           homeTeam = currentState.homeTeam.copy(
-            inningScores = homeScores
+            inningScores = homeScores,
+            activePlayerId = result.homeActiveId,
+            activeNumber = result.homeActiveNumber
           ),
           awayTeam = currentState.awayTeam.copy(
-            inningScores = awayScores
+            inningScores = awayScores,
+            activePlayerId = result.awayActiveId,
+            activeNumber = result.awayActiveNumber
           ),
           outCount = result.outCount,
           firstBase = result.firstBaseId?.let { currentState.getByPlayerId(it) },

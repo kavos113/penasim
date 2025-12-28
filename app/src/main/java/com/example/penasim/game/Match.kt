@@ -78,7 +78,11 @@ data class ScoreData(
   val firstBaseId: Int? = null,
   val secondBaseId: Int? = null,
   val thirdBaseId: Int? = null,
-  val lastResult: String
+  val lastResult: String,
+  val homeActiveId: Int,
+  val awayActiveId: Int,
+  val homeActiveNumber: Int?,
+  val awayActiveNumber: Int?
 )
 
 class Match(
@@ -100,7 +104,7 @@ class Match(
   private var awayScore = 0
 
   // 1-indexed
-  private var homeBatterIndex = 1
+  private var homeBatterIndex = 0
   private var awayBatterIndex = 1
 
   // game records
@@ -222,14 +226,32 @@ class Match(
   }
 
   fun scoreData(): ScoreData {
-    return ScoreData(
-      scores = inningScores(),
-      outCount = outs,
-      firstBaseId = firstBaseId,
-      secondBaseId = secondBaseId,
-      thirdBaseId = thirdBaseId,
-      lastResult = lastResult.randomResult()
-    )
+    when(half) {
+      Half.INNING_TOP -> return ScoreData(
+        scores = inningScores(),
+        outCount = outs,
+        firstBaseId = firstBaseId,
+        secondBaseId = secondBaseId,
+        thirdBaseId = thirdBaseId,
+        lastResult = lastResult.randomResult(),
+        awayActiveId = awayBatter(awayBatterIndex),
+        awayActiveNumber = awayBatterIndex,
+        homeActiveId = homePitcher(),
+        homeActiveNumber = null
+      )
+      Half.INNING_BOTTOM -> return ScoreData(
+        scores = inningScores(),
+        outCount = outs,
+        firstBaseId = firstBaseId,
+        secondBaseId = secondBaseId,
+        thirdBaseId = thirdBaseId,
+        lastResult = lastResult.randomResult(),
+        awayActiveId = awayPitcher(),
+        awayActiveNumber = null,
+        homeActiveId = homeBatter(homeBatterIndex),
+        homeActiveNumber = homeBatterIndex
+      )
+    }
   }
 
   fun battingStats(): List<BattingStat> = battingStats.values.toList()
@@ -241,7 +263,6 @@ class Match(
 
     // Simplified batting logic
     val outcome = (1..100).random()
-    nextBatter()
     when {
       outcome <= 70 -> out()
       outcome <= 85 -> single()
@@ -249,6 +270,7 @@ class Match(
       outcome <= 98 -> triple()
       else -> homeRun()
     }
+    nextBatter()
   }
 
   private fun nextBatter() {
