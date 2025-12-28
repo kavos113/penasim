@@ -17,6 +17,56 @@ enum class Half {
   INNING_BOTTOM
 }
 
+enum class Result {
+  OUT,
+  SINGLE_HIT,
+  DOUBLE_HIT,
+  TRIPLE_HIT,
+  HOMERUN;
+
+  override fun toString(): String {
+    return when (this) {
+      OUT -> {
+        val random = (1 .. 2).random()
+        when(random) {
+          1 -> "ゴ"
+          else -> "飛"
+        }
+      }
+      SINGLE_HIT -> "安"
+      DOUBLE_HIT -> "二"
+      TRIPLE_HIT -> "三"
+      HOMERUN -> "本"
+    }
+  }
+
+  fun randomResult(): String = randomPosition() + this.toString()
+
+  private fun randomPosition(): String {
+    val random = (1 .. 100).random()
+    return when {
+      random <= 2 -> "捕"
+      random <= 16 -> "一"
+      random <= 30 -> "二"
+      random <= 44 -> "三"
+      random <= 58 -> "遊"
+      random <= 72 -> "左"
+      random <= 86 -> "中"
+      else -> "右"
+    }
+  }
+}
+
+data class ScoreData(
+  val scores: List<InningScore>,
+  val outCount: Int = 0,
+  val firstBaseId: Int? = null,
+  val secondBaseId: Int? = null,
+  val thirdBaseId: Int? = null,
+  val homeScore: Int,
+  val awayScore: Int
+)
+
 class Match(
   private val schedule: GameSchedule,
   private val homePlayers: TeamPlayers,
@@ -27,9 +77,10 @@ class Match(
   private var half = Half.INNING_TOP
 
   private var outs = 0
-  private var firstBaseOccupied = false
-  private var secondBaseOccupied = false
-  private var thirdBaseOccupied = false
+  private var firstBaseId: Int? = null
+  private var secondBaseId: Int? = null
+  private var thirdBaseId: Int? = null
+  private var lastResult: Result = Result.OUT
 
   private var homeScore = 0
   private var awayScore = 0
@@ -156,6 +207,18 @@ class Match(
     return scores
   }
 
+  fun scoreData(): ScoreData {
+    return ScoreData(
+      scores = inningScores(),
+      outCount = outs,
+      firstBaseId = firstBaseId,
+      secondBaseId = secondBaseId,
+      thirdBaseId = thirdBaseId,
+      homeScore = homeScore,
+      awayScore = awayScore
+    )
+  }
+
   fun battingStats(): List<BattingStat> = battingStats.values.toList()
   fun pitchingStats(): List<PitchingStat> = pitchingStats.values.toList()
   fun homeRuns(): List<HomeRun> = homeHomeRuns + awayHomeRuns
@@ -195,9 +258,9 @@ class Match(
 
   private fun resetInning() {
     outs = 0
-    firstBaseOccupied = false
-    secondBaseOccupied = false
-    thirdBaseOccupied = false
+    firstBaseId = null
+    secondBaseId = null
+    thirdBaseId = null
   }
 
   private fun score() {
@@ -229,6 +292,7 @@ class Match(
 
   private fun out() {
     outs++
+    lastResult = Result.OUT
 
     val batter = currentBatter()
     val pitcher = currentPitcher()
@@ -278,6 +342,8 @@ class Match(
     val batter = currentBatter()
     val pitcher = currentPitcher()
 
+    lastResult = Result.SINGLE_HIT
+
     if (batter in battingStats) {
       battingStats[batter] = battingStats[batter]!!.copy(
         atBat = battingStats[batter]!!.atBat + 1,
@@ -304,24 +370,26 @@ class Match(
       )
     }
 
-    if (thirdBaseOccupied) {
+    if (thirdBaseId != null) {
       score()
-      thirdBaseOccupied = false
+      thirdBaseId = null
     }
-    if (secondBaseOccupied) {
-      thirdBaseOccupied = true
-      secondBaseOccupied = false
+    if (secondBaseId != null) {
+      thirdBaseId = secondBaseId
+      secondBaseId = null
     }
-    if (firstBaseOccupied) {
-      secondBaseOccupied = true
-      firstBaseOccupied = false
+    if (firstBaseId != null) {
+      secondBaseId = firstBaseId
+      firstBaseId = null
     }
-    firstBaseOccupied = true
+    firstBaseId = batter
   }
 
   private fun double() {
     val batter = currentBatter()
     val pitcher = currentPitcher()
+
+    lastResult = Result.DOUBLE_HIT
 
     if (batter in battingStats) {
       battingStats[batter] = battingStats[batter]!!.copy(
@@ -351,24 +419,26 @@ class Match(
       )
     }
 
-    if (thirdBaseOccupied) {
+    if (thirdBaseId != null) {
       score()
-      thirdBaseOccupied = false
+      thirdBaseId = null
     }
-    if (secondBaseOccupied) {
+    if (secondBaseId != null) {
       score()
-      secondBaseOccupied = false
+      secondBaseId = null
     }
-    if (firstBaseOccupied) {
-      thirdBaseOccupied = true
-      firstBaseOccupied = false
+    if (firstBaseId != null) {
+      thirdBaseId = firstBaseId
+      firstBaseId = null
     }
-    secondBaseOccupied = true
+    secondBaseId = batter
   }
 
   private fun triple() {
     val batter = currentBatter()
     val pitcher = currentPitcher()
+
+    lastResult = Result.TRIPLE_HIT
 
     if (batter in battingStats) {
       battingStats[batter] = battingStats[batter]!!.copy(
@@ -398,24 +468,26 @@ class Match(
       )
     }
 
-    if (thirdBaseOccupied) {
+    if (thirdBaseId != null) {
       score()
-      thirdBaseOccupied = false
+      thirdBaseId = null
     }
-    if (secondBaseOccupied) {
+    if (secondBaseId != null) {
       score()
-      secondBaseOccupied = false
+      secondBaseId = null
     }
-    if (firstBaseOccupied) {
+    if (firstBaseId != null) {
       score()
-      firstBaseOccupied = false
+      firstBaseId = null
     }
-    thirdBaseOccupied = true
+    thirdBaseId = batter
   }
 
   private fun homeRun() {
     val batter = currentBatter()
     val pitcher = currentPitcher()
+
+    lastResult = Result.HOMERUN
 
     if (batter in battingStats) {
       battingStats[batter] = battingStats[batter]!!.copy(
@@ -449,19 +521,19 @@ class Match(
 
     var count = 1
 
-    if (thirdBaseOccupied) {
+    if (thirdBaseId != null) {
       score()
-      thirdBaseOccupied = false
+      thirdBaseId = null
       count++
     }
-    if (secondBaseOccupied) {
+    if (secondBaseId != null) {
       score()
-      secondBaseOccupied = false
+      secondBaseId = null
       count++
     }
-    if (firstBaseOccupied) {
+    if (firstBaseId != null) {
       score()
-      firstBaseOccupied = false
+      firstBaseId = null
       count++
     }
     score()

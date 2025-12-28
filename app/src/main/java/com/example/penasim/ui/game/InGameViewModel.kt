@@ -65,7 +65,25 @@ class InGameViewModel @Inject constructor(
 
   // return true if finished
   fun next(): Boolean {
-    if (!executeGameByOne.next()) {
+    val (flag, result) = executeGameByOne.next()
+    val homeScores = result.scores.filter { it.teamId == schedule.homeTeam.id }
+    val awayScores = result.scores.filter { it.teamId == schedule.awayTeam.id }
+    _uiState.update { currentState ->
+      currentState.copy(
+        homeTeam = currentState.homeTeam.copy(
+          inningScores = homeScores
+        ),
+        awayTeam = currentState.awayTeam.copy(
+          inningScores = awayScores
+        ),
+        outCount = result.outCount,
+        firstBase = result.firstBaseId?.let { currentState.getByPlayerId(it) },
+        secondBase = result.secondBaseId?.let { currentState.getByPlayerId(it) },
+        thirdBase = result.thirdBaseId?.let { currentState.getByPlayerId(it) }
+      )
+    }
+
+    if (!flag) {
       viewModelScope.launch {
         executeGameByOne.postFinishGame()
       }
@@ -75,7 +93,29 @@ class InGameViewModel @Inject constructor(
   }
 
   fun skip() {
-    while (executeGameByOne.next()) {}
+    while (true) {
+      val (flag, result) = executeGameByOne.next()
+      val homeScores = result.scores.filter { it.teamId == schedule.homeTeam.id }
+      val awayScores = result.scores.filter { it.teamId == schedule.awayTeam.id }
+      _uiState.update { currentState ->
+        currentState.copy(
+          homeTeam = currentState.homeTeam.copy(
+            inningScores = homeScores
+          ),
+          awayTeam = currentState.awayTeam.copy(
+            inningScores = awayScores
+          ),
+          outCount = result.outCount,
+          firstBase = result.firstBaseId?.let { currentState.getByPlayerId(it) },
+          secondBase = result.secondBaseId?.let { currentState.getByPlayerId(it) },
+          thirdBase = result.thirdBaseId?.let { currentState.getByPlayerId(it) }
+        )
+      }
+
+      if (!flag) {
+        break
+      }
+    }
     viewModelScope.launch {
       executeGameByOne.postFinishGame()
     }

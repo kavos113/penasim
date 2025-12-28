@@ -83,7 +83,7 @@ fun PenasimNavHost(
     composable(route = InGameDestination.route) {
       InGameScreen(
         viewModel = hiltViewModel(),
-        onGameFinish = { navController.navigate(InGameDestination.route) },
+        onGameFinish = { navController.navigate(AfterGameDestination.route) },
         currentDay = globalState.value.currentDay
       )
     }

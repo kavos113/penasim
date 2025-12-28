@@ -63,6 +63,7 @@ fun InGameScreen(
     inGameInfo = uiState,
     onClickNext = {
       if (viewModel.next()) {
+        println("game finish")
         onGameFinish()
       }
     },

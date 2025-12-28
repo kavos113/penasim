@@ -1,6 +1,7 @@
 package com.example.penasim.game
 
 import com.example.penasim.domain.GameInfo
+import com.example.penasim.domain.InningScore
 import com.example.penasim.domain.Team
 import com.example.penasim.domain.TransactionProvider
 import com.example.penasim.usecase.BattingStatUseCase
@@ -54,7 +55,12 @@ class ExecuteGameByOne @Inject constructor(
     match = Match(schedule, homeTeamPlayers, awayTeamPlayers)
   }
 
-  fun next(): Boolean = match.next()
+  fun next(): Pair<Boolean, ScoreData> {
+    if (!match.next()) {
+      return Pair(false, match.scoreData())
+    }
+    return Pair(true, match.scoreData())
+  }
 
   suspend fun postFinishGame(): List<GameInfo> {
     match.postFinishGame()

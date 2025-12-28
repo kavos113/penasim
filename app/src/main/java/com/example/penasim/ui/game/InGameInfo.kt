@@ -15,7 +15,19 @@ data class InGameInfo(
   val firstBase: DisplayFielder? = null,
   val secondBase: DisplayFielder? = null,
   val thirdBase: DisplayFielder? = null
-)
+) {
+  fun getByPlayerId(id: Int): DisplayFielder {
+    return homeTeam.players.find { it.id == id }
+      ?: awayTeam.players.find { it.id == id }
+      ?: DisplayFielder(
+        id = 0,
+        displayName = "Unknown Player",
+        position = Position.OUTFIELDER,
+        number = 1,
+        color = outfielderColor
+      )
+  }
+}
 
 data class InGameTeamInfo(
   val inningScores: List<InningScore> = emptyList(),
