@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.hilt)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.kotlinx.selialization)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.corountine.test)
