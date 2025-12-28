@@ -355,7 +355,7 @@ private fun FooterItems(
       }
       PressingButton(
         buttonText = "高速",
-        intervalMs = 200,
+        intervalMs = 100,
         function = onClickFast
       )
       Button(
