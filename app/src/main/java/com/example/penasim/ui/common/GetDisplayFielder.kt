@@ -1,13 +1,11 @@
 package com.example.penasim.ui.common
 
-import com.example.penasim.domain.MemberType
 import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.PitcherType
 import com.example.penasim.domain.Position
 import com.example.penasim.domain.Team
 import com.example.penasim.domain.isStarting
 import com.example.penasim.usecase.FielderAppointmentUseCase
-import com.example.penasim.usecase.MainMembersUseCase
 import com.example.penasim.usecase.PitcherAppointmentUseCase
 import com.example.penasim.usecase.PlayerInfoUseCase
 import javax.inject.Inject

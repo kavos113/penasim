@@ -77,7 +77,7 @@ class ExecuteGameByOne @Inject constructor(
     return gameInfoUseCase.getByDate(date)
   }
 
-  suspend fun executeOtherGame(): List<GameInfo> {
+  private suspend fun executeOtherGame(): List<GameInfo> {
     val schedules = gameScheduleUseCase
       .getByDate(date)
       .filterNot { it.homeTeam == myTeam || it.awayTeam == myTeam }
