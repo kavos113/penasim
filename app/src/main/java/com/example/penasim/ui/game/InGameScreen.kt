@@ -99,7 +99,8 @@ private fun InGameContent(
       firstBase = inGameInfo.firstBase,
       secondBase = inGameInfo.secondBase,
       thirdBase = inGameInfo.thirdBase,
-      outCount = inGameInfo.outCount
+      outCount = inGameInfo.outCount,
+      lastResult = inGameInfo.lastResult
     )
     FooterItems(
       homeActivePlayer = inGameInfo.homeTeam.activePlayer,
@@ -122,6 +123,7 @@ private fun PlayerInfoContent(
   secondBase: DisplayFielder?,
   thirdBase: DisplayFielder?,
   outCount: Int,
+  lastResult: String,
   modifier: Modifier = Modifier
 ) {
   Row(
@@ -142,6 +144,7 @@ private fun PlayerInfoContent(
       secondBase = secondBase,
       thirdBase = thirdBase,
       outCount = outCount,
+      lastResult = lastResult,
       modifier = Modifier
         .weight(1f)
     )
@@ -163,6 +166,7 @@ private fun BaseInfo(
   secondBase: DisplayFielder?,
   thirdBase: DisplayFielder?,
   outCount: Int,
+  lastResult: String,
   modifier: Modifier = Modifier
 ) {
   Box(
@@ -171,9 +175,14 @@ private fun BaseInfo(
     Column(
       verticalArrangement = Arrangement.spacedBy(100.dp),
       modifier = Modifier
-        .padding(top = 100.dp)
+        .padding(top = 60.dp)
         .align(Alignment.Center)
     ) {
+      Text(
+        text = lastResult,
+        modifier = Modifier
+          .align(Alignment.CenterHorizontally)
+      )
       Box(
         modifier = Modifier
           .height(100.dp)
@@ -459,7 +468,8 @@ private fun BaseInfoPreview() {
       9,
       outfielderColor
     ),
-    outCount = 1
+    outCount = 1,
+    lastResult = "二本"
   )
 }
 
@@ -487,6 +497,7 @@ private fun PlayerInfoContentPreview() {
       outfielderColor
     ),
     outCount = 1,
+    lastResult = "二本"
   )
 }
 
@@ -539,7 +550,8 @@ private fun InGameContentPreview() {
         9,
         outfielderColor
       ),
-      outCount = 1
+      outCount = 1,
+      lastResult = "右本"
     )
   )
 }

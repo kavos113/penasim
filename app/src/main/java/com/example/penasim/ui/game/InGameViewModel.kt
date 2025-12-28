@@ -79,7 +79,8 @@ class InGameViewModel @Inject constructor(
         outCount = result.outCount,
         firstBase = result.firstBaseId?.let { currentState.getByPlayerId(it) },
         secondBase = result.secondBaseId?.let { currentState.getByPlayerId(it) },
-        thirdBase = result.thirdBaseId?.let { currentState.getByPlayerId(it) }
+        thirdBase = result.thirdBaseId?.let { currentState.getByPlayerId(it) },
+        lastResult = result.lastResult
       )
     }
 
@@ -108,7 +109,8 @@ class InGameViewModel @Inject constructor(
           outCount = result.outCount,
           firstBase = result.firstBaseId?.let { currentState.getByPlayerId(it) },
           secondBase = result.secondBaseId?.let { currentState.getByPlayerId(it) },
-          thirdBase = result.thirdBaseId?.let { currentState.getByPlayerId(it) }
+          thirdBase = result.thirdBaseId?.let { currentState.getByPlayerId(it) },
+          lastResult = result.lastResult
         )
       }
 

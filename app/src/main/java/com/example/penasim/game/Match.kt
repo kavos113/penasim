@@ -40,7 +40,13 @@ enum class Result {
     }
   }
 
-  fun randomResult(): String = randomPosition() + this.toString()
+  fun randomResult(): String {
+    return if (this == HOMERUN) {
+      randomOutPosition() + "本"
+    } else {
+      randomPosition() + this.toString()
+    }
+  }
 
   private fun randomPosition(): String {
     val random = (1 .. 100).random()
@@ -55,6 +61,15 @@ enum class Result {
       else -> "右"
     }
   }
+
+  private fun randomOutPosition(): String {
+    val random = (1 .. 3).random()
+    return when(random) {
+      1 -> "左"
+      2 -> "中"
+      else -> "右"
+    }
+  }
 }
 
 data class ScoreData(
@@ -63,8 +78,7 @@ data class ScoreData(
   val firstBaseId: Int? = null,
   val secondBaseId: Int? = null,
   val thirdBaseId: Int? = null,
-  val homeScore: Int,
-  val awayScore: Int
+  val lastResult: String
 )
 
 class Match(
@@ -214,8 +228,7 @@ class Match(
       firstBaseId = firstBaseId,
       secondBaseId = secondBaseId,
       thirdBaseId = thirdBaseId,
-      homeScore = homeScore,
-      awayScore = awayScore
+      lastResult = lastResult.randomResult()
     )
   }
 

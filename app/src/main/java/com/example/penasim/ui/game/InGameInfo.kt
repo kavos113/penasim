@@ -14,7 +14,8 @@ data class InGameInfo(
   val outCount: Int = 0,
   val firstBase: DisplayFielder? = null,
   val secondBase: DisplayFielder? = null,
-  val thirdBase: DisplayFielder? = null
+  val thirdBase: DisplayFielder? = null,
+  val lastResult: String = ""
 ) {
   fun getByPlayerId(id: Int): DisplayFielder {
     return homeTeam.players.find { it.id == id }
