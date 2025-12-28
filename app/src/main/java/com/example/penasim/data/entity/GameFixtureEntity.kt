@@ -2,6 +2,7 @@ package com.example.penasim.data.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.example.penasim.data.repository.Converters
@@ -22,6 +23,10 @@ import java.time.LocalDate
       childColumns = ["awayTeamId"],
       onDelete = ForeignKey.CASCADE
     )
+  ],
+  indices = [
+    Index(value = ["homeTeamId"]),
+    Index(value = ["awayTeamId"])
   ]
 )
 @TypeConverters(Converters::class)

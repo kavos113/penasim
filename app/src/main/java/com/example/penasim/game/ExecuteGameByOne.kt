@@ -35,6 +35,8 @@ class ExecuteGameByOne @Inject constructor(
   private lateinit var myTeam: Team
   private lateinit var date: LocalDate
 
+  private var isFinished = false
+
   suspend fun start(myTeam: Team, date: LocalDate) {
     this.myTeam = myTeam
     this.date = date
@@ -63,6 +65,9 @@ class ExecuteGameByOne @Inject constructor(
   }
 
   suspend fun postFinishGame(): List<GameInfo> {
+    if (isFinished) return emptyList()
+
+    isFinished = true
     match.postFinishGame()
 
     val result = match.result()

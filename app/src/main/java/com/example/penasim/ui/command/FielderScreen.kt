@@ -194,7 +194,7 @@ private fun MainMemberContent(
     }
 
     if (uiState.mainViewSelectedFielderId != null) {
-      val playerDetail = uiState.getDisplayPlayerDetail(uiState.mainViewSelectedFielderId!!)
+      val playerDetail = uiState.getDisplayPlayerDetail(uiState.mainViewSelectedFielderId)
       if (playerDetail != null) {
         Box(
           modifier = Modifier

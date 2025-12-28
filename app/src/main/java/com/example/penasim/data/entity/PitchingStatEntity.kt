@@ -2,6 +2,7 @@ package com.example.penasim.data.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 
 @Entity(
   tableName = "pitching_stats",
@@ -19,6 +20,10 @@ import androidx.room.ForeignKey
       childColumns = ["playerId"],
       onDelete = ForeignKey.CASCADE
     )
+  ],
+  indices = [
+    Index(value = ["gameFixtureId"]),
+    Index(value = ["playerId"])
   ]
 )
 data class PitchingStatEntity(

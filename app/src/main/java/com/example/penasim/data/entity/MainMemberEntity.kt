@@ -2,6 +2,7 @@ package com.example.penasim.data.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.example.penasim.domain.MemberType
 
@@ -20,6 +21,10 @@ import com.example.penasim.domain.MemberType
       childColumns = ["playerId"],
       onDelete = ForeignKey.CASCADE
     )
+  ],
+  indices = [
+    Index(value = ["teamId"]),
+    Index(value = ["playerId"])
   ]
 )
 data class MainMemberEntity(
