@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "penasim"
 include(":app")
+include(":protoc")
