@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package penasim;
+package com.example.penasim;
 
-import "options.proto";
+import "com/example/penasim/options.proto";
 
 message Team {
   option (table_options).table_name = "team";

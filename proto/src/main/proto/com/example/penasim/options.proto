@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package penasim;
+package com.example.penasim;
 
 import "google/protobuf/descriptor.proto";
 
