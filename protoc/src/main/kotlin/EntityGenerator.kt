@@ -30,24 +30,22 @@ object EntityGenerator {
       )
       .build()
 
-  private fun protoTypeToPoetType(type: DescriptorProtos.FieldDescriptorProto.Type): KClass<*> {
-    return when (type) {
-      TYPE_DOUBLE -> Double::class
-      TYPE_FLOAT -> Float::class
-      TYPE_INT64 -> Long::class
-      TYPE_INT32 -> Int::class
-      TYPE_UINT64 -> ULong::class
-      TYPE_UINT32 -> UInt::class
-      TYPE_FIXED64 -> ULong::class
-      TYPE_FIXED32 -> UInt::class
-      TYPE_BOOL -> Boolean::class
-      TYPE_STRING -> String::class
-      TYPE_SFIXED32 -> Int::class
-      TYPE_SFIXED64 -> Long::class
-      TYPE_SINT32 -> Int::class
-      TYPE_SINT64 -> Long::class
-      else -> throw IllegalArgumentException("need to deserialize nested parameter")
-    }
+  private fun protoTypeToPoetType(type: DescriptorProtos.FieldDescriptorProto.Type): KClass<*> = when (type) {
+    TYPE_DOUBLE -> Double::class
+    TYPE_FLOAT -> Float::class
+    TYPE_INT64 -> Long::class
+    TYPE_INT32 -> Int::class
+    TYPE_UINT64 -> ULong::class
+    TYPE_UINT32 -> UInt::class
+    TYPE_FIXED64 -> ULong::class
+    TYPE_FIXED32 -> UInt::class
+    TYPE_BOOL -> Boolean::class
+    TYPE_STRING -> String::class
+    TYPE_SFIXED32 -> Int::class
+    TYPE_SFIXED64 -> Long::class
+    TYPE_SINT32 -> Int::class
+    TYPE_SINT64 -> Long::class
+    else -> throw IllegalArgumentException("need to deserialize nested parameter")
   }
 
   private fun generateParameters(fields: List<DescriptorProtos.FieldDescriptorProto>): List<ParameterSpec> =
@@ -59,6 +57,16 @@ object EntityGenerator {
       .build()
   }
 
+  private fun PropertySpec.Builder.addPrimaryKeyAnnotationIfSingle(options: DescriptorProtos.FieldOptions): PropertySpec.Builder {
+    if (options.hasExtension(Options.fieldOptions))  {
+      val option = options.getExtension(Options.fieldOptions)
+      if (option.hasIsPrimaryKey() && option.isPrimaryKey) {
+        return addAnnotation(ClassName("androidx.room", "PrimaryKey"))
+      }
+    }
+    return this
+  }
+
   object AnnotationBuilder {
     fun gen(options: DescriptorProtos.MessageOptions): AnnotationSpec {
       return AnnotationSpec.builder(ClassName("androidx.room", "Entity"))
@@ -66,13 +74,12 @@ object EntityGenerator {
         .build()
     }
 
-    private fun AnnotationSpec.Builder.addTableOptionsIfExists(options: DescriptorProtos.MessageOptions): AnnotationSpec.Builder {
+    private fun AnnotationSpec.Builder.addTableOptionsIfExists(options: DescriptorProtos.MessageOptions): AnnotationSpec.Builder =
       if (options.hasExtension(Options.tableOptions)) {
         val tableName = options.getExtension(Options.tableOptions).tableName
-        return addMember("tableName = %S", tableName)
+        addMember("tableName = %S", tableName)
       } else {
-        return this
+        this
       }
-    }
   }
 }
