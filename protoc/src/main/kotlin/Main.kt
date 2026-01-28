@@ -1,5 +1,7 @@
 package com.example.penasim.protoc
 
+import com.example.penasim.Options
+import com.google.protobuf.ExtensionRegistry
 import com.google.protobuf.compiler.PluginProtos
 import java.io.File
 import java.nio.file.Paths
@@ -26,6 +28,9 @@ fun main() {
 //
 //    responseBuilder.build().writeTo(System.out)
 
-  val request = PluginProtos.CodeGeneratorRequest.parseFrom(File("input.bin").readBytes())
+  val registry = ExtensionRegistry.newInstance()
+  Options.registerAllExtensions(registry)
+
+  val request = PluginProtos.CodeGeneratorRequest.parseFrom(File("input.bin").readBytes(), registry)
   println(Generator.gen(request))
 }

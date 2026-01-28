@@ -1,7 +1,11 @@
 package com.example.penasim.protoc
 
+import com.example.penasim.Options
+import com.example.penasim.TableOptionsKt
 import com.google.protobuf.DescriptorProtos
 import com.google.protobuf.DescriptorProtos.FieldDescriptorProto.Type.*
+import com.squareup.kotlinpoet.AnnotationSpec
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
@@ -17,7 +21,6 @@ object EntityGenerator {
 
     var constructorBuilder = FunSpec.constructorBuilder()
     for (field in message.fieldList) {
-      println("${field.name}: ${field.type}")
       constructorBuilder = constructorBuilder.addParameter(field.name, protoTypeToPoetType(field.type))
       classBuilder = classBuilder.addProperty(
         PropertySpec.builder(field.name, protoTypeToPoetType(field.type))
@@ -26,10 +29,20 @@ object EntityGenerator {
       )
     }
 
+    var annotationBuilder = AnnotationSpec.builder(ClassName("androidx.room", "Entity"))
+
+    val messageOptions = message.options
+    if (messageOptions.hasExtension(Options.tableOptions)) {
+      val tableName = messageOptions.getExtension(Options.tableOptions).tableName
+
+      annotationBuilder = annotationBuilder.addMember("tableName = %S", tableName)
+    }
+
     return fileBuilder
       .addType(
         classBuilder
           .primaryConstructor(constructorBuilder.build())
+          .addAnnotation(annotationBuilder.build())
           .build()
       )
       .build()
