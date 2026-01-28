@@ -7,6 +7,8 @@ import java.io.File
 import java.nio.file.Paths
 
 fun main() {
+//    System.err.println("protoc called")
+//
 //    val bytes = System.`in`.readBytes()
 //    File("input.bin").writeBytes(bytes)
 
@@ -23,8 +25,6 @@ fun main() {
 //            )
 //        }
 //    }1
-//
-//    System.err.println("called")
 //
 //    responseBuilder.build().writeTo(System.out)
 
