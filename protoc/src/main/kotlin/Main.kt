@@ -26,6 +26,6 @@ fun main() {
 //
 //    responseBuilder.build().writeTo(System.out)
 
-    val request = PluginProtos.CodeGeneratorRequest.parseFrom(File("input.bin").readBytes())
-    println(Generator.gen(request))
+  val request = PluginProtos.CodeGeneratorRequest.parseFrom(File("input.bin").readBytes())
+  println(Generator.gen(request))
 }
