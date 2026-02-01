@@ -241,3 +241,5 @@ val lightWhiteColor = Color(0xFFFBFBFB)
 
 val outColor = Color(0xFFFF0000)
 val blankColor = Color(0xFF040404)
+
+val hitColor = Color(0xFF45FFD1)

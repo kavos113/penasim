@@ -137,6 +137,8 @@ private fun AfterGameContent(
         .padding(innerPadding),
     ) {
       InningScoresTable(
+        homeTeamName = afterGameInfo.homeTeamName,
+        awayTeamName = afterGameInfo.awayTeamName,
         homeInningScores = afterGameInfo.homeScores,
         awayInningScores = afterGameInfo.awayScores,
         modifier = Modifier

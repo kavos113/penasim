@@ -20,6 +20,6 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "penasim"
-//include(":app")
+include(":app")
 include(":protoc")
 include(":proto")

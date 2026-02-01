@@ -28,6 +28,7 @@ class InGameViewModel @Inject constructor(
   val uiState: StateFlow<InGameInfo> = _uiState.asStateFlow()
 
   private lateinit var schedule: GameSchedule
+  private var isInitialized = false
 
   fun setDate(date: LocalDate) {
     _uiState.update { currentState ->
@@ -35,9 +36,14 @@ class InGameViewModel @Inject constructor(
         date = date
       )
     }
+
+    if (!isInitialized) {
+      initialize()
+      isInitialized = true
+    }
   }
 
-  init {
+  private fun initialize() {
     viewModelScope.launch {
       val schedules = gameScheduleUseCase.getByDate(uiState.value.date)
       schedule = schedules.find { it.awayTeam.id == Constants.TEAM_ID || it.homeTeam.id == Constants.TEAM_ID } ?: throw IllegalArgumentException("unknown schedule")
@@ -50,10 +56,12 @@ class InGameViewModel @Inject constructor(
       _uiState.update { currentState ->
         currentState.copy(
           homeTeam = InGameTeamInfo(
+            name = schedule.homeTeam.name,
             players = homePlayers,
             activePlayerId = homePlayers.find { it.position == Position.PITCHER }?.id ?: 0
           ),
           awayTeam = InGameTeamInfo(
+            name = schedule.awayTeam.name,
             players = awayPlayers,
             activePlayerId = awayPlayers.find { it.number == 1 }?.id ?: 0,
             activeNumber = 1

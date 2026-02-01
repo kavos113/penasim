@@ -120,6 +120,8 @@ class AfterGameViewModel @Inject constructor(
 
       _uiState.update { currentState ->
         currentState.copy(
+          homeTeamName = mySchedule.homeTeam.name,
+          awayTeamName = mySchedule.awayTeam.name,
           homeScores = inningScores.filter { it.teamId == mySchedule.homeTeam.id },
           awayScores = inningScores.filter { it.teamId == mySchedule.awayTeam.id },
           homePitcherResults = homePitcherResults,

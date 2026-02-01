@@ -13,11 +13,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.penasim.domain.InningScore
+import com.example.penasim.ui.theme.hitColor
 import com.example.penasim.ui.theme.onPrimaryLight
 import com.example.penasim.ui.theme.playerBorderColor
 import com.example.penasim.ui.theme.primaryLight
@@ -26,10 +28,16 @@ private const val MAX_INNINGS = 9
 
 @Composable
 internal fun InningScoresTable(
+  homeTeamName: String,
+  awayTeamName: String,
   homeInningScores: List<InningScore>,
   awayInningScores: List<InningScore>,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  inspectLastInning: Boolean = false
 ) {
+  val isInspectHome = inspectLastInning && homeInningScores.size >= awayInningScores.size
+  val isInspectAway = inspectLastInning && awayInningScores.size > homeInningScores.size
+
   Column(
     modifier = modifier
   ) {
@@ -38,14 +46,16 @@ internal fun InningScoresTable(
         .fillMaxWidth()
     )
     InningScoreRow(
-      teamName = "A",
+      teamName = awayTeamName,
       inningScores = awayInningScores,
+      inspectLastInning = isInspectAway,
       modifier = Modifier
         .fillMaxWidth()
     )
     InningScoreRow(
-      teamName = "B",
+      teamName = homeTeamName,
       inningScores = homeInningScores,
+      inspectLastInning = isInspectHome,
       modifier = Modifier
         .fillMaxWidth()
     )
@@ -56,7 +66,8 @@ internal fun InningScoresTable(
 private fun InningScoreRow(
   teamName: String,
   inningScores: List<InningScore>,
-  modifier: Modifier = Modifier
+  inspectLastInning: Boolean,
+  modifier: Modifier = Modifier,
 ) {
   val inningStr = List(MAX_INNINGS) { i ->
     inningScores.map { it.score.toString() }.getOrElse(i) { "" }
@@ -64,23 +75,26 @@ private fun InningScoreRow(
   Row {
     InningScoreItem(
       value = teamName,
+      inspect = false,
       modifier = Modifier
-          .width(48.dp)
-          .height(32.dp)
+        .width(48.dp)
+        .height(32.dp)
     )
-    inningStr.forEach { inningScore ->
+    inningStr.forEachIndexed { i, inningScore ->
       InningScoreItem(
         value = inningScore,
+        inspect = inspectLastInning && i == inningScores.size - 1,
         modifier = Modifier
-            .width(32.dp)
-            .height(32.dp)
+          .width(32.dp)
+          .height(32.dp)
       )
     }
     InningScoreItem(
       value = inningScores.sumOf { it.score }.toString(),
+      inspect = false,
       modifier = Modifier
-          .width(36.dp)
-          .height(32.dp)
+        .width(36.dp)
+        .height(32.dp)
     )
   }
 }
@@ -88,16 +102,18 @@ private fun InningScoreRow(
 @Composable
 private fun InningScoreItem(
   value: String,
+  inspect: Boolean,
   modifier: Modifier = Modifier
 ) {
   Box(
     contentAlignment = Alignment.Center,
     modifier = modifier
-        .fillMaxSize()
-        .border(
-            width = 1.dp,
-            color = playerBorderColor
-        )
+      .fillMaxSize()
+      .background(if (inspect) hitColor else Color.Transparent)
+      .border(
+        width = 1.dp,
+        color = playerBorderColor
+      )
   ) {
     Text(
       text = value,
@@ -114,22 +130,22 @@ private fun InningHeader(
     InningHeaderItem(
       value = "回",
       modifier = Modifier
-          .width(48.dp)
-          .height(32.dp)
+        .width(48.dp)
+        .height(32.dp)
     )
     (1..9).forEach { inning ->
       InningHeaderItem(
         value = inning.toString(),
         modifier = Modifier
-            .width(32.dp)
-            .height(32.dp)
+          .width(32.dp)
+          .height(32.dp)
       )
     }
     InningHeaderItem(
       value = "計",
       modifier = Modifier
-          .width(36.dp)
-          .height(32.dp)
+        .width(36.dp)
+        .height(32.dp)
     )
   }
 }
@@ -142,12 +158,12 @@ private fun InningHeaderItem(
   Box(
     contentAlignment = Alignment.Center,
     modifier = modifier
-        .fillMaxSize()
-        .background(primaryLight)
-        .border(
-            width = 1.dp,
-            color = playerBorderColor
-        )
+      .fillMaxSize()
+      .background(primaryLight)
+      .border(
+        width = 1.dp,
+        color = playerBorderColor
+      )
   ) {
     Text(
       text = value,
@@ -201,10 +217,13 @@ private val SAMPLE_BLANK_AWAY_INNING_SCORES = listOf(
 @Composable
 private fun InningScoresTablePreview() {
   InningScoresTable(
+    homeTeamName = "A",
+    awayTeamName = "B",
     homeInningScores = SAMPLE_HOME_INNING_SCORES,
     awayInningScores = SAMPLE_AWAY_INNING_SCORES,
     modifier = Modifier
-      .fillMaxWidth()
+      .fillMaxWidth(),
+    inspectLastInning = false
   )
 }
 
@@ -212,9 +231,12 @@ private fun InningScoresTablePreview() {
 @Composable
 private fun InningScoresTableWithBlankPreview() {
   InningScoresTable(
+    homeTeamName = "A",
+    awayTeamName = "B",
     homeInningScores = SAMPLE_BLANK_HOME_INNING_SCORES,
     awayInningScores = SAMPLE_BLANK_AWAY_INNING_SCORES,
-    modifier = Modifier.fillMaxWidth()
+    modifier = Modifier.fillMaxWidth(),
+    inspectLastInning = true
   )
 }
 
@@ -224,6 +246,7 @@ private fun InningScoreRowPreview() {
   InningScoreRow(
     teamName = "A",
     inningScores = SAMPLE_HOME_INNING_SCORES,
+    inspectLastInning = false,
     modifier = Modifier
   )
 }
@@ -234,6 +257,7 @@ private fun InningScoreRowBlankPreview() {
   InningScoreRow(
     teamName = "A",
     inningScores = SAMPLE_BLANK_HOME_INNING_SCORES,
+    inspectLastInning = true,
     modifier = Modifier
   )
 }

@@ -1,6 +1,7 @@
 package com.example.penasim.ui.game
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,16 +26,15 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.penasim.R
 import com.example.penasim.domain.Position
 import com.example.penasim.ui.common.DisplayFielder
 import com.example.penasim.ui.common.InningScoresTable
 import com.example.penasim.ui.common.OrderPlayerItem
 import com.example.penasim.ui.common.PressingButton
 import com.example.penasim.ui.common.SimplePlayerItem
-import com.example.penasim.ui.navigation.NavigationDestination
 import com.example.penasim.ui.theme.blankColor
 import com.example.penasim.ui.theme.catcherColor
+import com.example.penasim.ui.theme.hitColor
 import com.example.penasim.ui.theme.infielderColor
 import com.example.penasim.ui.theme.outColor
 import com.example.penasim.ui.theme.outfielderColor
@@ -92,6 +92,8 @@ private fun InGameContent(
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
     InningScoresTable(
+      homeTeamName = inGameInfo.homeTeam.name,
+      awayTeamName = inGameInfo.awayTeam.name,
       homeInningScores = inGameInfo.homeTeam.inningScores,
       awayInningScores = inGameInfo.awayTeam.inningScores
     )
@@ -369,6 +371,51 @@ private fun FooterItems(
         Text("交代")
       }
     }
+  }
+}
+
+@Composable
+private fun LastResultText(
+  lastResult: String,
+  modifier: Modifier = Modifier
+) {
+  if (lastResult.isHit()) {
+    Text(
+      text = lastResult,
+      modifier = modifier
+        .background(color = hitColor)
+        .padding(4.dp)
+    )
+  } else {
+    Text(
+      text = lastResult,
+      modifier = modifier
+        .padding(4.dp)
+    )
+  }
+}
+
+private fun String.isHit(): Boolean {
+  val hitResults = listOf("安", "本")
+  return hitResults.any { this.contains(it) }
+}
+
+@Preview
+@Composable
+private fun LastResultTextPreview() {
+  Column {
+    LastResultText(
+      lastResult = "右本",
+      modifier = Modifier.padding(8.dp)
+    )
+    LastResultText(
+      lastResult = "二安",
+      modifier = Modifier.padding(8.dp)
+    )
+    LastResultText(
+      lastResult = "三振",
+      modifier = Modifier.padding(8.dp)
+    )
   }
 }
 

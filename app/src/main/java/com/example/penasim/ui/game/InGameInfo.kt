@@ -31,6 +31,7 @@ data class InGameInfo(
 }
 
 data class InGameTeamInfo(
+  val name: String = "",
   val inningScores: List<InningScore> = emptyList(),
   val players: List<DisplayFielder> = emptyList(),
   val activePlayerId: Int = 0, // 打線 or pitcher

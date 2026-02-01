@@ -10,6 +10,8 @@ import java.time.LocalDate
 data class AfterGameInfo(
   val date: LocalDate = Constants.START,
   val isRunning: Boolean = false,
+  val homeTeamName: String = "",
+  val awayTeamName: String = "",
   val homeScores: List<InningScore> = emptyList(),
   val awayScores: List<InningScore> = emptyList(),
   val homePitcherResults: List<PitcherResult> = emptyList(),
