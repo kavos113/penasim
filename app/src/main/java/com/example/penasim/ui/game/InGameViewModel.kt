@@ -76,22 +76,23 @@ class InGameViewModel @Inject constructor(
     val (flag, result) = executeGameByOne.next()
     val homeScores = result.scores.filter { it.teamId == schedule.homeTeam.id }
     val awayScores = result.scores.filter { it.teamId == schedule.awayTeam.id }
+
     _uiState.update { currentState ->
       currentState.copy(
         homeTeam = currentState.homeTeam.copy(
           inningScores = homeScores,
-          activePlayerId = result.homeActiveId,
-          activeNumber = result.homeActiveNumber
+          activePlayerId = if (result.isHomeBatting) result.homeBatterState.playerId else result.homePitcherState.playerId,
+          activeNumber = if (result.isHomeBatting) result.homeBatterState.battingOrder else null
         ),
         awayTeam = currentState.awayTeam.copy(
           inningScores = awayScores,
-          activePlayerId = result.awayActiveId,
-          activeNumber = result.awayActiveNumber
+          activePlayerId = if (result.isHomeBatting) result.awayPitcherState.playerId else result.awayBatterState.playerId,
+          activeNumber = if (result.isHomeBatting) null else result.awayBatterState.battingOrder
         ),
         outCount = result.outCount,
-        firstBase = result.firstBaseId?.let { currentState.getByPlayerId(it) },
-        secondBase = result.secondBaseId?.let { currentState.getByPlayerId(it) },
-        thirdBase = result.thirdBaseId?.let { currentState.getByPlayerId(it) },
+        firstBase = result.baseState.firstBaseId?.let { currentState.getByPlayerId(it) },
+        secondBase = result.baseState.secondBaseId?.let { currentState.getByPlayerId(it) },
+        thirdBase = result.baseState.thirdBaseId?.let { currentState.getByPlayerId(it) },
         lastResult = result.lastResult
       )
     }
@@ -114,18 +115,18 @@ class InGameViewModel @Inject constructor(
         currentState.copy(
           homeTeam = currentState.homeTeam.copy(
             inningScores = homeScores,
-            activePlayerId = result.homeActiveId,
-            activeNumber = result.homeActiveNumber
+            activePlayerId = if (result.isHomeBatting) result.homeBatterState.playerId else result.homePitcherState.playerId,
+            activeNumber = if (result.isHomeBatting) result.homeBatterState.battingOrder else null
           ),
           awayTeam = currentState.awayTeam.copy(
             inningScores = awayScores,
-            activePlayerId = result.awayActiveId,
-            activeNumber = result.awayActiveNumber
+            activePlayerId = if (result.isHomeBatting) result.awayPitcherState.playerId else result.awayBatterState.playerId,
+            activeNumber = if (result.isHomeBatting) null else result.awayBatterState.battingOrder
           ),
           outCount = result.outCount,
-          firstBase = result.firstBaseId?.let { currentState.getByPlayerId(it) },
-          secondBase = result.secondBaseId?.let { currentState.getByPlayerId(it) },
-          thirdBase = result.thirdBaseId?.let { currentState.getByPlayerId(it) },
+          firstBase = result.baseState.firstBaseId?.let { currentState.getByPlayerId(it) },
+          secondBase = result.baseState.secondBaseId?.let { currentState.getByPlayerId(it) },
+          thirdBase = result.baseState.thirdBaseId?.let { currentState.getByPlayerId(it) },
           lastResult = result.lastResult
         )
       }

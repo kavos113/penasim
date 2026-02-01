@@ -3,6 +3,8 @@ package com.example.penasim.ui.game
 import com.example.penasim.const.Constants
 import com.example.penasim.domain.InningScore
 import com.example.penasim.domain.Position
+import com.example.penasim.game.LastResult
+import com.example.penasim.game.Result
 import com.example.penasim.ui.common.DisplayFielder
 import com.example.penasim.ui.theme.outfielderColor
 import java.time.LocalDate
@@ -15,7 +17,11 @@ data class InGameInfo(
   val firstBase: DisplayFielder? = null,
   val secondBase: DisplayFielder? = null,
   val thirdBase: DisplayFielder? = null,
-  val lastResult: String = ""
+  val lastResult: LastResult = LastResult(
+    result = Result.OUT,
+    isHit = false,
+    isScored = false
+  )
 ) {
   fun getByPlayerId(id: Int): DisplayFielder {
     return homeTeam.players.find { it.id == id }

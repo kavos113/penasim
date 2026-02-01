@@ -243,3 +243,4 @@ val outColor = Color(0xFFFF0000)
 val blankColor = Color(0xFF040404)
 
 val hitColor = Color(0xFF45FFD1)
+val scoreColor = Color(0xFFFA8B0C)

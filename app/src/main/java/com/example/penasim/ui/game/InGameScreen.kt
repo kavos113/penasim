@@ -27,6 +27,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.penasim.domain.Position
+import com.example.penasim.game.LastResult
+import com.example.penasim.game.Result
 import com.example.penasim.ui.common.DisplayFielder
 import com.example.penasim.ui.common.InningScoresTable
 import com.example.penasim.ui.common.OrderPlayerItem
@@ -39,6 +41,7 @@ import com.example.penasim.ui.theme.infielderColor
 import com.example.penasim.ui.theme.outColor
 import com.example.penasim.ui.theme.outfielderColor
 import com.example.penasim.ui.theme.pitcherColor
+import com.example.penasim.ui.theme.scoreColor
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
@@ -129,7 +132,7 @@ private fun PlayerInfoContent(
   secondBase: DisplayFielder?,
   thirdBase: DisplayFielder?,
   outCount: Int,
-  lastResult: String,
+  lastResult: LastResult,
   modifier: Modifier = Modifier
 ) {
   Row(
@@ -172,7 +175,7 @@ private fun BaseInfo(
   secondBase: DisplayFielder?,
   thirdBase: DisplayFielder?,
   outCount: Int,
-  lastResult: String,
+  lastResult: LastResult,
   modifier: Modifier = Modifier
 ) {
   Box(
@@ -184,8 +187,8 @@ private fun BaseInfo(
         .padding(top = 60.dp)
         .align(Alignment.Center)
     ) {
-      Text(
-        text = lastResult,
+      LastResultText(
+        lastResult = lastResult,
         modifier = Modifier
           .align(Alignment.CenterHorizontally)
       )
@@ -376,28 +379,30 @@ private fun FooterItems(
 
 @Composable
 private fun LastResultText(
-  lastResult: String,
+  lastResult: LastResult,
   modifier: Modifier = Modifier
 ) {
-  if (lastResult.isHit()) {
+  if (lastResult.isScored) {
     Text(
-      text = lastResult,
+      text = lastResult.result.randomResult(),
+      modifier = modifier
+        .background(color = scoreColor)
+        .padding(4.dp)
+    )
+  } else if (lastResult.isHit) {
+    Text(
+      text = lastResult.result.randomResult(),
       modifier = modifier
         .background(color = hitColor)
         .padding(4.dp)
     )
   } else {
     Text(
-      text = lastResult,
+      text = lastResult.result.randomResult(),
       modifier = modifier
         .padding(4.dp)
     )
   }
-}
-
-private fun String.isHit(): Boolean {
-  val hitResults = listOf("安", "本")
-  return hitResults.any { this.contains(it) }
 }
 
 @Preview
@@ -405,15 +410,27 @@ private fun String.isHit(): Boolean {
 private fun LastResultTextPreview() {
   Column {
     LastResultText(
-      lastResult = "右本",
+      lastResult = LastResult(
+        result = Result.HOMERUN,
+        isHit = true,
+        isScored = true
+      ),
       modifier = Modifier.padding(8.dp)
     )
     LastResultText(
-      lastResult = "二安",
+      lastResult = LastResult(
+        result = Result.SINGLE_HIT,
+        isHit = true,
+        isScored = false
+      ),
       modifier = Modifier.padding(8.dp)
     )
     LastResultText(
-      lastResult = "三振",
+      lastResult = LastResult(
+        result = Result.OUT,
+        isHit = false,
+        isScored = false
+      ),
       modifier = Modifier.padding(8.dp)
     )
   }
@@ -520,7 +537,11 @@ private fun BaseInfoPreview() {
       outfielderColor
     ),
     outCount = 1,
-    lastResult = "二本"
+    lastResult = LastResult(
+      result = Result.OUT,
+      isHit = true,
+      isScored = false
+    )
   )
 }
 
@@ -548,7 +569,11 @@ private fun PlayerInfoContentPreview() {
       outfielderColor
     ),
     outCount = 1,
-    lastResult = "二本"
+    lastResult = LastResult(
+      result = Result.SINGLE_HIT,
+      isHit = true,
+      isScored = true
+    )
   )
 }
 
@@ -602,7 +627,11 @@ private fun InGameContentPreview() {
         outfielderColor
       ),
       outCount = 1,
-      lastResult = "右本"
+      lastResult = LastResult(
+        result = Result.SINGLE_HIT,
+        isHit = true,
+        isScored = true
+      )
     )
   )
 }
