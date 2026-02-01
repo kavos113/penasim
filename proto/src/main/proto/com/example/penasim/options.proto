@@ -17,7 +17,6 @@ message FieldOptions {
 message ForeignKey {
   string parent_table = 1;
   string parent = 2;
-  string child = 3;
 }
 
 extend google.protobuf.MessageOptions {

@@ -14,21 +14,32 @@ import com.squareup.kotlinpoet.TypeSpec
 import kotlin.reflect.KClass
 
 object EntityGenerator {
-  fun gen(message: DescriptorProtos.DescriptorProto, packageName: String): FileSpec =
-    FileSpec.builder(packageName, "${message.name}Entity")
-      .addType(
-        TypeSpec.classBuilder("${message.name}Entity")
-          .addModifiers(KModifier.DATA)
-          .addProperties(generateProperties(message.fieldList))
-          .primaryConstructor(
-            FunSpec.constructorBuilder()
-              .addParameters(generateParameters(message.fieldList))
-              .build()
-          )
-          .addAnnotation(AnnotationBuilder.gen(message.options))
-          .build()
-      )
-      .build()
+  fun gen(message: DescriptorProtos.DescriptorProto, packageName: String): FileSpec {
+    val builder = EntityAnnotationBuilder()
+
+    builder.setTableOption(message.options)
+    message.fieldList.forEach { field ->
+      builder.addFieldOption(field.options, field.name)
+    }
+
+    val fileBuilder = with(builder) {
+      FileSpec.builder(packageName, "${message.name}Entity")
+        .addType(
+          TypeSpec.classBuilder("${message.name}Entity")
+            .addModifiers(KModifier.DATA)
+            .addProperties(generateProperties(message.fieldList, this))
+            .primaryConstructor(
+              FunSpec.constructorBuilder()
+                .addParameters(generateParameters(message.fieldList))
+                .build()
+            )
+            .addAnnotation(generateClassAnnotation())
+            .build()
+        )
+    }
+
+    return fileBuilder.build()
+  }
 
   private fun protoTypeToPoetType(type: DescriptorProtos.FieldDescriptorProto.Type): KClass<*> = when (type) {
     TYPE_DOUBLE -> Double::class
@@ -51,35 +62,103 @@ object EntityGenerator {
   private fun generateParameters(fields: List<DescriptorProtos.FieldDescriptorProto>): List<ParameterSpec> =
     fields.map { ParameterSpec.builder(it.name, protoTypeToPoetType(it.type)).build() }
 
-  private fun generateProperties(fields: List<DescriptorProtos.FieldDescriptorProto>): List<PropertySpec> = fields.map {
-    PropertySpec.builder(it.name, protoTypeToPoetType(it.type))
-      .initializer(it.name)
-      .build()
+  private fun generateProperties(fields: List<DescriptorProtos.FieldDescriptorProto>, builder: EntityAnnotationBuilder): List<PropertySpec> = fields.map {
+    with(builder) {
+      PropertySpec.builder(it.name, protoTypeToPoetType(it.type))
+        .initializer(it.name)
+        .addPrimaryKeyAnnotationIfSingle(it.name)
+        .build()
+    }
   }
 
-  private fun PropertySpec.Builder.addPrimaryKeyAnnotationIfSingle(options: DescriptorProtos.FieldOptions): PropertySpec.Builder {
-    if (options.hasExtension(Options.fieldOptions))  {
-      val option = options.getExtension(Options.fieldOptions)
-      if (option.hasIsPrimaryKey() && option.isPrimaryKey) {
-        return addAnnotation(ClassName("androidx.room", "PrimaryKey"))
+  class EntityAnnotationBuilder {
+    var tableOptions: Options.TableOptions? = null
+    val fieldOptions: MutableMap<String, Options.FieldOptions> = mutableMapOf()
+
+    val isSinglePrimaryKey: Boolean
+      get() = fieldOptions.values.count { it.hasIsPrimaryKey() && it.isPrimaryKey } == 1
+
+    fun setTableOption(options: DescriptorProtos.MessageOptions) {
+      if (options.hasExtension(Options.tableOptions)) {
+        tableOptions = options.getExtension(Options.tableOptions)
       }
     }
-    return this
-  }
 
-  object AnnotationBuilder {
-    fun gen(options: DescriptorProtos.MessageOptions): AnnotationSpec {
+    fun addFieldOption(options: DescriptorProtos.FieldOptions, fieldName: String) {
+      if (options.hasExtension(Options.fieldOptions)) {
+        fieldOptions[fieldName] = options.getExtension(Options.fieldOptions)
+      }
+    }
+
+    fun PropertySpec.Builder.addPrimaryKeyAnnotationIfSingle(fieldName: String): PropertySpec.Builder {
+      val option = fieldOptions[fieldName]
+      if (isSinglePrimaryKey && option != null && option.hasIsPrimaryKey() && option.isPrimaryKey) {
+        return addAnnotation(ClassName("androidx.room", "PrimaryKey"))
+      }
+      return this
+    }
+
+    fun generateClassAnnotation(): AnnotationSpec {
       return AnnotationSpec.builder(ClassName("androidx.room", "Entity"))
-        .addTableOptionsIfExists(options)
+        .addTableName()
+        .addMultiplePrimaryKeys()
+        .addForeignKeys()
+        .addIndices()
         .build()
     }
 
-    private fun AnnotationSpec.Builder.addTableOptionsIfExists(options: DescriptorProtos.MessageOptions): AnnotationSpec.Builder =
-      if (options.hasExtension(Options.tableOptions)) {
-        val tableName = options.getExtension(Options.tableOptions).tableName
-        addMember("tableName = %S", tableName)
-      } else {
-        this
+    private fun AnnotationSpec.Builder.addTableName(): AnnotationSpec.Builder {
+      tableOptions?.tableName?.let {
+        return this.addMember("tableName = %S", it)
       }
+      return this
+    }
+
+    private fun AnnotationSpec.Builder.addMultiplePrimaryKeys(): AnnotationSpec.Builder {
+      if (!isSinglePrimaryKey) {
+        val primaryKeys = fieldOptions.filter { it.value.hasIsPrimaryKey() && it.value.isPrimaryKey }
+          .keys.joinToString(", ") { "\"$it\"" }
+
+        return this.addMember("primaryKeys = [%L]", primaryKeys)
+      }
+      return this
+    }
+
+    private fun AnnotationSpec.Builder.addForeignKeys(): AnnotationSpec.Builder {
+      val foreignKeys = fieldOptions.filter { it.value.hasForeignKey() }
+        .toList()
+        .map {
+          AnnotationSpec.builder(ClassName("androidx.room", "ForeignKey"))
+            .addMember("entity = ${it.second.foreignKey.parentTable}Entity::class")
+            .addMember("parentColumns = [%S]", it.second.foreignKey.parent)
+            .addMember("childColumns = [%S]", it.first)
+            .addMember("onDelete = ForeignKey.CASCADE")
+            .build()
+        }
+
+      if (foreignKeys.isNotEmpty()) {
+        val foreignKeysArray = foreignKeys.joinToString(", ") { "%L" }
+        return this.addMember("foreignKeys = [$foreignKeysArray]", *foreignKeys.toTypedArray())
+      } else {
+        return this
+      }
+    }
+
+    private fun AnnotationSpec.Builder.addIndices(): AnnotationSpec.Builder {
+      val indices = fieldOptions.filter { it.value.hasIsIndex() && it.value.isIndex }
+        .toList()
+        .map {
+          AnnotationSpec.builder(ClassName("androidx.room", "Index"))
+            .addMember("value = [%S]", it.first)
+            .build()
+        }
+
+      if (indices.isNotEmpty()) {
+        val indicesArray = indices.joinToString(", ") { "%L" }
+        return this.addMember("indices = [%L]", indicesArray, *indices.toTypedArray())
+      } else {
+        return this
+      }
+    }
   }
 }
