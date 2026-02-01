@@ -85,6 +85,11 @@ data class ScoreData(
   val awayActiveNumber: Int?
 )
 
+private data class PitcherState(
+  val playerId: Int,
+  val stamina: Int
+)
+
 class Match(
   private val schedule: GameSchedule,
   private val homePlayers: TeamPlayers,
@@ -127,26 +132,37 @@ class Match(
       .find { it.number == number }?.playerId
       ?: throw IllegalArgumentException("no away batter for number $number")
 
-  private fun homePitcher() =
-    homePlayers.pitcherAppointments.find { it.type == PitcherType.STARTER && it.number == 1 }?.playerId
-      ?: throw IllegalArgumentException("no home pitcher")
+  private var homePitcher: PitcherState
+  private var awayPitcher: PitcherState
 
-  private fun awayPitcher() =
-    awayPlayers.pitcherAppointments.find { it.type == PitcherType.STARTER && it.number == 1 }?.playerId
-      ?: throw IllegalArgumentException("no away pitcher")
-
-  private fun currentBatter() = when (half) {
+  private fun currentBatterId() = when (half) {
     Half.INNING_TOP -> awayBatter(awayBatterIndex)
     Half.INNING_BOTTOM -> homeBatter(homeBatterIndex)
   }
 
-  private fun currentPitcher() = when (half) {
-    Half.INNING_TOP -> homePitcher()
-    Half.INNING_BOTTOM -> awayPitcher()
+  private fun currentPitcherId() = when (half) {
+    Half.INNING_TOP -> homePitcher.playerId
+    Half.INNING_BOTTOM -> awayPitcher.playerId
   }
 
   private fun Boolean.toStr() = if (this) "X" else " "
   private fun Half.toStr() = if (this == Half.INNING_TOP) "表" else "裏"
+
+  init {
+    val homePitcherAppointment = homePlayers.pitcherAppointments.find { it.type == PitcherType.STARTER && it.number == 1 } ?: throw IllegalArgumentException("no home starting pitcher")
+    val homePitcherInfo = homePlayers.players.find { it.player.id == homePitcherAppointment.playerId } ?: throw IllegalArgumentException("no home starting pitcher info")
+    homePitcher = PitcherState(
+      playerId = homePitcherInfo.player.id,
+      stamina = homePitcherInfo.player.stamina
+    )
+
+    val awayPitcherAppointment = awayPlayers.pitcherAppointments.find { it.type == PitcherType.STARTER && it.number == 1 } ?: throw IllegalArgumentException("no away starting pitcher")
+    val awayPitcherInfo = awayPlayers.players.find { it.player.id == awayPitcherAppointment.playerId } ?: throw IllegalArgumentException("no away starting pitcher info")
+    awayPitcher = PitcherState(
+      playerId = awayPitcherInfo.player.id,
+      stamina = awayPitcherInfo.player.stamina
+    )
+  }
 
   fun play() {
     while (next()) {}
@@ -168,17 +184,17 @@ class Match(
     awayScores.removeAt(awayScores.lastIndex)
 
     if (homeScore > awayScore) {
-      pitchingStats[homePitcher()] = pitchingStats[homePitcher()]!!.copy(
+      pitchingStats[homePitcher.playerId] = pitchingStats[homePitcher.playerId]!!.copy(
         win = true
       )
-      pitchingStats[awayPitcher()] = pitchingStats[awayPitcher()]!!.copy(
+      pitchingStats[awayPitcher.playerId] = pitchingStats[awayPitcher.playerId]!!.copy(
         lose = true
       )
     } else if (awayScore > homeScore) {
-      pitchingStats[awayPitcher()] = pitchingStats[awayPitcher()]!!.copy(
+      pitchingStats[awayPitcher.playerId] = pitchingStats[awayPitcher.playerId]!!.copy(
         win = true
       )
-      pitchingStats[homePitcher()] = pitchingStats[homePitcher()]!!.copy(
+      pitchingStats[homePitcher.playerId] = pitchingStats[homePitcher.playerId]!!.copy(
         lose = true
       )
     }
@@ -236,7 +252,7 @@ class Match(
         lastResult = lastResult.randomResult(),
         awayActiveId = awayBatter(awayBatterIndex),
         awayActiveNumber = awayBatterIndex,
-        homeActiveId = homePitcher(),
+        homeActiveId = homePitcher.playerId,
         homeActiveNumber = null
       )
       Half.INNING_BOTTOM -> return ScoreData(
@@ -246,7 +262,7 @@ class Match(
         secondBaseId = secondBaseId,
         thirdBaseId = thirdBaseId,
         lastResult = lastResult.randomResult(),
-        awayActiveId = awayPitcher(),
+        awayActiveId = awayPitcher.playerId,
         awayActiveNumber = null,
         homeActiveId = homeBatter(homeBatterIndex),
         homeActiveNumber = homeBatterIndex
@@ -270,6 +286,7 @@ class Match(
       outcome <= 98 -> triple()
       else -> homeRun()
     }
+    decreasePitcherStamina()
     nextBatter()
   }
 
@@ -291,6 +308,24 @@ class Match(
     }
   }
 
+  private fun decreasePitcherStamina() {
+    val rate = (2..3).random()
+
+    when (half) {
+      Half.INNING_TOP -> {
+        homePitcher = homePitcher.copy(
+          stamina = homePitcher.stamina - rate
+        )
+      }
+
+      Half.INNING_BOTTOM -> {
+        awayPitcher = awayPitcher.copy(
+          stamina = awayPitcher.stamina - rate
+        )
+      }
+    }
+  }
+
   private fun resetInning() {
     outs = 0
     firstBaseId = null
@@ -299,8 +334,8 @@ class Match(
   }
 
   private fun score() {
-    val batter = currentBatter()
-    val pitcher = currentPitcher()
+    val batter = currentBatterId()
+    val pitcher = currentPitcherId()
 
     // stats are already initialized in out() / single() / double() / triple()
     battingStats[batter] = battingStats[batter]!!.copy(
@@ -329,8 +364,8 @@ class Match(
     outs++
     lastResult = Result.OUT
 
-    val batter = currentBatter()
-    val pitcher = currentPitcher()
+    val batter = currentBatterId()
+    val pitcher = currentPitcherId()
 
     if (batter in battingStats) {
       battingStats[batter] = battingStats[batter]!!.copy(
@@ -374,8 +409,8 @@ class Match(
   }
 
   private fun single() {
-    val batter = currentBatter()
-    val pitcher = currentPitcher()
+    val batter = currentBatterId()
+    val pitcher = currentPitcherId()
 
     lastResult = Result.SINGLE_HIT
 
@@ -421,8 +456,8 @@ class Match(
   }
 
   private fun double() {
-    val batter = currentBatter()
-    val pitcher = currentPitcher()
+    val batter = currentBatterId()
+    val pitcher = currentPitcherId()
 
     lastResult = Result.DOUBLE_HIT
 
@@ -470,8 +505,8 @@ class Match(
   }
 
   private fun triple() {
-    val batter = currentBatter()
-    val pitcher = currentPitcher()
+    val batter = currentBatterId()
+    val pitcher = currentPitcherId()
 
     lastResult = Result.TRIPLE_HIT
 
@@ -519,8 +554,8 @@ class Match(
   }
 
   private fun homeRun() {
-    val batter = currentBatter()
-    val pitcher = currentPitcher()
+    val batter = currentBatterId()
+    val pitcher = currentPitcherId()
 
     lastResult = Result.HOMERUN
 
