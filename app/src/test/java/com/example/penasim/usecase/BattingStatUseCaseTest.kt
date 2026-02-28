@@ -4,85 +4,86 @@ import com.example.penasim.domain.BattingStat
 import com.example.penasim.domain.repository.BattingStatRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 class BattingStatUseCaseTest {
 
-    private class RecordingBattingStatRepository(
-        private val data: MutableList<BattingStat>
-    ) : BattingStatRepository {
-        var lastInserted: List<BattingStat>? = null
-        var lastDeletedFixtureId: Int? = null
-
-        override suspend fun getByFixtureId(fixtureId: Int): List<BattingStat> =
-            data.filter { it.gameFixtureId == fixtureId }
-
-        override suspend fun getByFixtureIds(fixtureIds: List<Int>): List<BattingStat> =
-            data.filter { it.gameFixtureId in fixtureIds }
-
-        override suspend fun getByPlayerId(playerId: Int): List<BattingStat> =
-            data.filter { it.playerId == playerId }
-
-        override suspend fun getByPlayerIds(playerIds: List<Int>): List<BattingStat> =
-            data.filter { it.playerId in playerIds }
-
-        override suspend fun insertAll(items: List<BattingStat>) {
-            lastInserted = items
-            data.addAll(items)
-        }
-
-        override suspend fun deleteByFixtureId(fixtureId: Int) {
-            lastDeletedFixtureId = fixtureId
-            data.removeAll { it.gameFixtureId == fixtureId }
-        }
-    }
+    private val repo: BattingStatRepository = mock()
+    private val useCase = BattingStatUseCase(repo)
 
     private fun bs(fix: Int, player: Int, atBat: Int = 0, hit: Int = 0) =
         BattingStat(gameFixtureId = fix, playerId = player, atBat = atBat, hit = hit)
 
     @Test
-    fun get_queries_returnExpectedSubsets() = runTest {
-        val repo = RecordingBattingStatRepository(mutableListOf(
-            bs(10, 1, atBat = 4, hit = 2),
-            bs(10, 2, atBat = 3, hit = 1),
-            bs(11, 1, atBat = 5, hit = 3)
-        ))
-        val useCase = BattingStatUseCase(repo)
+    fun getByFixtureId_delegatesToRepository() = runTest {
+        val expected = listOf(bs(10, 1, 4, 2), bs(10, 2, 3, 1))
+        whenever(repo.getByFixtureId(10)).thenReturn(expected)
 
-        assertEquals(2, useCase.getByFixtureId(10).size)
-        assertEquals(3, useCase.getByFixtureIds(listOf(10, 11)).size)
-        assertEquals(2, useCase.getByPlayerId(1).size)
-        assertEquals(3, useCase.getByPlayerIds(listOf(1, 2)).size)
+        val result = useCase.getByFixtureId(10)
+
+        assertEquals(expected, result)
+        verify(repo).getByFixtureId(10)
     }
 
     @Test
-    fun insertAll_ignoresEmpty_andInsertsNonEmpty() = runTest {
-        val repo = RecordingBattingStatRepository(mutableListOf())
-        val useCase = BattingStatUseCase(repo)
+    fun getByFixtureIds_delegatesToRepository() = runTest {
+        val expected = listOf(bs(10, 1), bs(11, 1))
+        whenever(repo.getByFixtureIds(listOf(10, 11))).thenReturn(expected)
 
-        // empty -> repository.insertAll should not be called
+        val result = useCase.getByFixtureIds(listOf(10, 11))
+
+        assertEquals(expected, result)
+        verify(repo).getByFixtureIds(listOf(10, 11))
+    }
+
+    @Test
+    fun getByPlayerId_delegatesToRepository() = runTest {
+        val expected = listOf(bs(10, 1), bs(11, 1))
+        whenever(repo.getByPlayerId(1)).thenReturn(expected)
+
+        val result = useCase.getByPlayerId(1)
+
+        assertEquals(expected, result)
+        verify(repo).getByPlayerId(1)
+    }
+
+    @Test
+    fun getByPlayerIds_delegatesToRepository() = runTest {
+        val expected = listOf(bs(10, 1), bs(10, 2), bs(11, 1))
+        whenever(repo.getByPlayerIds(listOf(1, 2))).thenReturn(expected)
+
+        val result = useCase.getByPlayerIds(listOf(1, 2))
+
+        assertEquals(expected, result)
+        verify(repo).getByPlayerIds(listOf(1, 2))
+    }
+
+    @Test
+    fun insertAll_ignoresEmpty() = runTest {
         useCase.insertAll(emptyList())
-        assertNull(repo.lastInserted)
 
-        // non-empty -> repository.insertAll should be called with items
-        val items = listOf(bs(12, 3, 4, 2), bs(12, 4, 3, 1))
-        useCase.insertAll(items)
-        assertEquals(items, repo.lastInserted)
-        assertEquals(2, repo.getByFixtureId(12).size)
+        verify(repo, never()).insertAll(any())
     }
 
     @Test
-    fun deleteByFixtureId_delegates_andRemoves() = runTest {
-        val repo = RecordingBattingStatRepository(mutableListOf(
-            bs(13, 5), bs(13, 6), bs(14, 7)
-        ))
-        val useCase = BattingStatUseCase(repo)
+    fun insertAll_delegatesNonEmpty() = runTest {
+        val items = listOf(bs(12, 3, 4, 2), bs(12, 4, 3, 1))
 
+        useCase.insertAll(items)
+
+        verify(repo).insertAll(items)
+    }
+
+    @Test
+    fun deleteByFixtureId_delegatesToRepository() = runTest {
         useCase.deleteByFixtureId(13)
-        assertEquals(13, repo.lastDeletedFixtureId)
-        assertEquals(emptyList<BattingStat>(), repo.getByFixtureId(13))
-        assertEquals(1, repo.getByFixtureIds(listOf(14)).size)
+
+        verify(repo).deleteByFixtureId(13)
     }
 }
 

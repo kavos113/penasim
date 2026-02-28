@@ -1,105 +1,93 @@
 package com.example.penasim.usecase
 
-import com.example.penasim.domain.*
+import com.example.penasim.domain.GameFixture
+import com.example.penasim.domain.GameResult
+import com.example.penasim.domain.League
+import com.example.penasim.domain.Team
 import com.example.penasim.domain.repository.GameFixtureRepository
 import com.example.penasim.domain.repository.GameResultRepository
 import com.example.penasim.domain.repository.TeamRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.time.LocalDate
 import kotlin.test.assertFailsWith
 
 class ExecuteGameUseCaseTest {
 
-    private class FakeTeamRepository(private val teams: List<Team>) : TeamRepository {
-        override suspend fun getTeam(id: Int): Team? = teams.find { it.id == id }
-        override suspend fun getTeamsByLeague(league: League): List<Team> = teams.filter { it.league == league }
-        override suspend fun getAllTeams(): List<Team> = teams
-    }
+    private val gameResultRepository: GameResultRepository = mock()
+    private val gameFixtureRepository: GameFixtureRepository = mock()
+    private val teamRepository: TeamRepository = mock()
 
-    private class FakeGameFixtureRepository(private val fixtures: List<GameFixture>) : GameFixtureRepository {
-        override suspend fun getGameFixture(id: Int): GameFixture? = fixtures.find { it.id == id }
-        override suspend fun getGameFixturesByDate(date: LocalDate): List<GameFixture> = fixtures.filter { it.date == date }
-        override suspend fun getGameFixturesByTeam(team: Team): List<GameFixture> = fixtures.filter { it.homeTeamId == team.id || it.awayTeamId == team.id }
-        override suspend fun getAllGameFixtures(): List<GameFixture> = fixtures
-    }
+    private val useCase = ExecuteGameUseCase(
+        gameResultRepository,
+        gameFixtureRepository,
+        teamRepository,
+    )
 
-    private class FakeGameResultRepository(
-        private val createBehavior: (fixtureId: Int, homeScore: Int, awayScore: Int) -> GameResult?
-    ) : GameResultRepository {
-        override suspend fun getGameByFixtureId(fixtureId: Int): GameResult? = null
-        override suspend fun getGamesByFixtureIds(fixtureIds: List<Int>): List<GameResult> = emptyList()
-        override suspend fun getAllGames(): List<GameResult> = emptyList()
-        override suspend fun deleteAllGames() {}
-
-        override suspend fun createGame(fixtureId: Int, homeScore: Int, awayScore: Int): GameResult? = createBehavior(fixtureId, homeScore, awayScore)
-    }
+    private val league = League.L1
+    private val home = Team(1, "Home", league)
+    private val away = Team(2, "Away", league)
+    private val date: LocalDate = LocalDate.of(2025, 8, 1)
+    private val fixture = GameFixture(10, date, 0, home.id, away.id)
 
     @Test
-    fun execute_returnsComposedGameInfo_onSuccess() = runTest {
-        val league = League.L1
-        val home = Team(1, "Home", league)
-        val away = Team(2, "Away", league)
-        val fixture = GameFixture(10, LocalDate.of(2025, 8, 1), 1, home.id, away.id)
-        val result = GameResult(10, 3, 2)
+    fun execute_returnsGameInfo_whenAllDataExists() = runTest {
+        val result = GameResult(10, 5, 2)
+        whenever(gameResultRepository.createGame(10, 5, 2)).thenReturn(result)
+        whenever(gameFixtureRepository.getGameFixture(10)).thenReturn(fixture)
+        whenever(teamRepository.getTeam(home.id)).thenReturn(home)
+        whenever(teamRepository.getTeam(away.id)).thenReturn(away)
 
-        val useCase = ExecuteGameUseCase(
-            FakeGameResultRepository { f, h, a -> if (f == 10) GameResult(f, h, a) else null },
-            FakeGameFixtureRepository(listOf(fixture)),
-            FakeTeamRepository(listOf(home, away))
-        )
-
-        val info = useCase.execute(10, result.homeScore, result.awayScore)
+        val info = useCase.execute(10, 5, 2)
 
         assertEquals(fixture, info.fixture)
         assertEquals(home, info.homeTeam)
         assertEquals(away, info.awayTeam)
-        assertEquals(result.homeScore, info.result.homeScore)
-        assertEquals(result.awayScore, info.result.awayScore)
+        assertEquals(result, info.result)
     }
 
     @Test
-    fun execute_throws_onDuplicateFixture_orMissingData() = runTest {
-        val league = League.L1
-        val home = Team(1, "Home", league)
-        val away = Team(2, "Away", league)
-        val fixture = GameFixture(10, LocalDate.of(2025, 8, 1), 1, home.id, away.id)
+    fun execute_throws_whenFixtureAlreadyUsed() = runTest {
+        whenever(gameResultRepository.createGame(10, 1, 1)).thenReturn(null)
 
-        // duplicate (create returns null)
         assertFailsWith<IllegalArgumentException> {
-            ExecuteGameUseCase(
-                FakeGameResultRepository { _, _, _ -> null },
-                FakeGameFixtureRepository(listOf(fixture)),
-                FakeTeamRepository(listOf(home, away))
-            ).execute(10, 1, 1)
+            useCase.execute(10, 1, 1)
         }
+    }
 
-        // missing fixture
+    @Test
+    fun execute_throws_whenFixtureMissing() = runTest {
+        whenever(gameResultRepository.createGame(10, 1, 1)).thenReturn(GameResult(10, 1, 1))
+        whenever(gameFixtureRepository.getGameFixture(10)).thenReturn(null)
+
         assertFailsWith<IllegalArgumentException> {
-            ExecuteGameUseCase(
-                FakeGameResultRepository { _, _, _ -> GameResult(10, 1, 1) },
-                FakeGameFixtureRepository(emptyList()),
-                FakeTeamRepository(listOf(home, away))
-            ).execute(10, 1, 1)
+            useCase.execute(10, 1, 1)
         }
+    }
 
-        // missing home team
+    @Test
+    fun execute_throws_whenHomeTeamMissing() = runTest {
+        whenever(gameResultRepository.createGame(10, 1, 1)).thenReturn(GameResult(10, 1, 1))
+        whenever(gameFixtureRepository.getGameFixture(10)).thenReturn(fixture)
+        whenever(teamRepository.getTeam(home.id)).thenReturn(null)
+
         assertFailsWith<IllegalArgumentException> {
-            ExecuteGameUseCase(
-                FakeGameResultRepository { _, _, _ -> GameResult(10, 1, 1) },
-                FakeGameFixtureRepository(listOf(fixture)),
-                FakeTeamRepository(listOf(away))
-            ).execute(10, 1, 1)
+            useCase.execute(10, 1, 1)
         }
+    }
 
-        // missing away team
+    @Test
+    fun execute_throws_whenAwayTeamMissing() = runTest {
+        whenever(gameResultRepository.createGame(10, 1, 1)).thenReturn(GameResult(10, 1, 1))
+        whenever(gameFixtureRepository.getGameFixture(10)).thenReturn(fixture)
+        whenever(teamRepository.getTeam(home.id)).thenReturn(home)
+        whenever(teamRepository.getTeam(away.id)).thenReturn(null)
+
         assertFailsWith<IllegalArgumentException> {
-            ExecuteGameUseCase(
-                FakeGameResultRepository { _, _, _ -> GameResult(10, 1, 1) },
-                FakeGameFixtureRepository(listOf(fixture)),
-                FakeTeamRepository(listOf(home))
-            ).execute(10, 1, 1)
+            useCase.execute(10, 1, 1)
         }
     }
 }

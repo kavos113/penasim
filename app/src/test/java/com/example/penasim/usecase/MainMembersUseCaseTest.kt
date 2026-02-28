@@ -7,45 +7,17 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import kotlin.test.assertFailsWith
 
 class MainMembersUseCaseTest {
 
-    private class RecordingMainMembersRepository(
-        private val current: List<MainMember>
-    ) : MainMembersRepository {
-        var lastUpdated: List<MainMember>? = null
-        var lastInsertedOne: MainMember? = null
-        var lastInsertedMany: List<MainMember>? = null
-        var lastDeletedOne: MainMember? = null
-        var lastDeletedMany: List<MainMember>? = null
-        var lastUpdatedOne: MainMember? = null
-
-        override suspend fun getMainMembersByTeamId(teamId: Int): List<MainMember> =
-            current.filter { it.teamId == teamId }
-
-        override suspend fun getMainMemberByPlayerId(playerId: Int): MainMember? =
-            current.find { it.playerId == playerId }
-
-        override suspend fun insertMainMember(mainMember: MainMember) {
-            lastInsertedOne = mainMember
-        }
-        override suspend fun insertMainMembers(mainMembers: List<MainMember>) {
-            lastInsertedMany = mainMembers
-        }
-        override suspend fun deleteMainMember(mainMember: MainMember) {
-            lastDeletedOne = mainMember
-        }
-        override suspend fun deleteMainMembers(mainMembers: List<MainMember>) {
-            lastDeletedMany = mainMembers
-        }
-        override suspend fun updateMainMember(mainMember: MainMember) {
-            lastUpdatedOne = mainMember
-        }
-        override suspend fun updateMainMembers(mainMembers: List<MainMember>) {
-            lastUpdated = mainMembers
-        }
-    }
+    private val repo: MainMembersRepository = mock()
+    private val useCase = MainMembersUseCase(repo)
 
     private fun mm(teamId: Int, playerId: Int, type: MemberType, isFielder: Boolean) =
         MainMember(teamId = teamId, playerId = playerId, memberType = type, isFielder = isFielder)
@@ -54,23 +26,24 @@ class MainMembersUseCaseTest {
 
     @Test
     fun getByTeamId_delegates_empty() = runTest {
-        val repo = RecordingMainMembersRepository(emptyList())
-        val useCase = MainMembersUseCase(repo)
+        whenever(repo.getMainMembersByTeamId(3)).thenReturn(emptyList())
 
         val result = useCase.getByTeamId(3)
+
         assertEquals(emptyList<MainMember>(), result)
+        verify(repo).getMainMembersByTeamId(3)
     }
 
     @Test
     fun getByTeamId_returnsMembersForTeam() = runTest {
         val m1 = mm(3, 30, MemberType.MAIN, true)
         val m2 = mm(3, 31, MemberType.SUB, false)
-        val repo = RecordingMainMembersRepository(listOf(m1, m2))
-        val useCase = MainMembersUseCase(repo)
+        whenever(repo.getMainMembersByTeamId(3)).thenReturn(listOf(m1, m2))
 
         val result = useCase.getByTeamId(3)
 
         assertEquals(listOf(m1, m2), result)
+        verify(repo).getMainMembersByTeamId(3)
     }
 
     // --- getByPlayerId ---
@@ -78,53 +51,47 @@ class MainMembersUseCaseTest {
     @Test
     fun getByPlayerId_returnsMember_whenExists() = runTest {
         val expected = mm(3, 30, MemberType.MAIN, true)
-        val repo = RecordingMainMembersRepository(listOf(expected))
-        val useCase = MainMembersUseCase(repo)
+        whenever(repo.getMainMemberByPlayerId(30)).thenReturn(expected)
 
         val result = useCase.getByPlayerId(30)
+
         assertEquals(expected, result)
+        verify(repo).getMainMemberByPlayerId(30)
     }
 
     @Test
     fun getByPlayerId_returnsNull_whenNotExists() = runTest {
-        val repo = RecordingMainMembersRepository(emptyList())
-        val useCase = MainMembersUseCase(repo)
+        whenever(repo.getMainMemberByPlayerId(999)).thenReturn(null)
 
         assertNull(useCase.getByPlayerId(999))
+        verify(repo).getMainMemberByPlayerId(999)
     }
 
     // --- insertOne / insertMany ---
 
     @Test
     fun insertOne_delegatesToRepository() = runTest {
-        val repo = RecordingMainMembersRepository(emptyList())
-        val useCase = MainMembersUseCase(repo)
         val item = mm(3, 30, MemberType.MAIN, true)
 
         useCase.insertOne(item)
 
-        assertEquals(item, repo.lastInsertedOne)
+        verify(repo).insertMainMember(item)
     }
 
     @Test
     fun insertMany_doesNotCallRepository_whenEmpty() = runTest {
-        val repo = RecordingMainMembersRepository(emptyList())
-        val useCase = MainMembersUseCase(repo)
-
         useCase.insertMany(emptyList())
 
-        assertNull(repo.lastInsertedMany)
+        verify(repo, never()).insertMainMembers(any())
     }
 
     @Test
     fun insertMany_delegatesToRepository_whenNonEmpty() = runTest {
-        val repo = RecordingMainMembersRepository(emptyList())
-        val useCase = MainMembersUseCase(repo)
         val items = listOf(mm(3, 30, MemberType.MAIN, true), mm(3, 31, MemberType.SUB, false))
 
         useCase.insertMany(items)
 
-        assertEquals(items, repo.lastInsertedMany)
+        verify(repo).insertMainMembers(items)
     }
 
     // --- deleteOne / deleteMany ---
@@ -132,33 +99,26 @@ class MainMembersUseCaseTest {
     @Test
     fun deleteOne_delegatesToRepository() = runTest {
         val item = mm(3, 30, MemberType.MAIN, true)
-        val repo = RecordingMainMembersRepository(listOf(item))
-        val useCase = MainMembersUseCase(repo)
 
         useCase.deleteOne(item)
 
-        assertEquals(item, repo.lastDeletedOne)
+        verify(repo).deleteMainMember(item)
     }
 
     @Test
     fun deleteMany_doesNotCallRepository_whenEmpty() = runTest {
-        val repo = RecordingMainMembersRepository(emptyList())
-        val useCase = MainMembersUseCase(repo)
-
         useCase.deleteMany(emptyList())
 
-        assertNull(repo.lastDeletedMany)
+        verify(repo, never()).deleteMainMembers(any())
     }
 
     @Test
     fun deleteMany_delegatesToRepository_whenNonEmpty() = runTest {
         val items = listOf(mm(3, 30, MemberType.MAIN, true), mm(3, 31, MemberType.SUB, false))
-        val repo = RecordingMainMembersRepository(items)
-        val useCase = MainMembersUseCase(repo)
 
         useCase.deleteMany(items)
 
-        assertEquals(items, repo.lastDeletedMany)
+        verify(repo).deleteMainMembers(items)
     }
 
     // --- updateOne / updateMany ---
@@ -166,33 +126,26 @@ class MainMembersUseCaseTest {
     @Test
     fun updateOne_delegatesToRepository() = runTest {
         val item = mm(3, 30, MemberType.MAIN, true)
-        val repo = RecordingMainMembersRepository(listOf(item))
-        val useCase = MainMembersUseCase(repo)
 
         useCase.updateOne(item)
 
-        assertEquals(item, repo.lastUpdatedOne)
+        verify(repo).updateMainMember(item)
     }
 
     @Test
     fun updateMany_doesNotCallRepository_whenEmpty() = runTest {
-        val repo = RecordingMainMembersRepository(emptyList())
-        val useCase = MainMembersUseCase(repo)
-
         useCase.updateMany(emptyList())
 
-        assertNull(repo.lastUpdated)
+        verify(repo, never()).updateMainMembers(any())
     }
 
     @Test
     fun updateMany_delegatesToRepository_whenNonEmpty() = runTest {
         val items = listOf(mm(3, 30, MemberType.MAIN, true), mm(3, 31, MemberType.SUB, false))
-        val repo = RecordingMainMembersRepository(items)
-        val useCase = MainMembersUseCase(repo)
 
         useCase.updateMany(items)
 
-        assertEquals(items, repo.lastUpdated)
+        verify(repo).updateMainMembers(items)
     }
 
     // --- updateOnlyDiff ---
@@ -204,27 +157,24 @@ class MainMembersUseCaseTest {
             mm(teamId, 30, MemberType.MAIN, true),
             mm(teamId, 31, MemberType.SUB, false),
         )
-        val repo = RecordingMainMembersRepository(current)
-        val useCase = MainMembersUseCase(repo)
+        whenever(repo.getMainMembersByTeamId(3)).thenReturn(current)
 
-        val changed = listOf(
-            current[0].copy(memberType = MemberType.MAIN), // unchanged
-            current[1].copy(memberType = MemberType.MAIN), // changed
-            mm(teamId, 32, MemberType.SUB, true), // new
+        val changed = current[1].copy(memberType = MemberType.MAIN)
+        val newMember = mm(teamId, 32, MemberType.SUB, true)
+
+        useCase.updateOnlyDiff(
+            listOf(
+                current[0].copy(memberType = MemberType.MAIN), // unchanged
+                changed, // changed
+                newMember, // new
+            )
         )
 
-        useCase.updateOnlyDiff(changed)
-
-        val updated = repo.lastUpdated
-        requireNotNull(updated)
-        assertEquals(listOf(changed[1], changed[2]), updated)
+        verify(repo).updateMainMembers(listOf(changed, newMember))
     }
 
     @Test
     fun updateOnlyDiff_empty_throws() = runTest {
-        val repo = RecordingMainMembersRepository(emptyList())
-        val useCase = MainMembersUseCase(repo)
-
         assertFailsWith<IllegalArgumentException> {
             useCase.updateOnlyDiff(emptyList())
         }
@@ -232,9 +182,6 @@ class MainMembersUseCaseTest {
 
     @Test
     fun updateOnlyDiff_differentTeams_throws() = runTest {
-        val repo = RecordingMainMembersRepository(emptyList())
-        val useCase = MainMembersUseCase(repo)
-
         val members = listOf(
             mm(1, 30, MemberType.MAIN, true),
             mm(2, 31, MemberType.SUB, false),
@@ -247,9 +194,6 @@ class MainMembersUseCaseTest {
 
     @Test
     fun updateOnlyDiff_duplicatePlayerId_throws() = runTest {
-        val repo = RecordingMainMembersRepository(emptyList())
-        val useCase = MainMembersUseCase(repo)
-
         val members = listOf(
             mm(3, 30, MemberType.MAIN, true),
             mm(3, 30, MemberType.SUB, false),
@@ -267,12 +211,11 @@ class MainMembersUseCaseTest {
             mm(teamId, 30, MemberType.MAIN, true),
             mm(teamId, 31, MemberType.SUB, false),
         )
-        val repo = RecordingMainMembersRepository(current)
-        val useCase = MainMembersUseCase(repo)
+        whenever(repo.getMainMembersByTeamId(3)).thenReturn(current)
 
         useCase.updateOnlyDiff(current)
 
-        assertNull(repo.lastUpdated)
+        verify(repo, never()).updateMainMembers(any())
     }
 }
 

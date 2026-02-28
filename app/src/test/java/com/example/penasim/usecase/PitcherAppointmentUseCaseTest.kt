@@ -8,45 +8,17 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import kotlin.test.assertFailsWith
 
 class PitcherAppointmentUseCaseTest {
 
-    private class RecordingPitcherAppointmentRepository(
-        private val current: List<PitcherAppointment>
-    ) : PitcherAppointmentRepository {
-        var lastUpdated: List<PitcherAppointment>? = null
-        var lastInsertedOne: PitcherAppointment? = null
-        var lastInsertedMany: List<PitcherAppointment>? = null
-        var lastDeletedOne: PitcherAppointment? = null
-        var lastDeletedMany: List<PitcherAppointment>? = null
-        var lastUpdatedOne: PitcherAppointment? = null
-
-        override suspend fun getPitcherAppointmentsByTeamId(teamId: Int): List<PitcherAppointment> =
-            current.filter { it.teamId == teamId }
-
-        override suspend fun getPitcherAppointmentByPlayerId(playerId: Int): PitcherAppointment? =
-            current.find { it.playerId == playerId }
-
-        override suspend fun insertPitcherAppointment(pitcherAppointment: PitcherAppointment) {
-            lastInsertedOne = pitcherAppointment
-        }
-        override suspend fun insertPitcherAppointments(pitcherAppointments: List<PitcherAppointment>) {
-            lastInsertedMany = pitcherAppointments
-        }
-        override suspend fun deletePitcherAppointment(pitcherAppointment: PitcherAppointment) {
-            lastDeletedOne = pitcherAppointment
-        }
-        override suspend fun deletePitcherAppointments(pitcherAppointments: List<PitcherAppointment>) {
-            lastDeletedMany = pitcherAppointments
-        }
-        override suspend fun updatePitcherAppointment(pitcherAppointment: PitcherAppointment) {
-            lastUpdatedOne = pitcherAppointment
-        }
-        override suspend fun updatePitcherAppointments(pitcherAppointments: List<PitcherAppointment>) {
-            lastUpdated = pitcherAppointments
-        }
-    }
+    private val repo: PitcherAppointmentRepository = mock()
+    private val useCase = PitcherAppointmentUseCase(repo)
 
     private fun app(teamId: Int, playerId: Int, type: PitcherType, number: Int) =
         PitcherAppointment(teamId = teamId, playerId = playerId, type = type, number = number)
@@ -55,11 +27,13 @@ class PitcherAppointmentUseCaseTest {
 
     @Test
     fun getByTeam_delegates_empty() = runTest {
-        val repo = RecordingPitcherAppointmentRepository(emptyList())
-        val useCase = PitcherAppointmentUseCase(repo)
+        val teamId = 2
+        whenever(repo.getPitcherAppointmentsByTeamId(teamId)).thenReturn(emptyList())
 
-        val result = useCase.getByTeam(Team(id = 2, name = "B"))
+        val result = useCase.getByTeam(Team(id = teamId, name = "B"))
+
         assertEquals(emptyList<PitcherAppointment>(), result)
+        verify(repo).getPitcherAppointmentsByTeamId(teamId)
     }
 
     @Test
@@ -69,12 +43,12 @@ class PitcherAppointmentUseCaseTest {
             app(2, 20, PitcherType.STARTER, 1),
             app(2, 21, PitcherType.CLOSER, 2)
         )
-        val repo = RecordingPitcherAppointmentRepository(apps)
-        val useCase = PitcherAppointmentUseCase(repo)
+        whenever(repo.getPitcherAppointmentsByTeamId(2)).thenReturn(apps)
 
         val result = useCase.getByTeam(team)
 
         assertEquals(apps, result)
+        verify(repo).getPitcherAppointmentsByTeamId(2)
     }
 
     // --- getByPlayerId ---
@@ -82,53 +56,47 @@ class PitcherAppointmentUseCaseTest {
     @Test
     fun getByPlayerId_returnsAppointment_whenExists() = runTest {
         val expected = app(2, 20, PitcherType.STARTER, 1)
-        val repo = RecordingPitcherAppointmentRepository(listOf(expected))
-        val useCase = PitcherAppointmentUseCase(repo)
+        whenever(repo.getPitcherAppointmentByPlayerId(20)).thenReturn(expected)
 
         val result = useCase.getByPlayerId(20)
+
         assertEquals(expected, result)
+        verify(repo).getPitcherAppointmentByPlayerId(20)
     }
 
     @Test
     fun getByPlayerId_returnsNull_whenNotExists() = runTest {
-        val repo = RecordingPitcherAppointmentRepository(emptyList())
-        val useCase = PitcherAppointmentUseCase(repo)
+        whenever(repo.getPitcherAppointmentByPlayerId(999)).thenReturn(null)
 
         assertNull(useCase.getByPlayerId(999))
+        verify(repo).getPitcherAppointmentByPlayerId(999)
     }
 
     // --- insertOne / insertMany ---
 
     @Test
     fun insertOne_delegatesToRepository() = runTest {
-        val repo = RecordingPitcherAppointmentRepository(emptyList())
-        val useCase = PitcherAppointmentUseCase(repo)
         val item = app(2, 20, PitcherType.STARTER, 1)
 
         useCase.insertOne(item)
 
-        assertEquals(item, repo.lastInsertedOne)
+        verify(repo).insertPitcherAppointment(item)
     }
 
     @Test
     fun insertMany_doesNotCallRepository_whenEmpty() = runTest {
-        val repo = RecordingPitcherAppointmentRepository(emptyList())
-        val useCase = PitcherAppointmentUseCase(repo)
-
         useCase.insertMany(emptyList())
 
-        assertNull(repo.lastInsertedMany)
+        verify(repo, never()).insertPitcherAppointments(any())
     }
 
     @Test
     fun insertMany_delegatesToRepository_whenNonEmpty() = runTest {
-        val repo = RecordingPitcherAppointmentRepository(emptyList())
-        val useCase = PitcherAppointmentUseCase(repo)
         val items = listOf(app(2, 20, PitcherType.STARTER, 1), app(2, 21, PitcherType.CLOSER, 2))
 
         useCase.insertMany(items)
 
-        assertEquals(items, repo.lastInsertedMany)
+        verify(repo).insertPitcherAppointments(items)
     }
 
     // --- deleteOne / deleteMany ---
@@ -136,33 +104,26 @@ class PitcherAppointmentUseCaseTest {
     @Test
     fun deleteOne_delegatesToRepository() = runTest {
         val item = app(2, 20, PitcherType.STARTER, 1)
-        val repo = RecordingPitcherAppointmentRepository(listOf(item))
-        val useCase = PitcherAppointmentUseCase(repo)
 
         useCase.deleteOne(item)
 
-        assertEquals(item, repo.lastDeletedOne)
+        verify(repo).deletePitcherAppointment(item)
     }
 
     @Test
     fun deleteMany_doesNotCallRepository_whenEmpty() = runTest {
-        val repo = RecordingPitcherAppointmentRepository(emptyList())
-        val useCase = PitcherAppointmentUseCase(repo)
-
         useCase.deleteMany(emptyList())
 
-        assertNull(repo.lastDeletedMany)
+        verify(repo, never()).deletePitcherAppointments(any())
     }
 
     @Test
     fun deleteMany_delegatesToRepository_whenNonEmpty() = runTest {
         val items = listOf(app(2, 20, PitcherType.STARTER, 1), app(2, 21, PitcherType.CLOSER, 2))
-        val repo = RecordingPitcherAppointmentRepository(items)
-        val useCase = PitcherAppointmentUseCase(repo)
 
         useCase.deleteMany(items)
 
-        assertEquals(items, repo.lastDeletedMany)
+        verify(repo).deletePitcherAppointments(items)
     }
 
     // --- updateOne / updateMany ---
@@ -170,33 +131,26 @@ class PitcherAppointmentUseCaseTest {
     @Test
     fun updateOne_delegatesToRepository() = runTest {
         val item = app(2, 20, PitcherType.STARTER, 1)
-        val repo = RecordingPitcherAppointmentRepository(listOf(item))
-        val useCase = PitcherAppointmentUseCase(repo)
 
         useCase.updateOne(item)
 
-        assertEquals(item, repo.lastUpdatedOne)
+        verify(repo).updatePitcherAppointment(item)
     }
 
     @Test
     fun updateMany_doesNotCallRepository_whenEmpty() = runTest {
-        val repo = RecordingPitcherAppointmentRepository(emptyList())
-        val useCase = PitcherAppointmentUseCase(repo)
-
         useCase.updateMany(emptyList())
 
-        assertNull(repo.lastUpdated)
+        verify(repo, never()).updatePitcherAppointments(any())
     }
 
     @Test
     fun updateMany_delegatesToRepository_whenNonEmpty() = runTest {
         val items = listOf(app(2, 20, PitcherType.STARTER, 1), app(2, 21, PitcherType.CLOSER, 2))
-        val repo = RecordingPitcherAppointmentRepository(items)
-        val useCase = PitcherAppointmentUseCase(repo)
 
         useCase.updateMany(items)
 
-        assertEquals(items, repo.lastUpdated)
+        verify(repo).updatePitcherAppointments(items)
     }
 
     // --- updateOnlyDiff ---
@@ -208,27 +162,25 @@ class PitcherAppointmentUseCaseTest {
             app(teamId, 20, PitcherType.STARTER, 1),
             app(teamId, 21, PitcherType.CLOSER, 2),
         )
-        val repo = RecordingPitcherAppointmentRepository(current)
-        val useCase = PitcherAppointmentUseCase(repo)
+        whenever(repo.getPitcherAppointmentsByTeamId(teamId)).thenReturn(current)
 
-        val changed = listOf(
+        val newApps = listOf(
             current[0].copy(type = PitcherType.STARTER), // unchanged
             current[1].copy(type = PitcherType.RELIEVER), // changed
             app(teamId, 22, PitcherType.STARTER, 3), // new
         )
 
-        useCase.updateOnlyDiff(changed)
+        useCase.updateOnlyDiff(newApps)
 
-        val updated = repo.lastUpdated
-        requireNotNull(updated)
-        assertEquals(listOf(changed[1], changed[2]), updated)
+        val expected = listOf(
+            current[1].copy(type = PitcherType.RELIEVER),
+            app(teamId, 22, PitcherType.STARTER, 3),
+        )
+        verify(repo).updatePitcherAppointments(expected)
     }
 
     @Test
     fun updateOnlyDiff_empty_throws() = runTest {
-        val repo = RecordingPitcherAppointmentRepository(emptyList())
-        val useCase = PitcherAppointmentUseCase(repo)
-
         assertFailsWith<IllegalArgumentException> {
             useCase.updateOnlyDiff(emptyList())
         }
@@ -236,9 +188,6 @@ class PitcherAppointmentUseCaseTest {
 
     @Test
     fun updateOnlyDiff_differentTeams_throws() = runTest {
-        val repo = RecordingPitcherAppointmentRepository(emptyList())
-        val useCase = PitcherAppointmentUseCase(repo)
-
         val appointments = listOf(
             app(1, 20, PitcherType.STARTER, 1),
             app(2, 21, PitcherType.CLOSER, 2),
@@ -251,9 +200,6 @@ class PitcherAppointmentUseCaseTest {
 
     @Test
     fun updateOnlyDiff_duplicatePlayerId_throws() = runTest {
-        val repo = RecordingPitcherAppointmentRepository(emptyList())
-        val useCase = PitcherAppointmentUseCase(repo)
-
         val appointments = listOf(
             app(2, 20, PitcherType.STARTER, 1),
             app(2, 20, PitcherType.CLOSER, 2),
@@ -271,19 +217,17 @@ class PitcherAppointmentUseCaseTest {
             app(teamId, 20, PitcherType.STARTER, 1),
             app(teamId, 21, PitcherType.CLOSER, 2),
         )
-        val repo = RecordingPitcherAppointmentRepository(current)
-        val useCase = PitcherAppointmentUseCase(repo)
+        whenever(repo.getPitcherAppointmentsByTeamId(teamId)).thenReturn(current)
 
         useCase.updateOnlyDiff(current)
 
-        assertNull(repo.lastUpdated)
+        verify(repo, never()).updatePitcherAppointments(any())
     }
 
     @Test
     fun updateOnlyDiff_newPlayers_updatesAll() = runTest {
         val teamId = 2
-        val repo = RecordingPitcherAppointmentRepository(emptyList())
-        val useCase = PitcherAppointmentUseCase(repo)
+        whenever(repo.getPitcherAppointmentsByTeamId(teamId)).thenReturn(emptyList())
 
         val newApps = listOf(
             app(teamId, 20, PitcherType.STARTER, 1),
@@ -292,7 +236,7 @@ class PitcherAppointmentUseCaseTest {
 
         useCase.updateOnlyDiff(newApps)
 
-        assertEquals(newApps, repo.lastUpdated)
+        verify(repo).updatePitcherAppointments(newApps)
     }
 }
 

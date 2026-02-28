@@ -1,78 +1,45 @@
 package com.example.penasim.usecase
 
 import com.example.penasim.domain.*
-import com.example.penasim.domain.repository.BattingStatRepository
-import com.example.penasim.domain.repository.PitchingStatRepository
-import com.example.penasim.domain.repository.PlayerPositionRepository
-import com.example.penasim.domain.repository.PlayerRepository
-import com.example.penasim.domain.repository.TeamRepository
+import com.example.penasim.domain.repository.*
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import kotlin.test.assertFailsWith
 
 class PlayerInfoUseCaseTest {
-
-    private class FakePlayerRepository(private val players: List<Player>) : PlayerRepository {
-        override suspend fun getPlayerCount(teamId: Int): Int = players.count { it.teamId == teamId }
-        override suspend fun getPlayers(teamId: Int): List<Player> = players.filter { it.teamId == teamId }
-        override suspend fun getPlayer(id: Int): Player? = players.find { it.id == id }
-        override suspend fun getAllPlayers(): List<Player> = players
-    }
-
-    private class FakePlayerPositionRepository(private val positions: List<PlayerPosition>) : PlayerPositionRepository {
-        override suspend fun getPlayerPositions(playerId: Int): List<PlayerPosition> = positions.filter { it.playerId == playerId }
-        override suspend fun getAllPlayerPositions(): List<PlayerPosition> = positions
-        override suspend fun getAllPlayerPositionsByPosition(position: Position): List<PlayerPosition> = positions.filter { it.position == position }
-    }
-
-    private class FakeTeamRepository(private val teams: List<Team>) : TeamRepository {
-        override suspend fun getTeam(id: Int): Team? = teams.find { it.id == id }
-        override suspend fun getTeamsByLeague(league: League): List<Team> = teams.filter { it.league == league }
-        override suspend fun getAllTeams(): List<Team> = teams
-    }
-
-    private class FakeBattingStatRepository(private val stats: List<BattingStat>) : BattingStatRepository {
-        override suspend fun getByFixtureId(fixtureId: Int): List<BattingStat> = stats.filter { it.gameFixtureId == fixtureId }
-        override suspend fun getByFixtureIds(fixtureIds: List<Int>): List<BattingStat> = stats.filter { it.gameFixtureId in fixtureIds }
-        override suspend fun getByPlayerId(playerId: Int): List<BattingStat> = stats.filter { it.playerId == playerId }
-        override suspend fun getByPlayerIds(playerIds: List<Int>): List<BattingStat> = stats.filter { it.playerId in playerIds }
-        override suspend fun insertAll(items: List<BattingStat>) {}
-        override suspend fun deleteByFixtureId(fixtureId: Int) {}
-    }
-
-    private class FakePitchingStatRepository(private val stats: List<PitchingStat>) : PitchingStatRepository {
-        override suspend fun getByFixtureId(fixtureId: Int): List<PitchingStat> = stats.filter { it.gameFixtureId == fixtureId }
-        override suspend fun getByFixtureIds(fixtureIds: List<Int>): List<PitchingStat> = stats.filter { it.gameFixtureId in fixtureIds }
-        override suspend fun getByPlayerId(playerId: Int): List<PitchingStat> = stats.filter { it.playerId == playerId }
-        override suspend fun getByPlayerIds(playerIds: List<Int>): List<PitchingStat> = stats.filter { it.playerId in playerIds }
-        override suspend fun insertAll(items: List<PitchingStat>) {}
-        override suspend fun deleteByFixtureId(fixtureId: Int) {}
-    }
 
     private fun player(id: Int, teamId: Int) = Player(id, "F$id", "L$id", teamId, 1,1,1,1,1,1, 1,1,1, 1, 1)
 
     @Test
     fun getByPlayerId_returnsPlayerInfo_withTotals() = runTest {
-        val team = Team(1, "A", League.L1)
+        val playerRepo: PlayerRepository = mock()
+        val posRepo: PlayerPositionRepository = mock()
+        val teamRepo: TeamRepository = mock()
+        val battingRepo: BattingStatRepository = mock()
+        val pitchingRepo: PitchingStatRepository = mock()
+
         val p = player(10, 1)
+        val team = Team(1, "A", League.L1)
         val positions = listOf(PlayerPosition(10, Position.OUTFIELDER, 50), PlayerPosition(10, Position.CATCHER, 60))
-        val batting = listOf(
+        val battingStats = listOf(
             BattingStat(gameFixtureId = 100, playerId = 10, atBat = 4, hit = 2),
             BattingStat(gameFixtureId = 101, playerId = 10, atBat = 5, hit = 1, homeRun = 1)
         )
-        val pitching = listOf(
+        val pitchingStats = listOf(
             PitchingStat(gameFixtureId = 100, playerId = 10, inningPitched = 3, strikeOut = 2, win = true),
             PitchingStat(gameFixtureId = 101, playerId = 10, inningPitched = 6, strikeOut = 5)
         )
-        val useCase = PlayerInfoUseCase(
-            FakePlayerRepository(listOf(p)),
-            FakePlayerPositionRepository(positions),
-            FakeTeamRepository(listOf(team)),
-            FakeBattingStatRepository(batting),
-            FakePitchingStatRepository(pitching)
-        )
 
+        whenever(playerRepo.getPlayer(10)).thenReturn(p)
+        whenever(teamRepo.getTeam(1)).thenReturn(team)
+        whenever(posRepo.getPlayerPositions(10)).thenReturn(positions)
+        whenever(battingRepo.getByPlayerId(10)).thenReturn(battingStats)
+        whenever(pitchingRepo.getByPlayerId(10)).thenReturn(pitchingStats)
+
+        val useCase = PlayerInfoUseCase(playerRepo, posRepo, teamRepo, battingRepo, pitchingRepo)
         val info = useCase.getByPlayerId(10)
 
         assertEquals(p, info.player)
@@ -87,30 +54,31 @@ class PlayerInfoUseCaseTest {
 
     @Test
     fun getByTeamId_returnsInfos_forTeam_andThrowsWhenTeamMissing() = runTest {
-        val team = Team(1, "A", League.L1)
-        val ps = listOf(player(10,1), player(11,1), player(20,2))
-        val positions = listOf(
-            PlayerPosition(10, Position.OUTFIELDER, 50),
-            PlayerPosition(11, Position.CATCHER, 60),
-            PlayerPosition(20, Position.PITCHER, 70)
-        )
-        val batting = listOf(
-            BattingStat(gameFixtureId = 100, playerId = 10, atBat = 4, hit = 2),
-            BattingStat(gameFixtureId = 101, playerId = 11, atBat = 5, hit = 3)
-        )
-        val pitching = listOf(
-            PitchingStat(gameFixtureId = 100, playerId = 10, inningPitched = 3, strikeOut = 2),
-            PitchingStat(gameFixtureId = 101, playerId = 11, inningPitched = 6, strikeOut = 5)
-        )
-        val useCase = PlayerInfoUseCase(
-            FakePlayerRepository(ps),
-            FakePlayerPositionRepository(positions),
-            FakeTeamRepository(listOf(team)),
-            FakeBattingStatRepository(batting),
-            FakePitchingStatRepository(pitching)
-        )
+        val playerRepo: PlayerRepository = mock()
+        val posRepo: PlayerPositionRepository = mock()
+        val teamRepo: TeamRepository = mock()
+        val battingRepo: BattingStatRepository = mock()
+        val pitchingRepo: PitchingStatRepository = mock()
 
+        val team = Team(1, "A", League.L1)
+        val p10 = player(10, 1)
+        val p11 = player(11, 1)
+
+        whenever(teamRepo.getTeam(1)).thenReturn(team)
+        whenever(playerRepo.getPlayers(1)).thenReturn(listOf(p10, p11))
+
+        whenever(posRepo.getPlayerPositions(10)).thenReturn(listOf(PlayerPosition(10, Position.OUTFIELDER, 50)))
+        whenever(posRepo.getPlayerPositions(11)).thenReturn(listOf(PlayerPosition(11, Position.CATCHER, 60)))
+
+        whenever(battingRepo.getByPlayerId(10)).thenReturn(listOf(BattingStat(gameFixtureId = 100, playerId = 10, atBat = 4, hit = 2)))
+        whenever(battingRepo.getByPlayerId(11)).thenReturn(listOf(BattingStat(gameFixtureId = 101, playerId = 11, atBat = 5, hit = 3)))
+
+        whenever(pitchingRepo.getByPlayerId(10)).thenReturn(listOf(PitchingStat(gameFixtureId = 100, playerId = 10, inningPitched = 3, strikeOut = 2)))
+        whenever(pitchingRepo.getByPlayerId(11)).thenReturn(listOf(PitchingStat(gameFixtureId = 101, playerId = 11, inningPitched = 6, strikeOut = 5)))
+
+        val useCase = PlayerInfoUseCase(playerRepo, posRepo, teamRepo, battingRepo, pitchingRepo)
         val infos = useCase.getByTeamId(1)
+
         assertEquals(2, infos.size)
         assertEquals(team, infos[0].team)
         assertEquals(team, infos[1].team)
@@ -118,13 +86,9 @@ class PlayerInfoUseCaseTest {
         assertEquals(3, infos[1].battingStat.hit)
 
         // team missing -> throws
-        val missingTeamUseCase = PlayerInfoUseCase(
-            FakePlayerRepository(emptyList()),
-            FakePlayerPositionRepository(emptyList()),
-            FakeTeamRepository(emptyList()),
-            FakeBattingStatRepository(emptyList()),
-            FakePitchingStatRepository(emptyList())
-        )
+        val missingTeamRepo: TeamRepository = mock()
+        whenever(missingTeamRepo.getTeam(1)).thenReturn(null)
+        val missingTeamUseCase = PlayerInfoUseCase(mock(), mock(), missingTeamRepo, mock(), mock())
         assertFailsWith<IllegalArgumentException> { missingTeamUseCase.getByTeamId(1) }
     }
 }

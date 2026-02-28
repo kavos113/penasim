@@ -9,46 +9,17 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import kotlin.test.assertFailsWith
 
 class FielderAppointmentUseCaseTest {
 
-    private class RecordingFielderAppointmentRepository(
-        current: List<FielderAppointment>
-    ) : FielderAppointmentRepository {
-        private val current: MutableList<FielderAppointment> = current.toMutableList()
-        var lastUpdated: List<FielderAppointment>? = null
-        var lastInsertedOne: FielderAppointment? = null
-        var lastInsertedMany: List<FielderAppointment>? = null
-        var lastDeletedOne: FielderAppointment? = null
-        var lastDeletedMany: List<FielderAppointment>? = null
-        var lastUpdatedOne: FielderAppointment? = null
-
-        override suspend fun getFielderAppointmentsByTeamId(teamId: Int): List<FielderAppointment> =
-            current.filter { it.teamId == teamId }
-
-        override suspend fun getFielderAppointmentByPlayerId(playerId: Int): FielderAppointment? =
-            current.find { it.playerId == playerId }
-
-        override suspend fun insertFielderAppointment(fielderAppointment: FielderAppointment) {
-            lastInsertedOne = fielderAppointment
-        }
-        override suspend fun insertFielderAppointments(fielderAppointments: List<FielderAppointment>) {
-            lastInsertedMany = fielderAppointments
-        }
-        override suspend fun deleteFielderAppointment(fielderAppointment: FielderAppointment) {
-            lastDeletedOne = fielderAppointment
-        }
-        override suspend fun deleteFielderAppointments(fielderAppointments: List<FielderAppointment>) {
-            lastDeletedMany = fielderAppointments
-        }
-        override suspend fun updateFielderAppointment(fielderAppointment: FielderAppointment) {
-            lastUpdatedOne = fielderAppointment
-        }
-        override suspend fun updateFielderAppointments(fielderAppointments: List<FielderAppointment>) {
-            lastUpdated = fielderAppointments
-        }
-    }
+    private val repo: FielderAppointmentRepository = mock()
+    private val useCase = FielderAppointmentUseCase(repo)
 
     private fun app(teamId: Int, playerId: Int, position: Position, number: Int, orderType: OrderType) =
         FielderAppointment(teamId = teamId, playerId = playerId, position = position, number = number, orderType = orderType)
@@ -58,11 +29,12 @@ class FielderAppointmentUseCaseTest {
     @Test
     fun getByTeam_delegates_empty() = runTest {
         val teamId = 7
-        val repository = RecordingFielderAppointmentRepository(emptyList())
-        val useCase = FielderAppointmentUseCase(repository)
+        whenever(repo.getFielderAppointmentsByTeamId(teamId)).thenReturn(emptyList())
 
         val result = useCase.getByTeam(Team(id = teamId, name = "t"))
+
         assertEquals(emptyList<FielderAppointment>(), result)
+        verify(repo).getFielderAppointmentsByTeamId(teamId)
     }
 
     @Test
@@ -72,12 +44,12 @@ class FielderAppointmentUseCaseTest {
             app(teamId = 1, playerId = 10, position = Position.CATCHER, number = 4, orderType = OrderType.NORMAL),
             app(teamId = 1, playerId = 11, position = Position.OUTFIELDER, number = 7, orderType = OrderType.LEFT)
         )
-        val repository = RecordingFielderAppointmentRepository(apps)
-        val useCase = FielderAppointmentUseCase(repository)
+        whenever(repo.getFielderAppointmentsByTeamId(1)).thenReturn(apps)
 
         val result = useCase.getByTeam(team)
 
         assertEquals(apps, result)
+        verify(repo).getFielderAppointmentsByTeamId(1)
     }
 
     // --- getByPlayerId ---
@@ -85,48 +57,42 @@ class FielderAppointmentUseCaseTest {
     @Test
     fun getByPlayerId_returnsAppointment_whenExists() = runTest {
         val expected = app(1, 10, Position.CATCHER, 4, OrderType.NORMAL)
-        val repository = RecordingFielderAppointmentRepository(listOf(expected))
-        val useCase = FielderAppointmentUseCase(repository)
+        whenever(repo.getFielderAppointmentByPlayerId(10)).thenReturn(expected)
 
         val result = useCase.getByPlayerId(10)
+
         assertEquals(expected, result)
+        verify(repo).getFielderAppointmentByPlayerId(10)
     }
 
     @Test
     fun getByPlayerId_returnsNull_whenNotExists() = runTest {
-        val repository = RecordingFielderAppointmentRepository(emptyList())
-        val useCase = FielderAppointmentUseCase(repository)
+        whenever(repo.getFielderAppointmentByPlayerId(999)).thenReturn(null)
 
         assertNull(useCase.getByPlayerId(999))
+        verify(repo).getFielderAppointmentByPlayerId(999)
     }
 
     // --- insertOne / insertMany ---
 
     @Test
     fun insertOne_delegatesToRepository() = runTest {
-        val repository = RecordingFielderAppointmentRepository(emptyList())
-        val useCase = FielderAppointmentUseCase(repository)
         val item = app(1, 10, Position.CATCHER, 4, OrderType.NORMAL)
 
         useCase.insertOne(item)
 
-        assertEquals(item, repository.lastInsertedOne)
+        verify(repo).insertFielderAppointment(item)
     }
 
     @Test
     fun insertMany_doesNotCallRepository_whenEmpty() = runTest {
-        val repository = RecordingFielderAppointmentRepository(emptyList())
-        val useCase = FielderAppointmentUseCase(repository)
-
         useCase.insertMany(emptyList())
 
-        assertNull(repository.lastInsertedMany)
+        verify(repo, never()).insertFielderAppointments(any())
     }
 
     @Test
     fun insertMany_delegatesToRepository_whenNonEmpty() = runTest {
-        val repository = RecordingFielderAppointmentRepository(emptyList())
-        val useCase = FielderAppointmentUseCase(repository)
         val items = listOf(
             app(1, 10, Position.CATCHER, 4, OrderType.NORMAL),
             app(1, 11, Position.SHORTSTOP, 5, OrderType.NORMAL)
@@ -134,7 +100,7 @@ class FielderAppointmentUseCaseTest {
 
         useCase.insertMany(items)
 
-        assertEquals(items, repository.lastInsertedMany)
+        verify(repo).insertFielderAppointments(items)
     }
 
     // --- deleteOne / deleteMany ---
@@ -142,22 +108,17 @@ class FielderAppointmentUseCaseTest {
     @Test
     fun deleteOne_delegatesToRepository() = runTest {
         val item = app(1, 10, Position.CATCHER, 4, OrderType.NORMAL)
-        val repository = RecordingFielderAppointmentRepository(listOf(item))
-        val useCase = FielderAppointmentUseCase(repository)
 
         useCase.deleteOne(item)
 
-        assertEquals(item, repository.lastDeletedOne)
+        verify(repo).deleteFielderAppointment(item)
     }
 
     @Test
     fun deleteMany_doesNotCallRepository_whenEmpty() = runTest {
-        val repository = RecordingFielderAppointmentRepository(emptyList())
-        val useCase = FielderAppointmentUseCase(repository)
-
         useCase.deleteMany(emptyList())
 
-        assertNull(repository.lastDeletedMany)
+        verify(repo, never()).deleteFielderAppointments(any())
     }
 
     @Test
@@ -166,12 +127,10 @@ class FielderAppointmentUseCaseTest {
             app(1, 10, Position.CATCHER, 4, OrderType.NORMAL),
             app(1, 11, Position.SHORTSTOP, 5, OrderType.NORMAL)
         )
-        val repository = RecordingFielderAppointmentRepository(items)
-        val useCase = FielderAppointmentUseCase(repository)
 
         useCase.deleteMany(items)
 
-        assertEquals(items, repository.lastDeletedMany)
+        verify(repo).deleteFielderAppointments(items)
     }
 
     // --- updateOne / updateMany ---
@@ -179,22 +138,17 @@ class FielderAppointmentUseCaseTest {
     @Test
     fun updateOne_delegatesToRepository() = runTest {
         val item = app(1, 10, Position.CATCHER, 4, OrderType.NORMAL)
-        val repository = RecordingFielderAppointmentRepository(listOf(item))
-        val useCase = FielderAppointmentUseCase(repository)
 
         useCase.updateOne(item)
 
-        assertEquals(item, repository.lastUpdatedOne)
+        verify(repo).updateFielderAppointment(item)
     }
 
     @Test
     fun updateMany_doesNotCallRepository_whenEmpty() = runTest {
-        val repository = RecordingFielderAppointmentRepository(emptyList())
-        val useCase = FielderAppointmentUseCase(repository)
-
         useCase.updateMany(emptyList())
 
-        assertNull(repository.lastUpdated)
+        verify(repo, never()).updateFielderAppointments(any())
     }
 
     @Test
@@ -203,12 +157,10 @@ class FielderAppointmentUseCaseTest {
             app(1, 10, Position.CATCHER, 4, OrderType.NORMAL),
             app(1, 11, Position.SHORTSTOP, 5, OrderType.NORMAL)
         )
-        val repository = RecordingFielderAppointmentRepository(items)
-        val useCase = FielderAppointmentUseCase(repository)
 
         useCase.updateMany(items)
 
-        assertEquals(items, repository.lastUpdated)
+        verify(repo).updateFielderAppointments(items)
     }
 
     // --- updateOnlyDiff ---
@@ -220,28 +172,25 @@ class FielderAppointmentUseCaseTest {
             app(teamId, playerId = 10, position = Position.CENTER_FIELDER, number = 1, orderType = OrderType.NORMAL),
             app(teamId, playerId = 11, position = Position.SHORTSTOP, number = 2, orderType = OrderType.NORMAL),
         )
-        val repository = RecordingFielderAppointmentRepository(current)
-        val useCase = FielderAppointmentUseCase(repository)
+        whenever(repo.getFielderAppointmentsByTeamId(teamId)).thenReturn(current)
 
-        val changed = listOf(
+        val newApps = listOf(
             current[0].copy(number = 1), // unchanged
             current[1].copy(position = Position.SECOND_BASEMAN), // changed
+            app(teamId, playerId = 12, position = Position.CATCHER, number = 3, orderType = OrderType.NORMAL), // new
         )
 
-        useCase.updateOnlyDiff(changed)
+        useCase.updateOnlyDiff(newApps)
 
-        val updated = repository.lastUpdated
-        requireNotNull(updated)
-        assertEquals(1, updated.size)
-        assertEquals(11, updated.first().playerId)
-        assertEquals(Position.SECOND_BASEMAN, updated.first().position)
+        val expected = listOf(
+            current[1].copy(position = Position.SECOND_BASEMAN),
+            app(teamId, playerId = 12, position = Position.CATCHER, number = 3, orderType = OrderType.NORMAL),
+        )
+        verify(repo).updateFielderAppointments(expected)
     }
 
     @Test
     fun updateOnlyDiff_empty_throws() = runTest {
-        val repository = RecordingFielderAppointmentRepository(emptyList())
-        val useCase = FielderAppointmentUseCase(repository)
-
         assertFailsWith<IllegalArgumentException> {
             useCase.updateOnlyDiff(emptyList())
         }
@@ -249,9 +198,6 @@ class FielderAppointmentUseCaseTest {
 
     @Test
     fun updateOnlyDiff_differentTeams_throws() = runTest {
-        val repository = RecordingFielderAppointmentRepository(emptyList())
-        val useCase = FielderAppointmentUseCase(repository)
-
         val appointments = listOf(
             app(1, 10, Position.CATCHER, 1, OrderType.NORMAL),
             app(2, 11, Position.SHORTSTOP, 2, OrderType.NORMAL),
@@ -264,9 +210,6 @@ class FielderAppointmentUseCaseTest {
 
     @Test
     fun updateOnlyDiff_duplicatePlayerAndOrderType_throws() = runTest {
-        val repository = RecordingFielderAppointmentRepository(emptyList())
-        val useCase = FielderAppointmentUseCase(repository)
-
         val appointments = listOf(
             app(1, 10, Position.CATCHER, 1, OrderType.NORMAL),
             app(1, 10, Position.SHORTSTOP, 2, OrderType.NORMAL),
@@ -284,19 +227,17 @@ class FielderAppointmentUseCaseTest {
             app(teamId, 10, Position.CENTER_FIELDER, 1, OrderType.NORMAL),
             app(teamId, 11, Position.SHORTSTOP, 2, OrderType.NORMAL),
         )
-        val repository = RecordingFielderAppointmentRepository(current)
-        val useCase = FielderAppointmentUseCase(repository)
+        whenever(repo.getFielderAppointmentsByTeamId(teamId)).thenReturn(current)
 
         useCase.updateOnlyDiff(current)
 
-        assertNull(repository.lastUpdated)
+        verify(repo, never()).updateFielderAppointments(any())
     }
 
     @Test
     fun updateOnlyDiff_newPlayers_updatesAll() = runTest {
         val teamId = 1
-        val repository = RecordingFielderAppointmentRepository(emptyList())
-        val useCase = FielderAppointmentUseCase(repository)
+        whenever(repo.getFielderAppointmentsByTeamId(teamId)).thenReturn(emptyList())
 
         val newApps = listOf(
             app(teamId, 10, Position.CENTER_FIELDER, 1, OrderType.NORMAL),
@@ -305,6 +246,6 @@ class FielderAppointmentUseCaseTest {
 
         useCase.updateOnlyDiff(newApps)
 
-        assertEquals(newApps, repository.lastUpdated)
+        verify(repo).updateFielderAppointments(newApps)
     }
 }

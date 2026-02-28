@@ -7,33 +7,21 @@ import com.example.penasim.domain.repository.TeamRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.time.LocalDate
 
 class GetRankingUseCaseTest {
 
-    private class FakeTeamRepository(private val teams: List<Team>) : TeamRepository {
-        override suspend fun getTeam(id: Int): Team? = teams.find { it.id == id }
-        override suspend fun getTeamsByLeague(league: League): List<Team> = teams.filter { it.league == league }
-        override suspend fun getAllTeams(): List<Team> = teams
-    }
-
-    private class FakeGameFixtureRepository(private val fixtures: List<GameFixture>) : GameFixtureRepository {
-        override suspend fun getGameFixture(id: Int): GameFixture? = fixtures.find { it.id == id }
-        override suspend fun getGameFixturesByDate(date: LocalDate): List<GameFixture> = fixtures.filter { it.date == date }
-        override suspend fun getGameFixturesByTeam(team: Team): List<GameFixture> = fixtures.filter { it.homeTeamId == team.id || it.awayTeamId == team.id }
-        override suspend fun getAllGameFixtures(): List<GameFixture> = fixtures
-    }
-
-    private class FakeGameResultRepository(private val results: List<GameResult>) : GameResultRepository {
-        override suspend fun getGameByFixtureId(fixtureId: Int): GameResult? = results.find { it.fixtureId == fixtureId }
-        override suspend fun getGamesByFixtureIds(fixtureIds: List<Int>): List<GameResult> = results.filter { it.fixtureId in fixtureIds }
-        override suspend fun getAllGames(): List<GameResult> = results
-        override suspend fun deleteAllGames() {}
-        override suspend fun createGame(fixtureId: Int, homeScore: Int, awayScore: Int): GameResult? = null
-    }
+    private fun assertDoubleEquals(expected: Double, actual: Double) =
+        assertEquals(expected, actual, 0.001)
 
     @Test
     fun execute_calculatesRankings_winLossDraw_andGameBack() = runTest {
+        val teamRepo: TeamRepository = mock()
+        val fixtureRepo: GameFixtureRepository = mock()
+        val resultRepo: GameResultRepository = mock()
+
         val league = League.L1
         val t0 = Team(0, "T0", league)
         val t1 = Team(1, "T1", league)
@@ -41,7 +29,6 @@ class GetRankingUseCaseTest {
         val t3 = Team(3, "T3", league)
         val t4 = Team(4, "T4", league)
         val t5 = Team(5, "T5", league)
-        val teams = listOf(t0, t1, t2, t3, t4, t5)
 
         val d1 = LocalDate.of(2025, 4, 1)
         val d2 = LocalDate.of(2025, 4, 2)
@@ -64,11 +51,24 @@ class GetRankingUseCaseTest {
             GameResult(fixtureId = 5, homeScore = 2, awayScore = 2),
         )
 
-        val teamRepo = FakeTeamRepository(teams)
-        val fixtureRepo = FakeGameFixtureRepository(fixtures)
-        val resultRepo = FakeGameResultRepository(results)
-        val useCase = RankingUseCase(teamRepo, fixtureRepo, resultRepo)
+        whenever(teamRepo.getTeamsByLeague(league)).thenReturn(listOf(t0, t1, t2, t3, t4, t5))
 
+        // Per-team fixture mocks
+        whenever(fixtureRepo.getGameFixturesByTeam(t0)).thenReturn(listOf(fixtures[0], fixtures[3]))
+        whenever(fixtureRepo.getGameFixturesByTeam(t1)).thenReturn(listOf(fixtures[1], fixtures[4]))
+        whenever(fixtureRepo.getGameFixturesByTeam(t2)).thenReturn(listOf(fixtures[2], fixtures[4]))
+        whenever(fixtureRepo.getGameFixturesByTeam(t3)).thenReturn(listOf(fixtures[1], fixtures[5]))
+        whenever(fixtureRepo.getGameFixturesByTeam(t4)).thenReturn(listOf(fixtures[2], fixtures[5]))
+        whenever(fixtureRepo.getGameFixturesByTeam(t5)).thenReturn(listOf(fixtures[0], fixtures[3]))
+
+        // Per-team result mocks (t0 and t5 share the same fixture ids)
+        whenever(resultRepo.getGamesByFixtureIds(listOf(0, 3))).thenReturn(listOf(results[0], results[3]))
+        whenever(resultRepo.getGamesByFixtureIds(listOf(1, 4))).thenReturn(listOf(results[1], results[4]))
+        whenever(resultRepo.getGamesByFixtureIds(listOf(2, 4))).thenReturn(listOf(results[2], results[4]))
+        whenever(resultRepo.getGamesByFixtureIds(listOf(1, 5))).thenReturn(listOf(results[1], results[5]))
+        whenever(resultRepo.getGamesByFixtureIds(listOf(2, 5))).thenReturn(listOf(results[2], results[5]))
+
+        val useCase = RankingUseCase(teamRepo, fixtureRepo, resultRepo)
         val standings = useCase.getByLeague(league)
 
         assertEquals(6, standings.size)
@@ -95,7 +95,6 @@ class GetRankingUseCaseTest {
         assertEquals(5, s4.rank)
         assertEquals(6, s3.rank)
 
-        fun assertDoubleEquals(expected: Double, actual: Double) = assertEquals(expected, actual, 0.001)
         assertDoubleEquals(0.0, s0.gameBack)
         assertDoubleEquals(0.5, s1.gameBack)
         assertDoubleEquals(1.0, s2.gameBack)
@@ -106,6 +105,10 @@ class GetRankingUseCaseTest {
 
     @Test
     fun getAll_returnsCombinedStandingsFromBothLeagues() = runTest {
+        val teamRepo: TeamRepository = mock()
+        val fixtureRepo: GameFixtureRepository = mock()
+        val resultRepo: GameResultRepository = mock()
+
         val l1 = League.L1
         val l2 = League.L2
         val t0 = Team(0, "L1-A", l1)
@@ -125,11 +128,25 @@ class GetRankingUseCaseTest {
             GameResult(fixtureId = 1, homeScore = 2, awayScore = 5),
         )
 
-        val teamRepo = FakeTeamRepository(listOf(t0, t1, t2, t3))
-        val fixtureRepo = FakeGameFixtureRepository(fixtures)
-        val resultRepo = FakeGameResultRepository(results)
-        val useCase = RankingUseCase(teamRepo, fixtureRepo, resultRepo)
+        whenever(teamRepo.getTeamsByLeague(l1)).thenReturn(listOf(t0, t1))
+        whenever(teamRepo.getTeamsByLeague(l2)).thenReturn(listOf(t2, t3))
 
+        // L1 per-team mocks
+        whenever(fixtureRepo.getGameFixturesByTeam(t0)).thenReturn(listOf(fixtures[0]))
+        whenever(fixtureRepo.getGameFixturesByTeam(t1)).thenReturn(listOf(fixtures[0]))
+        whenever(resultRepo.getGamesByFixtureIds(listOf(0))).thenReturn(listOf(results[0]))
+
+        // L2 per-team mocks
+        whenever(fixtureRepo.getGameFixturesByTeam(t2)).thenReturn(listOf(fixtures[1]))
+        whenever(fixtureRepo.getGameFixturesByTeam(t3)).thenReturn(listOf(fixtures[1]))
+        whenever(resultRepo.getGamesByFixtureIds(listOf(1))).thenReturn(listOf(results[1]))
+
+        // Other leagues return empty
+        League.entries.filter { it != l1 && it != l2 }.forEach { league ->
+            whenever(teamRepo.getTeamsByLeague(league)).thenReturn(emptyList())
+        }
+
+        val useCase = RankingUseCase(teamRepo, fixtureRepo, resultRepo)
         val all = useCase.getAll()
 
         // L1: t0 wins, t1 loses; L2: t3 wins, t2 loses
@@ -148,26 +165,33 @@ class GetRankingUseCaseTest {
 
     @Test
     fun getByLeague_emptyTeams_returnsEmptyList() = runTest {
-        val teamRepo = FakeTeamRepository(emptyList())
-        val fixtureRepo = FakeGameFixtureRepository(emptyList())
-        val resultRepo = FakeGameResultRepository(emptyList())
-        val useCase = RankingUseCase(teamRepo, fixtureRepo, resultRepo)
+        val teamRepo: TeamRepository = mock()
+        val fixtureRepo: GameFixtureRepository = mock()
+        val resultRepo: GameResultRepository = mock()
 
+        whenever(teamRepo.getTeamsByLeague(League.L1)).thenReturn(emptyList())
+
+        val useCase = RankingUseCase(teamRepo, fixtureRepo, resultRepo)
         val standings = useCase.getByLeague(League.L1)
         assertEquals(emptyList<TeamStanding>(), standings)
     }
 
     @Test
     fun getByLeague_teamsWithNoGames_allZeroStats() = runTest {
+        val teamRepo: TeamRepository = mock()
+        val fixtureRepo: GameFixtureRepository = mock()
+        val resultRepo: GameResultRepository = mock()
+
         val league = League.L1
         val t0 = Team(0, "A", league)
         val t1 = Team(1, "B", league)
 
-        val teamRepo = FakeTeamRepository(listOf(t0, t1))
-        val fixtureRepo = FakeGameFixtureRepository(emptyList())
-        val resultRepo = FakeGameResultRepository(emptyList())
-        val useCase = RankingUseCase(teamRepo, fixtureRepo, resultRepo)
+        whenever(teamRepo.getTeamsByLeague(league)).thenReturn(listOf(t0, t1))
+        whenever(fixtureRepo.getGameFixturesByTeam(t0)).thenReturn(emptyList())
+        whenever(fixtureRepo.getGameFixturesByTeam(t1)).thenReturn(emptyList())
+        whenever(resultRepo.getGamesByFixtureIds(emptyList())).thenReturn(emptyList())
 
+        val useCase = RankingUseCase(teamRepo, fixtureRepo, resultRepo)
         val standings = useCase.getByLeague(league)
 
         assertEquals(2, standings.size)

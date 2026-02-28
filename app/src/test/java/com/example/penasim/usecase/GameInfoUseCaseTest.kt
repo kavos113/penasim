@@ -10,45 +10,31 @@ import com.example.penasim.domain.repository.TeamRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.time.LocalDate
 import kotlin.test.assertFailsWith
 
 class GameInfoUseCaseTest {
-    private class FakeTeamRepository(private val teams: List<Team>) : TeamRepository {
-        override suspend fun getTeam(id: Int): Team? = teams.find { it.id == id }
-        override suspend fun getTeamsByLeague(league: League): List<Team> = teams.filter { it.league == league }
-        override suspend fun getAllTeams(): List<Team> = teams
-    }
-
-    private class FakeGameFixtureRepository(private val fixtures: List<GameFixture>) : GameFixtureRepository {
-        override suspend fun getGameFixture(id: Int): GameFixture? = fixtures.find { it.id == id }
-        override suspend fun getGameFixturesByDate(date: LocalDate): List<GameFixture> = fixtures.filter { it.date == date }
-        override suspend fun getGameFixturesByTeam(team: Team): List<GameFixture> = fixtures.filter { it.homeTeamId == team.id || it.awayTeamId == team.id }
-        override suspend fun getAllGameFixtures(): List<GameFixture> = fixtures
-    }
-
-    private class FakeGameResultRepository(private val results: List<GameResult>) : GameResultRepository {
-        override suspend fun getGameByFixtureId(fixtureId: Int): GameResult? = results.find { it.fixtureId == fixtureId }
-        override suspend fun getGamesByFixtureIds(fixtureIds: List<Int>): List<GameResult> = results.filter { it.fixtureId in fixtureIds }
-        override suspend fun getAllGames(): List<GameResult> = results
-        override suspend fun deleteAllGames() {}
-        override suspend fun createGame(fixtureId: Int, homeScore: Int, awayScore: Int): GameResult? = null
-    }
 
     @Test
     fun getById_returnsComposedGameInfo_whenAllDataExists() = runTest {
+        val fixtureRepo: GameFixtureRepository = mock()
+        val resultRepo: GameResultRepository = mock()
+        val teamRepo: TeamRepository = mock()
+
         val league = League.L1
         val home = Team(1, "Home", league)
         val away = Team(2, "Away", league)
         val fixture = GameFixture(10, LocalDate.of(2025, 8, 1), 1, home.id, away.id)
         val result = GameResult(10, 5, 2)
 
-        val useCase = GameInfoUseCase(
-            FakeGameFixtureRepository(listOf(fixture)),
-            FakeGameResultRepository(listOf(result)),
-            FakeTeamRepository(listOf(home, away))
-        )
+        whenever(fixtureRepo.getGameFixture(10)).thenReturn(fixture)
+        whenever(teamRepo.getTeam(1)).thenReturn(home)
+        whenever(teamRepo.getTeam(2)).thenReturn(away)
+        whenever(resultRepo.getGameByFixtureId(10)).thenReturn(result)
 
+        val useCase = GameInfoUseCase(fixtureRepo, resultRepo, teamRepo)
         val info = useCase.getById(10)
 
         assertEquals(fixture, info.fixture)
@@ -67,34 +53,47 @@ class GameInfoUseCaseTest {
 
         // Missing home team
         assertFailsWith<IllegalArgumentException> {
-            GameInfoUseCase(
-                FakeGameFixtureRepository(listOf(fixture)),
-                FakeGameResultRepository(listOf(result)),
-                FakeTeamRepository(listOf(away))
-            ).getById(10)
+            val fixtureRepo: GameFixtureRepository = mock()
+            val resultRepo: GameResultRepository = mock()
+            val teamRepo: TeamRepository = mock()
+            whenever(fixtureRepo.getGameFixture(10)).thenReturn(fixture)
+            whenever(teamRepo.getTeam(1)).thenReturn(null)
+            whenever(teamRepo.getTeam(2)).thenReturn(away)
+            whenever(resultRepo.getGameByFixtureId(10)).thenReturn(result)
+            GameInfoUseCase(fixtureRepo, resultRepo, teamRepo).getById(10)
         }
 
         // Missing away team
         assertFailsWith<IllegalArgumentException> {
-            GameInfoUseCase(
-                FakeGameFixtureRepository(listOf(fixture)),
-                FakeGameResultRepository(listOf(result)),
-                FakeTeamRepository(listOf(home))
-            ).getById(10)
+            val fixtureRepo: GameFixtureRepository = mock()
+            val resultRepo: GameResultRepository = mock()
+            val teamRepo: TeamRepository = mock()
+            whenever(fixtureRepo.getGameFixture(10)).thenReturn(fixture)
+            whenever(teamRepo.getTeam(1)).thenReturn(home)
+            whenever(teamRepo.getTeam(2)).thenReturn(null)
+            whenever(resultRepo.getGameByFixtureId(10)).thenReturn(result)
+            GameInfoUseCase(fixtureRepo, resultRepo, teamRepo).getById(10)
         }
 
         // Missing result
         assertFailsWith<IllegalArgumentException> {
-            GameInfoUseCase(
-                FakeGameFixtureRepository(listOf(fixture)),
-                FakeGameResultRepository(emptyList()),
-                FakeTeamRepository(listOf(home, away))
-            ).getById(10)
+            val fixtureRepo: GameFixtureRepository = mock()
+            val resultRepo: GameResultRepository = mock()
+            val teamRepo: TeamRepository = mock()
+            whenever(fixtureRepo.getGameFixture(10)).thenReturn(fixture)
+            whenever(teamRepo.getTeam(1)).thenReturn(home)
+            whenever(teamRepo.getTeam(2)).thenReturn(away)
+            whenever(resultRepo.getGameByFixtureId(10)).thenReturn(null)
+            GameInfoUseCase(fixtureRepo, resultRepo, teamRepo).getById(10)
         }
     }
 
     @Test
     fun getByTeam_returnsGameInfos_forTeam() = runTest {
+        val fixtureRepo: GameFixtureRepository = mock()
+        val resultRepo: GameResultRepository = mock()
+        val teamRepo: TeamRepository = mock()
+
         val league = League.L1
         val team = Team(1, "A", league)
         val opponent = Team(2, "B", league)
@@ -104,12 +103,12 @@ class GameInfoUseCaseTest {
         )
         val results = listOf(GameResult(10, 1, 0), GameResult(11, 0, 2))
 
-        val useCase = GameInfoUseCase(
-            FakeGameFixtureRepository(fixtures),
-            FakeGameResultRepository(results),
-            FakeTeamRepository(listOf(team, opponent))
-        )
+        whenever(fixtureRepo.getGameFixturesByTeam(team)).thenReturn(fixtures)
+        whenever(teamRepo.getTeam(1)).thenReturn(team)
+        whenever(teamRepo.getTeam(2)).thenReturn(opponent)
+        whenever(resultRepo.getGamesByFixtureIds(listOf(10, 11))).thenReturn(results)
 
+        val useCase = GameInfoUseCase(fixtureRepo, resultRepo, teamRepo)
         val infos = useCase.getByTeam(team)
         assertEquals(2, infos.size)
         assertEquals(10, infos[0].fixture.id)
@@ -118,36 +117,45 @@ class GameInfoUseCaseTest {
 
     @Test
     fun getByTeam_throws_whenTeamEntityMissing() = runTest {
+        val fixtureRepo: GameFixtureRepository = mock()
+        val resultRepo: GameResultRepository = mock()
+        val teamRepo: TeamRepository = mock()
+
         val team = Team(1, "A", League.L1)
         val fixtures = listOf(GameFixture(10, LocalDate.now(), 1, 1, 2))
         val results = listOf(GameResult(10, 1, 1))
-        val useCase = GameInfoUseCase(
-            FakeGameFixtureRepository(fixtures),
-            FakeGameResultRepository(results),
-            FakeTeamRepository(emptyList())
-        )
+
+        whenever(fixtureRepo.getGameFixturesByTeam(team)).thenReturn(fixtures)
+        whenever(teamRepo.getTeam(1)).thenReturn(null)
+        whenever(teamRepo.getTeam(2)).thenReturn(null)
+        whenever(resultRepo.getGamesByFixtureIds(listOf(10))).thenReturn(results)
+
+        val useCase = GameInfoUseCase(fixtureRepo, resultRepo, teamRepo)
         assertFailsWith<IllegalArgumentException> { useCase.getByTeam(team) }
     }
 
     @Test
     fun getByDate_returnsGameInfos_forDate() = runTest {
+        val fixtureRepo: GameFixtureRepository = mock()
+        val resultRepo: GameResultRepository = mock()
+        val teamRepo: TeamRepository = mock()
+
         val league = League.L1
         val teams = listOf(Team(1, "A", league), Team(2, "B", league))
         val date = LocalDate.of(2025, 7, 1)
         val fixtures = listOf(
-            GameFixture(10, date, 1, 1, 2),
-            GameFixture(11, date.plusDays(1), 2, 1, 2)
+            GameFixture(10, date, 1, 1, 2)
         )
         val results = listOf(
-            GameResult(10, 2, 0),
-            GameResult(11, 1, 1)
-        )
-        val useCase = GameInfoUseCase(
-            FakeGameFixtureRepository(fixtures),
-            FakeGameResultRepository(results),
-            FakeTeamRepository(teams)
+            GameResult(10, 2, 0)
         )
 
+        whenever(fixtureRepo.getGameFixturesByDate(date)).thenReturn(fixtures)
+        whenever(teamRepo.getTeam(1)).thenReturn(teams[0])
+        whenever(teamRepo.getTeam(2)).thenReturn(teams[1])
+        whenever(resultRepo.getGamesByFixtureIds(listOf(10))).thenReturn(results)
+
+        val useCase = GameInfoUseCase(fixtureRepo, resultRepo, teamRepo)
         val infos = useCase.getByDate(date)
         assertEquals(1, infos.size)
         assertEquals(10, infos[0].fixture.id)
@@ -156,22 +164,29 @@ class GameInfoUseCaseTest {
 
     @Test
     fun getByDate_throws_whenTeamMissing() = runTest {
+        val fixtureRepo: GameFixtureRepository = mock()
+        val resultRepo: GameResultRepository = mock()
+        val teamRepo: TeamRepository = mock()
+
         val date = LocalDate.now()
         val fixtures = listOf(GameFixture(10, date, 1, 1, 2))
         val results = listOf(GameResult(10, 1, 1))
 
-        // missing team
-        assertFailsWith<IllegalArgumentException> {
-            GameInfoUseCase(
-                FakeGameFixtureRepository(fixtures),
-                FakeGameResultRepository(results),
-                FakeTeamRepository(emptyList())
-            ).getByDate(date)
-        }
+        whenever(fixtureRepo.getGameFixturesByDate(date)).thenReturn(fixtures)
+        whenever(teamRepo.getTeam(1)).thenReturn(null)
+        whenever(teamRepo.getTeam(2)).thenReturn(null)
+        whenever(resultRepo.getGamesByFixtureIds(listOf(10))).thenReturn(results)
+
+        val useCase = GameInfoUseCase(fixtureRepo, resultRepo, teamRepo)
+        assertFailsWith<IllegalArgumentException> { useCase.getByDate(date) }
     }
 
     @Test
     fun getAll_returnsGameInfos_forAllFixtures() = runTest {
+        val fixtureRepo: GameFixtureRepository = mock()
+        val resultRepo: GameResultRepository = mock()
+        val teamRepo: TeamRepository = mock()
+
         val league = League.L1
         val teams = listOf(
             Team(1, "A", league), Team(2, "B", league), Team(3, "C", league), Team(4, "D", league)
@@ -184,12 +199,15 @@ class GameInfoUseCaseTest {
             GameResult(10, 3, 1),
             GameResult(11, 0, 0)
         )
-        val useCase = GameInfoUseCase(
-            FakeGameFixtureRepository(fixtures),
-            FakeGameResultRepository(results),
-            FakeTeamRepository(teams)
-        )
 
+        whenever(fixtureRepo.getAllGameFixtures()).thenReturn(fixtures)
+        whenever(teamRepo.getTeam(1)).thenReturn(teams[0])
+        whenever(teamRepo.getTeam(2)).thenReturn(teams[1])
+        whenever(teamRepo.getTeam(3)).thenReturn(teams[2])
+        whenever(teamRepo.getTeam(4)).thenReturn(teams[3])
+        whenever(resultRepo.getGamesByFixtureIds(listOf(10, 11))).thenReturn(results)
+
+        val useCase = GameInfoUseCase(fixtureRepo, resultRepo, teamRepo)
         val infos = useCase.getAll()
         assertEquals(2, infos.size)
         assertEquals(teams[0], infos[0].homeTeam)
@@ -199,18 +217,21 @@ class GameInfoUseCaseTest {
 
     @Test
     fun getAll_throws_whenTeamMissing() = runTest {
+        val fixtureRepo: GameFixtureRepository = mock()
+        val resultRepo: GameResultRepository = mock()
+        val teamRepo: TeamRepository = mock()
+
         val league = League.L1
         val teams = listOf(Team(1, "A", league)) // team 2 missing
         val fixtures = listOf(GameFixture(10, LocalDate.now(), 1, 1, 2))
         val results = listOf(GameResult(10, 1, 1))
 
-        // missing team
-        assertFailsWith<IllegalArgumentException> {
-            GameInfoUseCase(
-                FakeGameFixtureRepository(fixtures),
-                FakeGameResultRepository(results),
-                FakeTeamRepository(teams)
-            ).getAll()
-        }
+        whenever(fixtureRepo.getAllGameFixtures()).thenReturn(fixtures)
+        whenever(teamRepo.getTeam(1)).thenReturn(teams[0])
+        whenever(teamRepo.getTeam(2)).thenReturn(null)
+        whenever(resultRepo.getGamesByFixtureIds(listOf(10))).thenReturn(results)
+
+        val useCase = GameInfoUseCase(fixtureRepo, resultRepo, teamRepo)
+        assertFailsWith<IllegalArgumentException> { useCase.getAll() }
     }
 }

@@ -1,375 +1,190 @@
 package com.example.penasim.ui.game
 
+import androidx.compose.ui.graphics.Color
 import com.example.penasim.const.Constants
-import com.example.penasim.domain.BattingStat
-import com.example.penasim.domain.FielderAppointment
 import com.example.penasim.domain.GameFixture
-import com.example.penasim.domain.GameResult
-import com.example.penasim.domain.HomeRun
+import com.example.penasim.domain.GameInfo
+import com.example.penasim.domain.GameSchedule
 import com.example.penasim.domain.InningScore
 import com.example.penasim.domain.League
 import com.example.penasim.domain.OrderType
-import com.example.penasim.domain.PitcherAppointment
-import com.example.penasim.domain.PitcherType
-import com.example.penasim.domain.PitchingStat
-import com.example.penasim.domain.Player
-import com.example.penasim.domain.PlayerPosition
 import com.example.penasim.domain.Position
 import com.example.penasim.domain.Team
-import com.example.penasim.domain.TransactionProvider
-import com.example.penasim.domain.repository.BattingStatRepository
-import com.example.penasim.domain.repository.FielderAppointmentRepository
-import com.example.penasim.domain.repository.GameFixtureRepository
-import com.example.penasim.domain.repository.GameResultRepository
-import com.example.penasim.domain.repository.HomeRunRepository
-import com.example.penasim.domain.repository.InningScoreRepository
-import com.example.penasim.domain.repository.PitcherAppointmentRepository
-import com.example.penasim.domain.repository.PitchingStatRepository
-import com.example.penasim.domain.repository.PlayerPositionRepository
-import com.example.penasim.domain.repository.PlayerRepository
-import com.example.penasim.domain.repository.TeamRepository
+import com.example.penasim.game.BaseState
+import com.example.penasim.game.BatterState
 import com.example.penasim.game.ExecuteGameByOne
+import com.example.penasim.game.LastResult
+import com.example.penasim.game.PitcherState
+import com.example.penasim.game.Result
+import com.example.penasim.game.ScoreData
 import com.example.penasim.testing.MainDispatcherRule
+import com.example.penasim.ui.common.DisplayFielder
 import com.example.penasim.ui.common.GetDisplayFielder
-import com.example.penasim.usecase.BattingStatUseCase
-import com.example.penasim.usecase.ExecuteGameUseCase
-import com.example.penasim.usecase.FielderAppointmentUseCase
-import com.example.penasim.usecase.GameInfoUseCase
 import com.example.penasim.usecase.GameScheduleUseCase
-import com.example.penasim.usecase.HomeRunUseCase
-import com.example.penasim.usecase.InningScoreUseCase
-import com.example.penasim.usecase.PitcherAppointmentUseCase
-import com.example.penasim.usecase.PitchingStatUseCase
-import com.example.penasim.usecase.PlayerInfoUseCase
-import com.example.penasim.usecase.TeamUseCase
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import java.time.LocalDate
 
 class InGameViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
-    // region Fake Repositories
-    private class FakeTeamRepository(private val teams: List<Team>) : TeamRepository {
-        override suspend fun getTeam(id: Int): Team? = teams.find { it.id == id }
-        override suspend fun getTeamsByLeague(league: League): List<Team> = teams.filter { it.league == league }
-        override suspend fun getAllTeams(): List<Team> = teams
-    }
+    private val homeTeam = Team(Constants.TEAM_ID, "Home", League.L1)
+    private val awayTeam = Team(1, "Away", League.L1)
 
-    private class FakeGameFixtureRepository(private val fixtures: List<GameFixture>) : GameFixtureRepository {
-        override suspend fun getGameFixture(id: Int): GameFixture? = fixtures.find { it.id == id }
-        override suspend fun getGameFixturesByDate(date: LocalDate): List<GameFixture> = fixtures.filter { it.date == date }
-        override suspend fun getGameFixturesByTeam(team: Team): List<GameFixture> = fixtures.filter { it.homeTeamId == team.id || it.awayTeamId == team.id }
-        override suspend fun getAllGameFixtures(): List<GameFixture> = fixtures
-    }
-
-    private class FakeGameResultRepository(
-        private val results: MutableList<GameResult> = mutableListOf()
-    ) : GameResultRepository {
-        override suspend fun getGameByFixtureId(fixtureId: Int): GameResult? = results.find { it.fixtureId == fixtureId }
-        override suspend fun getGamesByFixtureIds(fixtureIds: List<Int>): List<GameResult> = results.filter { it.fixtureId in fixtureIds }
-        override suspend fun getAllGames(): List<GameResult> = results
-        override suspend fun deleteAllGames() { results.clear() }
-        override suspend fun createGame(fixtureId: Int, homeScore: Int, awayScore: Int): GameResult? {
-            if (results.any { it.fixtureId == fixtureId }) return null
-            val r = GameResult(fixtureId, homeScore, awayScore)
-            results.add(r)
-            return r
-        }
-    }
-
-    private class FakePlayerRepository(private val players: List<Player>) : PlayerRepository {
-        override suspend fun getPlayerCount(teamId: Int): Int = players.count { it.teamId == teamId }
-        override suspend fun getPlayers(teamId: Int): List<Player> = players.filter { it.teamId == teamId }
-        override suspend fun getPlayer(id: Int): Player? = players.find { it.id == id }
-        override suspend fun getAllPlayers(): List<Player> = players
-    }
-
-    private class FakePlayerPositionRepository(private val positions: List<PlayerPosition>) : PlayerPositionRepository {
-        override suspend fun getPlayerPositions(playerId: Int): List<PlayerPosition> = positions.filter { it.playerId == playerId }
-        override suspend fun getAllPlayerPositions(): List<PlayerPosition> = positions
-        override suspend fun getAllPlayerPositionsByPosition(position: Position): List<PlayerPosition> = positions.filter { it.position == position }
-    }
-
-    private class FakeInningScoreRepository(private val data: MutableList<InningScore> = mutableListOf()) : InningScoreRepository {
-        override suspend fun getByFixtureId(fixtureId: Int): List<InningScore> = data.filter { it.fixtureId == fixtureId }
-        override suspend fun getByFixtureIds(fixtureIds: List<Int>): List<InningScore> = data.filter { it.fixtureId in fixtureIds }
-        override suspend fun getByTeamId(teamId: Int): List<InningScore> = data.filter { it.teamId == teamId }
-        override suspend fun getByTeamIds(teamIds: List<Int>): List<InningScore> = data.filter { it.teamId in teamIds }
-        override suspend fun insertAll(items: List<InningScore>) { data.addAll(items) }
-        override suspend fun deleteByFixtureId(fixtureId: Int) { data.removeAll { it.fixtureId == fixtureId } }
-    }
-
-    private class FakePitchingStatRepository(private val data: MutableList<PitchingStat> = mutableListOf()) : PitchingStatRepository {
-        override suspend fun getByFixtureId(fixtureId: Int): List<PitchingStat> = data.filter { it.gameFixtureId == fixtureId }
-        override suspend fun getByFixtureIds(fixtureIds: List<Int>): List<PitchingStat> = data.filter { it.gameFixtureId in fixtureIds }
-        override suspend fun getByPlayerId(playerId: Int): List<PitchingStat> = data.filter { it.playerId == playerId }
-        override suspend fun getByPlayerIds(playerIds: List<Int>): List<PitchingStat> = data.filter { it.playerId in playerIds }
-        override suspend fun insertAll(items: List<PitchingStat>) { data.addAll(items) }
-        override suspend fun deleteByFixtureId(fixtureId: Int) { data.removeAll { it.gameFixtureId == fixtureId } }
-    }
-
-    private class FakeBattingStatRepository(private val data: MutableList<BattingStat> = mutableListOf()) : BattingStatRepository {
-        override suspend fun getByFixtureId(fixtureId: Int): List<BattingStat> = data.filter { it.gameFixtureId == fixtureId }
-        override suspend fun getByFixtureIds(fixtureIds: List<Int>): List<BattingStat> = data.filter { it.gameFixtureId in fixtureIds }
-        override suspend fun getByPlayerId(playerId: Int): List<BattingStat> = data.filter { it.playerId == playerId }
-        override suspend fun getByPlayerIds(playerIds: List<Int>): List<BattingStat> = data.filter { it.playerId in playerIds }
-        override suspend fun insertAll(items: List<BattingStat>) { data.addAll(items) }
-        override suspend fun deleteByFixtureId(fixtureId: Int) { data.removeAll { it.gameFixtureId == fixtureId } }
-    }
-
-    private class FakeHomeRunRepository(private val data: MutableList<HomeRun> = mutableListOf()) : HomeRunRepository {
-        override suspend fun getHomeRunsByFixtureId(fixtureId: Int): List<HomeRun> = data.filter { it.fixtureId == fixtureId }
-        override suspend fun getHomeRunsByPlayerId(playerId: Int): List<HomeRun> = data.filter { it.playerId == playerId }
-        override suspend fun insertHomeRuns(homeRuns: List<HomeRun>) { data.addAll(homeRuns) }
-    }
-
-    private class FakeFielderAppointmentRepository(private val data: List<FielderAppointment>) : FielderAppointmentRepository {
-        override suspend fun getFielderAppointmentByPlayerId(playerId: Int) = data.find { it.playerId == playerId }
-        override suspend fun getFielderAppointmentsByTeamId(teamId: Int) = data.filter { it.teamId == teamId }
-        override suspend fun insertFielderAppointment(fielderAppointment: FielderAppointment) {}
-        override suspend fun insertFielderAppointments(fielderAppointments: List<FielderAppointment>) {}
-        override suspend fun deleteFielderAppointment(fielderAppointment: FielderAppointment) {}
-        override suspend fun deleteFielderAppointments(fielderAppointments: List<FielderAppointment>) {}
-        override suspend fun updateFielderAppointment(fielderAppointment: FielderAppointment) {}
-        override suspend fun updateFielderAppointments(fielderAppointments: List<FielderAppointment>) {}
-    }
-
-    private class FakePitcherAppointmentRepository(private val data: List<PitcherAppointment>) : PitcherAppointmentRepository {
-        override suspend fun getPitcherAppointmentsByTeamId(teamId: Int) = data.filter { it.teamId == teamId }
-        override suspend fun getPitcherAppointmentByPlayerId(playerId: Int) = data.find { it.playerId == playerId }
-        override suspend fun insertPitcherAppointment(pitcherAppointment: PitcherAppointment) {}
-        override suspend fun insertPitcherAppointments(pitcherAppointments: List<PitcherAppointment>) {}
-        override suspend fun deletePitcherAppointment(pitcherAppointment: PitcherAppointment) {}
-        override suspend fun deletePitcherAppointments(pitcherAppointments: List<PitcherAppointment>) {}
-        override suspend fun updatePitcherAppointment(pitcherAppointment: PitcherAppointment) {}
-        override suspend fun updatePitcherAppointments(pitcherAppointments: List<PitcherAppointment>) {}
-    }
-    // endregion
-
-    private fun mkPlayer(id: Int, teamId: Int, name: String): Player = Player(
-        id = id, firstName = name, lastName = "", teamId = teamId,
-        meet = 50, power = 50, speed = 50, throwing = 50, defense = 50, catching = 50,
-        ballSpeed = 140, control = 50, stamina = 50, starter = 50, reliever = 50
+    private val homePlayers = listOf(
+        DisplayFielder(100, "HP1", Position.CATCHER, 1, Color.Red),
+        DisplayFielder(101, "HP2", Position.FIRST_BASEMAN, 2, Color.Red),
+        DisplayFielder(109, "HP10", Position.PITCHER, 9, Color.Red),
+    )
+    private val awayPlayers = listOf(
+        DisplayFielder(200, "AP1", Position.CATCHER, 1, Color.Blue),
+        DisplayFielder(201, "AP2", Position.FIRST_BASEMAN, 2, Color.Blue),
+        DisplayFielder(209, "AP10", Position.PITCHER, 9, Color.Blue),
     )
 
-    /**
-     * Creates a minimal valid team with 9 fielders + 1 starting pitcher + 1 reliever.
-     * Each position is filled in batting order 1-9, with position 9 mapped to PITCHER.
-     */
-    private fun createTeamData(teamId: Int, teamName: String, playerIdStart: Int): TeamSetup {
-        val team = Team(teamId, teamName, League.L1)
+    private val fixture = GameFixture(1, Constants.START, 0, homeTeam.id, awayTeam.id)
+    private val schedule = GameSchedule(fixture, homeTeam, awayTeam)
 
-        // 9 fielders in batting order 1-9 + pitcher slot, + 1 reliever
-        val startingPositions = listOf(
-            Position.CATCHER, Position.FIRST_BASEMAN, Position.SECOND_BASEMAN,
-            Position.THIRD_BASEMAN, Position.SHORTSTOP, Position.LEFT_FIELDER,
-            Position.CENTER_FIELDER, Position.RIGHT_FIELDER, Position.PITCHER
-        )
-
-        val players = (0..10).map { i ->
-            mkPlayer(playerIdStart + i, teamId, "P${playerIdStart + i}")
-        }
-
-        val fielderAppointments = startingPositions.mapIndexed { idx, pos ->
-            FielderAppointment(teamId, players[idx].id, pos, idx + 1, OrderType.NORMAL)
-        }
-
-        val pitcherAppointments = listOf(
-            PitcherAppointment(teamId, players[9].id, PitcherType.STARTER, 1),
-            PitcherAppointment(teamId, players[10].id, PitcherType.RELIEVER, 2),
-        )
-
-        val positions = players.map {
-            PlayerPosition(it.id, Position.OUTFIELDER, 10)
-        }
-
-        return TeamSetup(team, players, fielderAppointments, pitcherAppointments, positions)
-    }
-
-    private data class TeamSetup(
-        val team: Team,
-        val players: List<Player>,
-        val fielderAppointments: List<FielderAppointment>,
-        val pitcherAppointments: List<PitcherAppointment>,
-        val positions: List<PlayerPosition>,
+    private val ongoingScoreData = ScoreData(
+        scores = emptyList(),
+        outCount = 1,
+        baseState = BaseState(),
+        lastResult = LastResult(Result.OUT, false, false),
+        isHomeBatting = false,
+        homeBatterState = BatterState(playerId = 100, battingOrder = 1),
+        awayBatterState = BatterState(playerId = 200, battingOrder = 1),
+        homePitcherState = PitcherState(playerId = 109, stamina = 100),
+        awayPitcherState = PitcherState(playerId = 209, stamina = 100),
     )
 
-    private fun buildViewModel(
-        teams: List<TeamSetup>,
-        fixtures: List<GameFixture>,
-        results: List<GameResult> = emptyList(),
-    ): InGameViewModel {
-        val allTeams = teams.map { it.team }
-        val allPlayers = teams.flatMap { it.players }
-        val allFielders = teams.flatMap { it.fielderAppointments }
-        val allPitchers = teams.flatMap { it.pitcherAppointments }
-        val allPositions = teams.flatMap { it.positions }
+    private val finalScoreData = ScoreData(
+        scores = listOf(
+            InningScore(1, homeTeam.id, 1, 2),
+            InningScore(1, awayTeam.id, 1, 1),
+        ),
+        outCount = 3,
+        baseState = BaseState(),
+        lastResult = LastResult(Result.OUT, false, false),
+        isHomeBatting = true,
+        homeBatterState = BatterState(playerId = 100, battingOrder = 5),
+        awayBatterState = BatterState(playerId = 200, battingOrder = 3),
+        homePitcherState = PitcherState(playerId = 109, stamina = 50),
+        awayPitcherState = PitcherState(playerId = 209, stamina = 50),
+    )
 
-        val teamRepo = FakeTeamRepository(allTeams)
-        val fixtureRepo = FakeGameFixtureRepository(fixtures)
-        val resultRepo = FakeGameResultRepository(results.toMutableList())
-        val playerRepo = FakePlayerRepository(allPlayers)
-        val posRepo = FakePlayerPositionRepository(allPositions)
-        val battingRepo = FakeBattingStatRepository()
-        val pitchingRepo = FakePitchingStatRepository()
-        val inningRepo = FakeInningScoreRepository()
-        val homeRunRepo = FakeHomeRunRepository()
-        val fielderRepo = FakeFielderAppointmentRepository(allFielders)
-        val pitcherRepo = FakePitcherAppointmentRepository(allPitchers)
+    private val executeGameByOne: ExecuteGameByOne = mock()
+    private val gameScheduleUseCase: GameScheduleUseCase = mock()
+    private val getDisplayFielder: GetDisplayFielder = mock()
 
-        val scheduleUseCase = GameScheduleUseCase(fixtureRepo, teamRepo)
-        val playerInfoUseCase = PlayerInfoUseCase(playerRepo, posRepo, teamRepo, battingRepo, pitchingRepo)
-        val fielderUseCase = FielderAppointmentUseCase(fielderRepo)
-        val pitcherUseCase = PitcherAppointmentUseCase(pitcherRepo)
-        val getDisplayFielder = GetDisplayFielder(playerInfoUseCase, fielderUseCase, pitcherUseCase)
+    private fun buildViewModel(): InGameViewModel {
+        return InGameViewModel(executeGameByOne, gameScheduleUseCase, getDisplayFielder)
+    }
 
-        val teamUseCase = TeamUseCase(teamRepo, playerRepo, fielderRepo, pitcherRepo, posRepo, battingRepo, pitchingRepo)
-        val executeGameUseCase = ExecuteGameUseCase(resultRepo, fixtureRepo, teamRepo)
-        val battingStatUseCase = BattingStatUseCase(battingRepo)
-        val pitchingStatUseCase = PitchingStatUseCase(pitchingRepo)
-        val inningUseCase = InningScoreUseCase(inningRepo)
-        val homeRunUseCase = HomeRunUseCase(homeRunRepo)
-        val gameInfoUseCase = GameInfoUseCase(fixtureRepo, resultRepo, teamRepo)
-
-        val transactionProvider = object : TransactionProvider {
-            override suspend fun <T> runInTransaction(block: suspend () -> T): T = block()
-        }
-
-        val executeGameByOne = ExecuteGameByOne(
-            executeGameUseCase, teamUseCase, scheduleUseCase, gameInfoUseCase,
-            battingStatUseCase, pitchingStatUseCase, inningUseCase, homeRunUseCase,
-            transactionProvider
-        )
-
-        return InGameViewModel(executeGameByOne, scheduleUseCase, getDisplayFielder)
+    private suspend fun stubInitialization(
+        date: LocalDate = Constants.START,
+        schedules: List<GameSchedule> = listOf(schedule),
+        homePlayersList: List<DisplayFielder> = homePlayers,
+        awayPlayersList: List<DisplayFielder> = awayPlayers,
+    ) {
+        whenever(gameScheduleUseCase.getByDate(date)).thenReturn(schedules)
+        whenever(getDisplayFielder.getMainMember(eq(schedules.first { it.homeTeam.id == Constants.TEAM_ID || it.awayTeam.id == Constants.TEAM_ID }.homeTeam), eq(OrderType.NORMAL))).thenReturn(homePlayersList)
+        whenever(getDisplayFielder.getMainMember(eq(schedules.first { it.homeTeam.id == Constants.TEAM_ID || it.awayTeam.id == Constants.TEAM_ID }.awayTeam), eq(OrderType.NORMAL))).thenReturn(awayPlayersList)
     }
 
     @Test
     fun defaultState_hasConstantsStartDate() {
-        val homeSetup = createTeamData(Constants.TEAM_ID, "Home", 100)
-        val awaySetup = createTeamData(1, "Away", 200)
-
-        // No fixture for Constants.START, so we can construct but not call setDate
-        val vm = buildViewModel(
-            teams = listOf(homeSetup, awaySetup),
-            fixtures = emptyList(),
-        )
-
+        val vm = buildViewModel()
         assertEquals(Constants.START, vm.uiState.value.date)
     }
 
     @Test
     fun setDate_updatesDateAndInitializesGame() = runTest {
-        val homeSetup = createTeamData(Constants.TEAM_ID, "Home", 100)
-        val awaySetup = createTeamData(1, "Away", 200)
-        val fixture = GameFixture(1, Constants.START, 0, homeSetup.team.id, awaySetup.team.id)
-
-        val vm = buildViewModel(
-            teams = listOf(homeSetup, awaySetup),
-            fixtures = listOf(fixture),
-        )
+        stubInitialization()
+        val vm = buildViewModel()
 
         vm.setDate(Constants.START)
 
         val state = vm.uiState.value
         assertEquals(Constants.START, state.date)
-        // After initialization, team names should be populated
         assertEquals("Home", state.homeTeam.name)
         assertEquals("Away", state.awayTeam.name)
-        // Players should be loaded
         assertTrue(state.homeTeam.players.isNotEmpty())
         assertTrue(state.awayTeam.players.isNotEmpty())
     }
 
     @Test
     fun setDate_secondCallDoesNotReinitialize() = runTest {
-        val homeSetup = createTeamData(Constants.TEAM_ID, "Home", 100)
-        val awaySetup = createTeamData(1, "Away", 200)
-        val fixture = GameFixture(1, Constants.START, 0, homeSetup.team.id, awaySetup.team.id)
-
-        val vm = buildViewModel(
-            teams = listOf(homeSetup, awaySetup),
-            fixtures = listOf(fixture),
-        )
+        stubInitialization()
+        val vm = buildViewModel()
 
         vm.setDate(Constants.START)
         val stateAfterFirst = vm.uiState.value
 
-        // Second call changes date but does NOT reinitialize
         val newDate = LocalDate.of(2025, 5, 1)
         vm.setDate(newDate)
 
         val stateAfterSecond = vm.uiState.value
         assertEquals(newDate, stateAfterSecond.date)
-        // Team names should remain from first initialization
         assertEquals(stateAfterFirst.homeTeam.name, stateAfterSecond.homeTeam.name)
         assertEquals(stateAfterFirst.awayTeam.name, stateAfterSecond.awayTeam.name)
     }
 
     @Test
     fun next_advancesGameAndReturnsState() = runTest {
-        val homeSetup = createTeamData(Constants.TEAM_ID, "Home", 100)
-        val awaySetup = createTeamData(1, "Away", 200)
-        val fixture = GameFixture(1, Constants.START, 0, homeSetup.team.id, awaySetup.team.id)
+        stubInitialization()
+        whenever(executeGameByOne.next()).thenReturn(Pair(true, ongoingScoreData))
 
-        val vm = buildViewModel(
-            teams = listOf(homeSetup, awaySetup),
-            fixtures = listOf(fixture),
-        )
-
+        val vm = buildViewModel()
         vm.setDate(Constants.START)
 
-        // Execute one play-by-play step
         val finished = vm.next()
-        // Game should not be finished in just one step
         assertFalse(finished)
     }
 
     @Test
     fun skip_completesEntireGame() = runTest {
-        val homeSetup = createTeamData(Constants.TEAM_ID, "Home", 100)
-        val awaySetup = createTeamData(1, "Away", 200)
-        val fixture = GameFixture(1, Constants.START, 0, homeSetup.team.id, awaySetup.team.id)
+        stubInitialization()
+        whenever(executeGameByOne.next())
+            .thenReturn(Pair(true, ongoingScoreData))
+            .thenReturn(Pair(true, ongoingScoreData))
+            .thenReturn(Pair(false, finalScoreData))
+        whenever(executeGameByOne.postFinishGame()).thenReturn(emptyList<GameInfo>())
 
-        val vm = buildViewModel(
-            teams = listOf(homeSetup, awaySetup),
-            fixtures = listOf(fixture),
-        )
-
+        val vm = buildViewModel()
         vm.setDate(Constants.START)
         vm.skip()
 
         val state = vm.uiState.value
-        // After skipping the entire game, inning scores should exist for both teams
         assertTrue(state.homeTeam.inningScores.isNotEmpty())
         assertTrue(state.awayTeam.inningScores.isNotEmpty())
     }
 
     @Test
     fun next_repeatedUntilFinished_completesGame() = runTest {
-        val homeSetup = createTeamData(Constants.TEAM_ID, "Home", 100)
-        val awaySetup = createTeamData(1, "Away", 200)
-        val fixture = GameFixture(1, Constants.START, 0, homeSetup.team.id, awaySetup.team.id)
+        stubInitialization()
+        whenever(executeGameByOne.next())
+            .thenReturn(Pair(true, ongoingScoreData))
+            .thenReturn(Pair(true, ongoingScoreData))
+            .thenReturn(Pair(true, ongoingScoreData))
+            .thenReturn(Pair(false, finalScoreData))
+        whenever(executeGameByOne.postFinishGame()).thenReturn(emptyList<GameInfo>())
 
-        val vm = buildViewModel(
-            teams = listOf(homeSetup, awaySetup),
-            fixtures = listOf(fixture),
-        )
-
+        val vm = buildViewModel()
         vm.setDate(Constants.START)
 
-        // Run through the entire game step by step
         var steps = 0
         while (!vm.next()) {
             steps++
-            // Safety: a baseball game should finish within reasonable steps
             if (steps > 10000) break
         }
 
@@ -381,15 +196,16 @@ class InGameViewModelTest {
 
     @Test
     fun setDate_awayTeamMatchesTeamId_initializesCorrectly() = runTest {
-        val homeSetup = createTeamData(1, "Home", 100)
-        val awaySetup = createTeamData(Constants.TEAM_ID, "Away", 200)
-        val fixture = GameFixture(1, Constants.START, 0, homeSetup.team.id, awaySetup.team.id)
+        val awayMatchTeam = Team(Constants.TEAM_ID, "Away", League.L1)
+        val homeMatchTeam = Team(1, "Home", League.L1)
+        val matchFixture = GameFixture(1, Constants.START, 0, homeMatchTeam.id, awayMatchTeam.id)
+        val matchSchedule = GameSchedule(matchFixture, homeMatchTeam, awayMatchTeam)
 
-        val vm = buildViewModel(
-            teams = listOf(homeSetup, awaySetup),
-            fixtures = listOf(fixture),
-        )
+        whenever(gameScheduleUseCase.getByDate(Constants.START)).thenReturn(listOf(matchSchedule))
+        whenever(getDisplayFielder.getMainMember(eq(homeMatchTeam), eq(OrderType.NORMAL))).thenReturn(homePlayers)
+        whenever(getDisplayFielder.getMainMember(eq(awayMatchTeam), eq(OrderType.NORMAL))).thenReturn(awayPlayers)
 
+        val vm = buildViewModel()
         vm.setDate(Constants.START)
 
         val state = vm.uiState.value
@@ -399,29 +215,15 @@ class InGameViewModelTest {
 
     @Test
     fun outCount_initiallyZero() {
-        val homeSetup = createTeamData(Constants.TEAM_ID, "Home", 100)
-        val awaySetup = createTeamData(1, "Away", 200)
-
-        val vm = buildViewModel(
-            teams = listOf(homeSetup, awaySetup),
-            fixtures = emptyList(),
-        )
-
+        val vm = buildViewModel()
         assertEquals(0, vm.uiState.value.outCount)
     }
 
     @Test
     fun bases_initiallyNull() {
-        val homeSetup = createTeamData(Constants.TEAM_ID, "Home", 100)
-        val awaySetup = createTeamData(1, "Away", 200)
-
-        val vm = buildViewModel(
-            teams = listOf(homeSetup, awaySetup),
-            fixtures = emptyList(),
-        )
-
-        assertEquals(null, vm.uiState.value.firstBase)
-        assertEquals(null, vm.uiState.value.secondBase)
-        assertEquals(null, vm.uiState.value.thirdBase)
+        val vm = buildViewModel()
+        assertNull(vm.uiState.value.firstBase)
+        assertNull(vm.uiState.value.secondBase)
+        assertNull(vm.uiState.value.thirdBase)
     }
 }
