@@ -103,4 +103,78 @@ class GetRankingUseCaseTest {
         assertDoubleEquals(1.5, s4.gameBack)
         assertDoubleEquals(2.0, s5.gameBack)
     }
+
+    @Test
+    fun getAll_returnsCombinedStandingsFromBothLeagues() = runTest {
+        val l1 = League.L1
+        val l2 = League.L2
+        val t0 = Team(0, "L1-A", l1)
+        val t1 = Team(1, "L1-B", l1)
+        val t2 = Team(2, "L2-A", l2)
+        val t3 = Team(3, "L2-B", l2)
+
+        val d1 = LocalDate.of(2025, 4, 1)
+
+        val fixtures = listOf(
+            GameFixture(id = 0, date = d1, numberOfGames = 0, homeTeamId = t0.id, awayTeamId = t1.id),
+            GameFixture(id = 1, date = d1, numberOfGames = 1, homeTeamId = t2.id, awayTeamId = t3.id),
+        )
+
+        val results = listOf(
+            GameResult(fixtureId = 0, homeScore = 3, awayScore = 1),
+            GameResult(fixtureId = 1, homeScore = 2, awayScore = 5),
+        )
+
+        val teamRepo = FakeTeamRepository(listOf(t0, t1, t2, t3))
+        val fixtureRepo = FakeGameFixtureRepository(fixtures)
+        val resultRepo = FakeGameResultRepository(results)
+        val useCase = RankingUseCase(teamRepo, fixtureRepo, resultRepo)
+
+        val all = useCase.getAll()
+
+        // L1: t0 wins, t1 loses; L2: t3 wins, t2 loses
+        assertEquals(4, all.size)
+
+        val l1Standings = all.filter { it.team.league == l1 }
+        val l2Standings = all.filter { it.team.league == l2 }
+        assertEquals(2, l1Standings.size)
+        assertEquals(2, l2Standings.size)
+
+        assertEquals(t0.id, l1Standings[0].team.id)
+        assertEquals(1, l1Standings[0].rank)
+        assertEquals(t3.id, l2Standings[0].team.id)
+        assertEquals(1, l2Standings[0].rank)
+    }
+
+    @Test
+    fun getByLeague_emptyTeams_returnsEmptyList() = runTest {
+        val teamRepo = FakeTeamRepository(emptyList())
+        val fixtureRepo = FakeGameFixtureRepository(emptyList())
+        val resultRepo = FakeGameResultRepository(emptyList())
+        val useCase = RankingUseCase(teamRepo, fixtureRepo, resultRepo)
+
+        val standings = useCase.getByLeague(League.L1)
+        assertEquals(emptyList<TeamStanding>(), standings)
+    }
+
+    @Test
+    fun getByLeague_teamsWithNoGames_allZeroStats() = runTest {
+        val league = League.L1
+        val t0 = Team(0, "A", league)
+        val t1 = Team(1, "B", league)
+
+        val teamRepo = FakeTeamRepository(listOf(t0, t1))
+        val fixtureRepo = FakeGameFixtureRepository(emptyList())
+        val resultRepo = FakeGameResultRepository(emptyList())
+        val useCase = RankingUseCase(teamRepo, fixtureRepo, resultRepo)
+
+        val standings = useCase.getByLeague(league)
+
+        assertEquals(2, standings.size)
+        standings.forEach {
+            assertEquals(0, it.wins)
+            assertEquals(0, it.losses)
+            assertEquals(0, it.draws)
+        }
+    }
 }

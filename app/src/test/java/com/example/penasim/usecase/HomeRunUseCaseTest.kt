@@ -3,17 +3,27 @@ package com.example.penasim.usecase
 import com.example.penasim.domain.HomeRun
 import com.example.penasim.domain.repository.HomeRunRepository
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
-import org.mockito.kotlin.argumentCaptor
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
-import org.mockito.kotlin.whenever
-import kotlin.test.assertEquals
 
 class HomeRunUseCaseTest {
 
-    private val repository: HomeRunRepository = mock()
-    private val useCase = HomeRunUseCase(repository)
+    private class FakeHomeRunRepository(
+        private val data: List<HomeRun> = emptyList()
+    ) : HomeRunRepository {
+        var lastInserted: List<HomeRun>? = null
+
+        override suspend fun getHomeRunsByFixtureId(fixtureId: Int): List<HomeRun> =
+            data.filter { it.fixtureId == fixtureId }
+
+        override suspend fun getHomeRunsByPlayerId(playerId: Int): List<HomeRun> =
+            data.filter { it.playerId == playerId }
+
+        override suspend fun insertHomeRuns(homeRuns: List<HomeRun>) {
+            lastInserted = homeRuns
+        }
+    }
 
     @Test
     fun getByFixtureId_delegatesToRepository() = runTest {
@@ -21,26 +31,61 @@ class HomeRunUseCaseTest {
         val expected = listOf(
             HomeRun(fixtureId = fixtureId, playerId = 100, inning = 3, count = 1),
         )
-        whenever(repository.getHomeRunsByFixtureId(fixtureId)).thenReturn(expected)
+        val repository = FakeHomeRunRepository(expected)
+        val useCase = HomeRunUseCase(repository)
 
         val actual = useCase.getByFixtureId(fixtureId)
 
         assertEquals(expected, actual)
-        verify(repository).getHomeRunsByFixtureId(fixtureId)
     }
 
     @Test
-    fun insert_emptyList_isNoop() = runTest {
-        val captor = argumentCaptor<List<HomeRun>>()
+    fun getByPlayerId_delegatesToRepository() = runTest {
+        val data = listOf(
+            HomeRun(fixtureId = 10, playerId = 100, inning = 3, count = 1),
+            HomeRun(fixtureId = 11, playerId = 100, inning = 5, count = 2),
+            HomeRun(fixtureId = 10, playerId = 200, inning = 7, count = 1),
+        )
+        val repository = FakeHomeRunRepository(data)
+        val useCase = HomeRunUseCase(repository)
+
+        val result = useCase.getByPlayerId(100)
+
+        assertEquals(2, result.size)
+        assertEquals(listOf(data[0], data[1]), result)
+    }
+
+    @Test
+    fun getByPlayerId_returnsEmpty_whenNoMatch() = runTest {
+        val repository = FakeHomeRunRepository(emptyList())
+        val useCase = HomeRunUseCase(repository)
+
+        val result = useCase.getByPlayerId(999)
+
+        assertEquals(emptyList<HomeRun>(), result)
+    }
+
+    @Test
+    fun insert_emptyList_doesNotCallRepository() = runTest {
+        val repository = FakeHomeRunRepository()
+        val useCase = HomeRunUseCase(repository)
 
         useCase.insert(emptyList())
 
-        // repository.insertHomeRuns should not be called
-        try {
-            verify(repository).insertHomeRuns(captor.capture())
-            throw AssertionError("insertHomeRuns should not be called with empty list")
-        } catch (_: Throwable) {
-            // success: no invocation expected
-        }
+        assertNull(repository.lastInserted)
+    }
+
+    @Test
+    fun insert_nonEmptyList_delegatesToRepository() = runTest {
+        val repository = FakeHomeRunRepository()
+        val useCase = HomeRunUseCase(repository)
+        val items = listOf(
+            HomeRun(fixtureId = 10, playerId = 100, inning = 3, count = 1),
+            HomeRun(fixtureId = 10, playerId = 200, inning = 5, count = 4),
+        )
+
+        useCase.insert(items)
+
+        assertEquals(items, repository.lastInserted)
     }
 }
