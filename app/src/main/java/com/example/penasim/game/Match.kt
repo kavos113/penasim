@@ -7,6 +7,7 @@ import com.example.penasim.domain.HomeRun
 import com.example.penasim.domain.InningScore
 import com.example.penasim.domain.PitcherType
 import com.example.penasim.domain.PitchingStat
+import com.example.penasim.domain.Stat
 import com.example.penasim.domain.TeamPlayers
 import com.example.penasim.domain.isStarting
 
@@ -163,6 +164,7 @@ class Match(
   fun battingStats(): List<BattingStat> = teamStat.battingStats.values.toList()
   fun pitchingStats(): List<PitchingStat> = teamStat.pitchingStats.values.toList()
   fun homeRuns(): List<HomeRun> = teamStat.homeRuns()
+  fun stats(): List<Stat> = teamStat.stats.toList()
 
   fun scoreData(): ScoreData = ScoreData(
     scores = inningScores(),
@@ -219,15 +221,26 @@ class Match(
   }
 
   private fun out() {
+    val batter = currentBatterId()
+    val pitcher = currentPitcherId()
+    val resultString = Result.OUT.randomResult()
+
+    teamStat.recordStat(
+      batterId = batter,
+      pitcherId = pitcher,
+      inning = inning,
+      outCount = outs,
+      hitCount = 0,
+      earnedRun = 0,
+      result = resultString,
+    )
+
     outs++
     lastResult = LastResult(
       result = Result.OUT,
       isHit = false,
       isScored = false
     )
-
-    val batter = currentBatterId()
-    val pitcher = currentPitcherId()
 
     teamStat.out(batter, pitcher)
 
@@ -258,6 +271,17 @@ class Match(
       score(score)
     }
 
+    val resultString = Result.SINGLE_HIT.randomResult()
+    teamStat.recordStat(
+      batterId = batter,
+      pitcherId = pitcher,
+      inning = inning,
+      outCount = outs,
+      hitCount = score,
+      earnedRun = score,
+      result = resultString,
+    )
+
     lastResult = LastResult(
       result = Result.SINGLE_HIT,
       isHit = true,
@@ -275,6 +299,17 @@ class Match(
     if (score > 0) {
       score(score)
     }
+
+    val resultString = Result.DOUBLE_HIT.randomResult()
+    teamStat.recordStat(
+      batterId = batter,
+      pitcherId = pitcher,
+      inning = inning,
+      outCount = outs,
+      hitCount = score,
+      earnedRun = score,
+      result = resultString,
+    )
 
     lastResult = LastResult(
       result = Result.DOUBLE_HIT,
@@ -294,6 +329,17 @@ class Match(
       score(score)
     }
 
+    val resultString = Result.TRIPLE_HIT.randomResult()
+    teamStat.recordStat(
+      batterId = batter,
+      pitcherId = pitcher,
+      inning = inning,
+      outCount = outs,
+      hitCount = score,
+      earnedRun = score,
+      result = resultString,
+    )
+
     lastResult = LastResult(
       result = Result.TRIPLE_HIT,
       isHit = true,
@@ -311,6 +357,17 @@ class Match(
     }
 
     teamStat.homeRun(batter, pitcher, half, inning, score)
+
+    val resultString = Result.HOMERUN.randomResult()
+    teamStat.recordStat(
+      batterId = batter,
+      pitcherId = pitcher,
+      inning = inning,
+      outCount = outs,
+      hitCount = score,
+      earnedRun = score,
+      result = resultString,
+    )
 
     lastResult = LastResult(
       result = Result.HOMERUN,

@@ -5,6 +5,7 @@ import com.example.penasim.domain.GameResult
 import com.example.penasim.domain.HomeRun
 import com.example.penasim.domain.InningScore
 import com.example.penasim.domain.PitchingStat
+import com.example.penasim.domain.Stat
 
 data class TeamStat(
   val fixtureId: Int,
@@ -15,8 +16,32 @@ data class TeamStat(
   val battingStats: MutableMap<Int, BattingStat> = mutableMapOf(),
   val pitchingStats: MutableMap<Int, PitchingStat> = mutableMapOf(),
   val homeHomeRuns: MutableList<HomeRun> = mutableListOf(),
-  val awayHomeRuns: MutableList<HomeRun> = mutableListOf()
+  val awayHomeRuns: MutableList<HomeRun> = mutableListOf(),
+  val stats: MutableList<Stat> = mutableListOf()
 ) {
+
+  fun recordStat(
+    batterId: Int,
+    pitcherId: Int,
+    inning: Int,
+    outCount: Int,
+    hitCount: Int,
+    earnedRun: Int,
+    result: String
+  ) {
+    stats.add(
+      Stat(
+        gameFixtureId = fixtureId,
+        batterId = batterId,
+        pitcherId = pitcherId,
+        inning = inning,
+        outCount = outCount,
+        hitCount = hitCount,
+        earnedRun = earnedRun,
+        result = result,
+      )
+    )
+  }
 
   fun result(): GameResult = GameResult(
     fixtureId = fixtureId,

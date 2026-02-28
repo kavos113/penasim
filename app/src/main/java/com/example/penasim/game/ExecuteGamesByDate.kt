@@ -8,6 +8,7 @@ import com.example.penasim.usecase.GameScheduleUseCase
 import com.example.penasim.usecase.HomeRunUseCase
 import com.example.penasim.usecase.InningScoreUseCase
 import com.example.penasim.usecase.PitchingStatUseCase
+import com.example.penasim.usecase.StatUseCase
 import com.example.penasim.usecase.TeamUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -24,6 +25,7 @@ class ExecuteGamesByDate @Inject constructor(
   private val pitchingStatUseCase: PitchingStatUseCase,
   private val inningScoreUseCase: InningScoreUseCase,
   private val homeRunUseCase: HomeRunUseCase,
+  private val statUseCase: StatUseCase,
   private val transactionProvider: TransactionProvider
 ) {
   suspend fun execute(date: LocalDate): List<GameInfo> {
@@ -46,6 +48,7 @@ class ExecuteGamesByDate @Inject constructor(
             battingStatUseCase.insertAll(match.battingStats())
             pitchingStatUseCase.insertAll(match.pitchingStats())
             homeRunUseCase.insert(match.homeRuns())
+            statUseCase.insertAll(match.stats())
 
             executeGameUseCase.execute(
               fixtureId = result.fixtureId,

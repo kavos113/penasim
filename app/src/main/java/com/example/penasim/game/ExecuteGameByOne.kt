@@ -11,6 +11,7 @@ import com.example.penasim.usecase.GameScheduleUseCase
 import com.example.penasim.usecase.HomeRunUseCase
 import com.example.penasim.usecase.InningScoreUseCase
 import com.example.penasim.usecase.PitchingStatUseCase
+import com.example.penasim.usecase.StatUseCase
 import com.example.penasim.usecase.TeamUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -29,6 +30,7 @@ class ExecuteGameByOne @Inject constructor(
   private val pitchingStatUseCase: PitchingStatUseCase,
   private val inningScoreUseCase: InningScoreUseCase,
   private val homeRunUseCase: HomeRunUseCase,
+  private val statUseCase: StatUseCase,
   private val transactionProvider: TransactionProvider
 ) {
   private lateinit var match: Match
@@ -77,6 +79,7 @@ class ExecuteGameByOne @Inject constructor(
       battingStatUseCase.insertAll(match.battingStats())
       pitchingStatUseCase.insertAll(match.pitchingStats())
       homeRunUseCase.insert(match.homeRuns())
+      statUseCase.insertAll(match.stats())
 
       executeGameUseCase.execute(
         fixtureId = result.fixtureId,
@@ -110,6 +113,7 @@ class ExecuteGameByOne @Inject constructor(
             battingStatUseCase.insertAll(match.battingStats())
             pitchingStatUseCase.insertAll(match.pitchingStats())
             homeRunUseCase.insert(match.homeRuns())
+            statUseCase.insertAll(match.stats())
 
             executeGameUseCase.execute(
               fixtureId = result.fixtureId,
