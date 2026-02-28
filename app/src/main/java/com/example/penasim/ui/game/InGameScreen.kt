@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -405,6 +407,47 @@ private fun LastResultText(
   }
 }
 
+@Composable
+private fun SubstituteList(
+  substitutes: List<DisplayFielder>,
+  modifier: Modifier = Modifier
+) {
+  Row(
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    modifier = modifier
+  ) {
+    val (first, second) = substitutes.withIndex().partition { it.index % 2 == 0 }
+    LazyColumn(
+      modifier = Modifier
+        .weight(1f)
+    ) {
+      items(first) { (_, fielder) ->
+        SimplePlayerItem(
+          displayName = fielder.displayName,
+          color = fielder.color,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+        )
+      }
+    }
+    LazyColumn(
+      modifier = Modifier
+        .weight(1f)
+    ) {
+      items(second) { (_, fielder) ->
+        SimplePlayerItem(
+          displayName = fielder.displayName,
+          color = fielder.color,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+        )
+      }
+    }
+  }
+}
+
 @Preview
 @Composable
 private fun LastResultTextPreview() {
@@ -501,6 +544,115 @@ private val SAMPLE_ORDER = listOf(
     outfielderColor
   ),
 )
+
+private val SAMPLE_SUBSTITUTES = listOf(
+  DisplayFielder(
+    9,
+    "Substitute 1",
+    Position.LEFT_FIELDER,
+    10,
+    infielderColor
+  ),
+  DisplayFielder(
+    10,
+    "Substitute 2",
+    Position.CENTER_FIELDER,
+    11,
+    outfielderColor
+  ),
+  DisplayFielder(
+    11,
+    "Substitute 3",
+    Position.RIGHT_FIELDER,
+    12,
+    outfielderColor
+  ),
+  DisplayFielder(
+    12,
+    "Substitute 4",
+    Position.FIRST_BASEMAN,
+    13,
+    infielderColor
+  ),
+  DisplayFielder(
+    13,
+    "Substitute 5",
+    Position.SECOND_BASEMAN,
+    14,
+    infielderColor
+  ),
+  DisplayFielder(
+    14,
+    "Substitute 6",
+    Position.THIRD_BASEMAN,
+    15,
+    infielderColor
+  ),
+  DisplayFielder(
+    15,
+    "Substitute 7",
+    Position.SHORTSTOP,
+    16,
+    infielderColor
+  ),
+  DisplayFielder(
+    16,
+    "Substitute 8",
+    Position.CATCHER,
+    17,
+    catcherColor
+  ),
+  DisplayFielder(
+    17,
+    "Substitute 9",
+    Position.PITCHER,
+    18,
+    pitcherColor
+  ),
+  DisplayFielder(
+    18,
+    "Substitute 10",
+    Position.LEFT_FIELDER,
+    19,
+    infielderColor
+  ),
+  DisplayFielder(
+    19,
+    "Substitute 11",
+    Position.CENTER_FIELDER,
+    20,
+    outfielderColor
+  ),
+  DisplayFielder(
+    20,
+    "Substitute 12",
+    Position.RIGHT_FIELDER,
+    21,
+    outfielderColor
+  ),
+  DisplayFielder(
+    21,
+    "Substitute 13",
+    Position.FIRST_BASEMAN,
+    22,
+    infielderColor
+  ),
+  DisplayFielder(
+    22,
+    "Substitute 14",
+    Position.SECOND_BASEMAN,
+    23,
+    infielderColor
+  ),
+)
+
+@Preview
+@Composable
+private fun SubstituteListPreview() {
+  SubstituteList(
+    substitutes = SAMPLE_SUBSTITUTES
+  )
+}
 
 @Preview
 @Composable

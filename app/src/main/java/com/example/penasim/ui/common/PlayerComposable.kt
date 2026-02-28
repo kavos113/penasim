@@ -326,6 +326,31 @@ private fun DefenseStatus(
   }
 }
 
+@Composable
+private fun DefenseStatusCompact(
+  position: PlayerPosition,
+  modifier: Modifier = Modifier
+) {
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier
+  ) {
+    Text(
+      text = position.position.toShortJa(),
+      fontSize = 14.sp,
+      modifier = Modifier
+        .padding(horizontal = 4.dp, vertical = 2.dp)
+    )
+    Text(
+      text = position.defense.statusAlphabet(),
+      fontSize = 16.sp,
+      color = position.defense.statusColor(),
+      modifier = Modifier
+        .padding(horizontal = 4.dp, vertical = 2.dp)
+    )
+  }
+}
+
 private fun pitcherTypeAppropriate(appropriate: Int): String = when (appropriate) {
   0 -> "△"
   1 -> "〇"
@@ -463,6 +488,100 @@ internal fun FielderDetailCompact(
           color = playerDetail.player.catching.statusColor(),
           modifier = Modifier.fillMaxWidth()
         )
+      }
+    }
+  }
+}
+
+@Composable
+internal fun FielderDetailPower(
+  playerDetail: DisplayPlayerDetail,
+  modifier: Modifier = Modifier
+) {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+    modifier = Modifier
+      .padding(6.dp)
+  ) {
+    SimplePlayerItem(
+      displayName = playerDetail.player.firstName,
+      color = playerDetail.color,
+    )
+    Column {
+      Row {
+        Status(
+          value = playerDetail.player.meet,
+          alphabet = playerDetail.player.meet.statusAlphabet(),
+          color = playerDetail.player.meet.statusColor(),
+          modifier = Modifier.fillMaxWidth()
+        )
+        Status(
+          value = playerDetail.player.power,
+          alphabet = playerDetail.player.power.statusAlphabet(),
+          color = playerDetail.player.power.statusColor(),
+          modifier = Modifier.fillMaxWidth()
+        )
+        Status(
+          value = playerDetail.player.speed,
+          alphabet = playerDetail.player.speed.statusAlphabet(),
+          color = playerDetail.player.speed.statusColor(),
+          modifier = Modifier.fillMaxWidth()
+        )
+      }
+      Row {
+        Status(
+          value = playerDetail.player.throwing,
+          alphabet = playerDetail.player.throwing.statusAlphabet(),
+          color = playerDetail.player.throwing.statusColor(),
+          modifier = Modifier.fillMaxWidth()
+        )
+        Status(
+          value = playerDetail.player.defense,
+          alphabet = playerDetail.player.defense.statusAlphabet(),
+          color = playerDetail.player.defense.statusColor(),
+          modifier = Modifier.fillMaxWidth()
+        )
+        Status(
+          value = playerDetail.player.catching,
+          alphabet = playerDetail.player.catching.statusAlphabet(),
+          color = playerDetail.player.catching.statusColor(),
+          modifier = Modifier.fillMaxWidth()
+        )
+      }
+      Row {
+        val (first, second, third) = playerDetail.positions.withIndex()
+          .partition { it.index % 3 == 0 }
+          .let { (first, rest) ->
+            val (second, third) = rest.partition { it.index % 3 == 1 }
+            Triple(first, second, third)
+          }
+        Column(
+          verticalArrangement = Arrangement.spacedBy(2.dp),
+          modifier = Modifier
+            .weight(1f)
+        ) {
+          repeat(first.size) {
+            DefenseStatusCompact(position = first[it].value)
+          }
+        }
+        Column(
+          verticalArrangement = Arrangement.spacedBy(2.dp),
+          modifier = Modifier
+            .weight(1f)
+        ) {
+          repeat(second.size) {
+            DefenseStatusCompact(position = second[it].value)
+          }
+        }
+        Column(
+          verticalArrangement = Arrangement.spacedBy(2.dp),
+          modifier = Modifier
+            .weight(1f)
+        ) {
+          repeat(third.size) {
+            DefenseStatusCompact(position = third[it].value)
+          }
+        }
       }
     }
   }
@@ -693,6 +812,51 @@ private fun PitcherDetailCompactPreview() {
         saves = 0,
       ),
       color = pitcherColor
+    )
+  )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PlayerDetailPowerPreview() {
+  FielderDetailPower(
+    playerDetail = DisplayPlayerDetail(
+      player = Player(
+        id = 1,
+        firstName = "山田",
+        lastName = "太郎",
+        teamId = 0,
+        meet = 72,
+        power = 51,
+        speed = 68,
+        throwing = 58,
+        defense = 62,
+        catching = 66,
+        ballSpeed = 120,
+        control = 1,
+        stamina = 1,
+        starter = 0,
+        reliever = 0,
+      ),
+      positions = listOf(
+        PlayerPosition(1, Position.OUTFIELDER, 62),
+        PlayerPosition(1, Position.FIRST_BASEMAN, 58),
+        PlayerPosition(1, Position.SECOND_BASEMAN, 55),
+        PlayerPosition(1, Position.THIRD_BASEMAN, 50),
+      ),
+      battingStats = TotalBattingStats(
+        playerId = 1,
+        atBat = 300,
+        hit = 102,
+        doubleHit = 20,
+        tripleHit = 5,
+        homeRun = 12,
+        walk = 40,
+        rbi = 55,
+        strikeOut = 60,
+      ),
+      pitchingStats = TotalPitchingStats(playerId = 1),
+      color = outfielderColor
     )
   )
 }
