@@ -11,6 +11,7 @@ import com.example.penasim.domain.repository.PitcherAppointmentRepository
 import com.example.penasim.domain.repository.PitchingStatRepository
 import com.example.penasim.domain.repository.PlayerPositionRepository
 import com.example.penasim.domain.repository.PlayerRepository
+import com.example.penasim.domain.repository.StatRepository
 import com.example.penasim.domain.repository.TeamRepository
 import dagger.Binds
 import dagger.Module
@@ -28,6 +29,7 @@ import com.example.penasim.data.repository.PitcherAppointmentRepository as Pitch
 import com.example.penasim.data.repository.PitchingStatRepository as PitchingStatRepositoryImpl
 import com.example.penasim.data.repository.PlayerPositionRepository as PlayerPositionRepositoryImpl
 import com.example.penasim.data.repository.PlayerRepository as PlayerRepositoryImpl
+import com.example.penasim.data.repository.StatRepository as StatRepositoryImpl
 import com.example.penasim.data.repository.TeamRepository as TeamRepositoryImpl
 
 @Module
@@ -105,4 +107,10 @@ abstract class RepositoryModule {
   abstract fun bindHomeRunRepository(
     impl: HomeRunRepositoryImpl
   ): HomeRunRepository
+
+  @Binds
+  @Singleton
+  abstract fun bindStatRepository(
+    impl: StatRepositoryImpl
+  ): StatRepository
 }

@@ -82,6 +82,18 @@
 | save            | int  | bool           |
 | numberOfPitches | int  |                |
 
+### stats
+| name          | type   | description |
+| ------------- | ------ | ----------- |
+| gameFixtureId | int    | foreign key |
+| batterId      | int    | foreign key |
+| pitcherId     | int    | foreign key |
+| inning        | int    |             |
+| outCount      | int    | 0 ~ 2       |
+| hitCount      | int    | 0 ~ 4       |
+| earnedRun     | int    | 0 ~ 4       |
+| result        | string | 中飛など    |
+
 
 ## Player Info Table
 

@@ -64,4 +64,7 @@ object DatabaseModule {
 
   @Provides
   fun provideHomeRunDao(database: PennantDatabase) = database.homeRunDao()
+
+  @Provides
+  fun provideStatDao(database: PennantDatabase) = database.statDao()
 }
