@@ -1,4 +1,4 @@
-package com.example.penasim.ui.command
+package com.example.penasim.features.command.ui.command
 
 import com.example.penasim.domain.FielderAppointment
 import com.example.penasim.domain.League

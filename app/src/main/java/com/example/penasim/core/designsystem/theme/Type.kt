@@ -1,4 +1,4 @@
-package com.example.penasim.ui.theme
+package com.example.penasim.core.designsystem.theme
 
 import androidx.compose.material3.Typography
 

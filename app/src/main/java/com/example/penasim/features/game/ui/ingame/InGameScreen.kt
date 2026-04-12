@@ -1,4 +1,4 @@
-package com.example.penasim.ui.game
+package com.example.penasim.features.game.ui.ingame
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background

@@ -1,4 +1,4 @@
-package com.example.penasim.ui.navigation
+package com.example.penasim.core.navigation
 
 import com.example.penasim.const.Constants
 import java.time.LocalDate

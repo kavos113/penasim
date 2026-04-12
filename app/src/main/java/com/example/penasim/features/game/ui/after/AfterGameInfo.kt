@@ -1,4 +1,4 @@
-package com.example.penasim.ui.game
+package com.example.penasim.features.game.ui.after
 
 import com.example.penasim.const.Constants
 import com.example.penasim.const.DataSource

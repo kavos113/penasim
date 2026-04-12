@@ -1,4 +1,4 @@
-package com.example.penasim.ui.common
+package com.example.penasim.features.command.ui
 
 import com.example.penasim.domain.OrderType
 import com.example.penasim.domain.PitcherType

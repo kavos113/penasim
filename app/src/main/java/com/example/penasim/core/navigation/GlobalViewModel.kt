@@ -1,4 +1,4 @@
-package com.example.penasim.ui.navigation
+package com.example.penasim.core.navigation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

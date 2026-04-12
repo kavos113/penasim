@@ -1,4 +1,4 @@
-package com.example.penasim.ui.theme
+package com.example.penasim.core.designsystem.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

@@ -1,4 +1,4 @@
-package com.example.penasim.ui.common
+package com.example.penasim.features.schedule.ui.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.example.penasim.ui.common
+package com.example.penasim.features.standing.ui.component
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image

@@ -1,4 +1,4 @@
-package com.example.penasim.usecase
+package com.example.penasim.features.player.usecase
 
 import com.example.penasim.domain.PlayerInfo
 import com.example.penasim.domain.repository.BattingStatRepository

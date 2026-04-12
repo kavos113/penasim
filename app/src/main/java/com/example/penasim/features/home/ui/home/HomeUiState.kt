@@ -1,4 +1,4 @@
-package com.example.penasim.ui.home
+package com.example.penasim.features.home.ui.home
 
 import com.example.penasim.const.Constants
 import java.time.LocalDate

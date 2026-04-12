@@ -1,4 +1,4 @@
-package com.example.penasim.ui.game
+package com.example.penasim.features.game.ui.common
 
 import com.example.penasim.domain.HomeRun
 import com.example.penasim.domain.PitchingStat

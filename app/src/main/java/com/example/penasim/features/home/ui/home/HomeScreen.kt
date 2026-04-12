@@ -1,4 +1,4 @@
-package com.example.penasim.ui.home
+package com.example.penasim.features.home.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -1,4 +1,4 @@
-package com.example.penasim.ui.calender
+package com.example.penasim.features.schedule.ui.calender
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

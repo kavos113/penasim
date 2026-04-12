@@ -1,4 +1,4 @@
-package com.example.penasim.ui.game
+package com.example.penasim.features.game.ui.after
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background

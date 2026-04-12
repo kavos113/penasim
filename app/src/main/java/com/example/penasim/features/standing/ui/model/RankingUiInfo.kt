@@ -1,4 +1,4 @@
-package com.example.penasim.ui.common
+package com.example.penasim.features.standing.ui.model
 
 import com.example.penasim.const.Constants
 import com.example.penasim.const.icon

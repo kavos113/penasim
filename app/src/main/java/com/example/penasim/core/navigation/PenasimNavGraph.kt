@@ -1,4 +1,4 @@
-package com.example.penasim.ui.navigation
+package com.example.penasim.core.navigation
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable

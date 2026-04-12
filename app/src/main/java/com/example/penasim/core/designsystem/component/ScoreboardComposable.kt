@@ -1,4 +1,4 @@
-package com.example.penasim.ui.common
+package com.example.penasim.core.designsystem.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

@@ -1,4 +1,4 @@
-package com.example.penasim.ui.common
+package com.example.penasim.features.command.ui.model
 
 import androidx.compose.ui.graphics.Color
 import com.example.penasim.domain.Position

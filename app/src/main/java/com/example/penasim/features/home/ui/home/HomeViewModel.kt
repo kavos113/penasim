@@ -1,4 +1,4 @@
-package com.example.penasim.ui.home
+package com.example.penasim.features.home.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

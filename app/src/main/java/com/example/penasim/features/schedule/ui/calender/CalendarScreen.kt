@@ -1,4 +1,4 @@
-package com.example.penasim.ui.calender
+package com.example.penasim.features.schedule.ui.calender
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box

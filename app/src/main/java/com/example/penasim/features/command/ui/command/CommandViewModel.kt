@@ -1,4 +1,4 @@
-package com.example.penasim.ui.command
+package com.example.penasim.features.command.ui.command
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
