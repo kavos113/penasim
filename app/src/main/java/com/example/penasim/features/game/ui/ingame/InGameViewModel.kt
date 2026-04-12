@@ -2,12 +2,12 @@ package com.example.penasim.features.game.ui.ingame
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.penasim.const.Constants
+import com.example.penasim.core.session.SelectedTeamStore
 import com.example.penasim.features.game.application.ExecuteGameByOne
 import com.example.penasim.features.schedule.domain.GameSchedule
 import com.example.penasim.features.command.domain.OrderType
 import com.example.penasim.features.player.domain.Position
-import com.example.penasim.features.command.ui.GetDisplayFielder
+import com.example.penasim.features.command.usecase.DisplayFielderUseCase
 import com.example.penasim.features.schedule.usecase.GameScheduleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,9 +20,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class InGameViewModel @Inject constructor(
+  private val selectedTeamStore: SelectedTeamStore,
   private val executeGameByOne: ExecuteGameByOne,
   private val gameScheduleUseCase: GameScheduleUseCase,
-  private val getDisplayFielder: GetDisplayFielder,
+  private val displayFielderUseCase: DisplayFielderUseCase,
   private val inGameInfoAssembler: InGameInfoAssembler
 ) : ViewModel() {
   private val _uiState = MutableStateFlow(InGameInfo())
@@ -47,10 +48,12 @@ class InGameViewModel @Inject constructor(
   private fun initialize() {
     viewModelScope.launch {
       val schedules = gameScheduleUseCase.getByDate(uiState.value.date)
-      schedule = schedules.find { it.awayTeam.id == Constants.TEAM_ID || it.homeTeam.id == Constants.TEAM_ID } ?: throw IllegalArgumentException("unknown schedule")
+      val currentTeamId = selectedTeamStore.currentTeamId()
+      schedule = schedules.find { it.awayTeam.id == currentTeamId || it.homeTeam.id == currentTeamId }
+        ?: throw IllegalArgumentException("unknown schedule")
 
-      val homePlayers = getDisplayFielder.getMainMember(schedule.homeTeam, OrderType.NORMAL)
-      val awayPlayers = getDisplayFielder.getMainMember(schedule.awayTeam, OrderType.NORMAL)
+      val homePlayers = displayFielderUseCase.getMainMember(schedule.homeTeam, OrderType.NORMAL)
+      val awayPlayers = displayFielderUseCase.getMainMember(schedule.awayTeam, OrderType.NORMAL)
 
       executeGameByOne.start(schedule.homeTeam, uiState.value.date)
 

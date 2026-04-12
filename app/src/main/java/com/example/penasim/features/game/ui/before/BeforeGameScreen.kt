@@ -26,7 +26,7 @@ import com.example.penasim.const.icon
 import com.example.penasim.features.team.domain.League
 import com.example.penasim.features.player.domain.Position
 import com.example.penasim.features.team.domain.Team
-import com.example.penasim.features.command.ui.model.DisplayFielder
+import com.example.penasim.core.ui.model.DisplayFielder
 import com.example.penasim.features.standing.domain.TeamStanding
 import com.example.penasim.features.player.ui.component.OrderPlayerItem
 import com.example.penasim.core.designsystem.theme.catcherColor

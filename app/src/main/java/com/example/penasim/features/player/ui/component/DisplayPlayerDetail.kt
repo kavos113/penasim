@@ -3,20 +3,15 @@ package com.example.penasim.features.player.ui.component
 import androidx.compose.ui.graphics.Color
 import com.example.penasim.features.player.domain.Player
 import com.example.penasim.features.player.domain.PlayerPosition
-import com.example.penasim.features.player.domain.Position
 import com.example.penasim.features.player.domain.TotalBattingStats
 import com.example.penasim.features.player.domain.TotalPitchingStats
 import com.example.penasim.core.designsystem.theme.aColor
 import com.example.penasim.core.designsystem.theme.bColor
 import com.example.penasim.core.designsystem.theme.cColor
-import com.example.penasim.core.designsystem.theme.catcherColor
 import com.example.penasim.core.designsystem.theme.dColor
 import com.example.penasim.core.designsystem.theme.eColor
 import com.example.penasim.core.designsystem.theme.fColor
 import com.example.penasim.core.designsystem.theme.gColor
-import com.example.penasim.core.designsystem.theme.infielderColor
-import com.example.penasim.core.designsystem.theme.outfielderColor
-import com.example.penasim.core.designsystem.theme.pitcherColor
 import com.example.penasim.core.designsystem.theme.sColor
 
 data class DisplayPlayerDetail(
@@ -26,22 +21,6 @@ data class DisplayPlayerDetail(
   val pitchingStats: TotalPitchingStats,
   val color: Color
 )
-
-fun Position.color(): Color = when (this) {
-  Position.PITCHER -> pitcherColor
-  Position.CATCHER -> catcherColor
-  Position.FIRST_BASEMAN -> infielderColor
-  Position.SECOND_BASEMAN -> infielderColor
-  Position.THIRD_BASEMAN -> infielderColor
-  Position.SHORTSTOP -> infielderColor
-  Position.OUTFIELDER -> outfielderColor
-  Position.LEFT_FIELDER -> outfielderColor
-  Position.CENTER_FIELDER -> outfielderColor
-  Position.RIGHT_FIELDER -> outfielderColor
-  Position.DH -> outfielderColor
-  Position.BENCH -> Color.Gray
-  Position.SUBSTITUTE -> Color.Gray
-}
 
 fun Int.statusAlphabet(): String = if (this >= 90) {
   "S"

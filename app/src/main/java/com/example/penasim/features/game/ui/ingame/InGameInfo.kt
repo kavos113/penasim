@@ -1,11 +1,11 @@
 package com.example.penasim.features.game.ui.ingame
 
 import com.example.penasim.const.Constants
+import com.example.penasim.core.ui.model.DisplayFielder
 import com.example.penasim.features.game.application.model.AtBatResultType
 import com.example.penasim.features.game.application.model.InGameAtBatResult
 import com.example.penasim.features.game.domain.InningScore
 import com.example.penasim.features.player.domain.Position
-import com.example.penasim.features.command.ui.model.DisplayFielder
 import com.example.penasim.core.designsystem.theme.outfielderColor
 import java.time.LocalDate
 

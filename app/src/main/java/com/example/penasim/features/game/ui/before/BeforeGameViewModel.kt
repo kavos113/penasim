@@ -2,9 +2,9 @@ package com.example.penasim.features.game.ui.before
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.penasim.const.Constants
+import com.example.penasim.core.session.SelectedTeamStore
 import com.example.penasim.features.command.domain.OrderType
-import com.example.penasim.features.command.ui.GetDisplayFielder
+import com.example.penasim.features.command.usecase.DisplayFielderUseCase
 import com.example.penasim.features.schedule.usecase.GameScheduleUseCase
 import com.example.penasim.features.standing.usecase.RankingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,9 +18,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BeforeGameViewModel @Inject constructor(
+  private val selectedTeamStore: SelectedTeamStore,
   private val rankingUseCase: RankingUseCase,
   private val gameScheduleUseCase: GameScheduleUseCase,
-  private val getDisplayFielder: GetDisplayFielder
+  private val displayFielderUseCase: DisplayFielderUseCase
 ) : ViewModel() {
   private val _uiState = MutableStateFlow(BeforeGameInfo())
   val uiState: StateFlow<BeforeGameInfo> = _uiState.asStateFlow()
@@ -34,14 +35,15 @@ class BeforeGameViewModel @Inject constructor(
   init {
     viewModelScope.launch {
       val rankings = rankingUseCase.getAll()
+      val currentTeamId = selectedTeamStore.currentTeamId()
 
       val schedules = gameScheduleUseCase.getByDate(uiState.value.date)
       val mySchedule = schedules.find {
-        it.homeTeam.id == Constants.TEAM_ID || it.awayTeam.id == Constants.TEAM_ID
+        it.homeTeam.id == currentTeamId || it.awayTeam.id == currentTeamId
       }?: return@launch
 
-      val homeStartingPlayers = getDisplayFielder.getStartingMember(mySchedule.homeTeam, OrderType.NORMAL)
-      val awayStartingPlayers = getDisplayFielder.getStartingMember(mySchedule.awayTeam, OrderType.NORMAL)
+      val homeStartingPlayers = displayFielderUseCase.getStartingMember(mySchedule.homeTeam, OrderType.NORMAL)
+      val awayStartingPlayers = displayFielderUseCase.getStartingMember(mySchedule.awayTeam, OrderType.NORMAL)
 
       _uiState.update { currentState ->
         currentState.copy(

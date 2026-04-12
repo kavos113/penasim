@@ -29,7 +29,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.penasim.R
-import com.example.penasim.const.DataSource
 import com.example.penasim.features.game.domain.InningScore
 import com.example.penasim.features.game.ui.common.FielderResult
 import com.example.penasim.features.game.ui.common.HomeRunType
@@ -38,7 +37,9 @@ import com.example.penasim.features.game.ui.common.toStringJp
 import com.example.penasim.features.schedule.ui.component.ClauseWithoutDate
 import com.example.penasim.features.schedule.ui.model.GameUiInfo
 import com.example.penasim.core.designsystem.component.InningScoresTable
+import com.example.penasim.features.standing.ui.model.RankingUiInfo
 import com.example.penasim.features.standing.ui.component.Ranking
+import com.example.penasim.features.team.domain.League
 import com.example.penasim.core.navigation.NavigationDestination
 import com.example.penasim.core.designsystem.theme.errorContainerLight
 import com.example.penasim.core.designsystem.theme.playerBorderColor
@@ -510,6 +511,12 @@ private val SAMPLE_FIELDER_RESULTS = listOf(
   ),
 )
 
+private val SAMPLE_RANKINGS = listOf(
+  RankingUiInfo(league = League.L1, rank = 1, teamIcon = R.drawable.team1_icon, gameBack = 0.0, isMyTeam = true),
+  RankingUiInfo(league = League.L1, rank = 2, teamIcon = R.drawable.team3_icon, gameBack = 1.5, isMyTeam = false),
+  RankingUiInfo(league = League.L2, rank = 1, teamIcon = R.drawable.team2_icon, gameBack = 0.0, isMyTeam = false),
+)
+
 @Preview
 @Composable
 private fun SingleTeamPitcherResultsPreview() {
@@ -542,7 +549,7 @@ private fun AfterGameContentPreview() {
       awayPitcherResults = SAMPLE_LOSE_PITCHER_RESULTS,
       homeFielderResults = SAMPLE_FIELDER_RESULTS,
       awayFielderResults = emptyList(),
-      rankings = DataSource.rankings,
+      rankings = SAMPLE_RANKINGS,
       games = listOf(
         GameUiInfo(
           homeTeamIcon = R.drawable.team1_icon,
@@ -603,7 +610,7 @@ private fun AfterGameContentWithoutGameResultPreview() {
       awayPitcherResults = SAMPLE_LOSE_PITCHER_RESULTS,
       homeFielderResults = SAMPLE_FIELDER_RESULTS,
       awayFielderResults = emptyList(),
-      rankings = DataSource.rankings,
+      rankings = SAMPLE_RANKINGS,
       games = listOf(
         GameUiInfo(
           homeTeamIcon = R.drawable.team1_icon,

@@ -2,7 +2,7 @@ package com.example.penasim.features.command.ui.command
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.penasim.const.Constants.TEAM_ID
+import com.example.penasim.core.session.SelectedTeamStore
 import com.example.penasim.features.command.domain.MemberType
 import com.example.penasim.features.command.domain.OrderType
 import com.example.penasim.features.command.domain.PitcherType
@@ -23,6 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CommandViewModel @Inject constructor(
+  private val selectedTeamStore: SelectedTeamStore,
   private val teamUseCase: TeamUseCase,
   private val playerInfoUseCase: PlayerInfoUseCase,
   private val fielderAppointmentUseCase: FielderAppointmentUseCase,
@@ -59,7 +60,7 @@ class CommandViewModel @Inject constructor(
 
   init {
     viewModelScope.launch {
-      val team = teamUseCase.getTeam(TEAM_ID) ?: return@launch
+      val team = teamUseCase.getTeam(selectedTeamStore.currentTeamId()) ?: return@launch
 
       val players = playerInfoUseCase.getByTeamId(team.id)
 
@@ -76,10 +77,6 @@ class CommandViewModel @Inject constructor(
           mainMembers = mainMembers,
         )
       }
-
-      println("Loaded ${players.size} players for team ${team.name}")
-      println("Loaded ${fielderAppointments.size} fielder appointments for team ${team.name}")
-      println("Loaded ${pitcherAppointments.size} pitcher appointments for team ${team.name}")
     }
   }
 
@@ -105,8 +102,6 @@ class CommandViewModel @Inject constructor(
     number: Int,
     orderType: OrderType
   ) {
-    println("Updating fielder appointment for playerId: $playerId, position: $position, number: $number")
-
     val currentAppointments = _uiState.value.fielderAppointments.toMutableList()
     val currentPlayerAppointment =
       currentAppointments.find { it.playerId == playerId && it.orderType == orderType } ?: return

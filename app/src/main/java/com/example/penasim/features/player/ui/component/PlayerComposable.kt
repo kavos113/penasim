@@ -21,13 +21,14 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.example.penasim.features.command.ui.model.DisplayFielder
+import com.example.penasim.core.ui.model.DisplayFielder
 import com.example.penasim.features.player.domain.Player
 import com.example.penasim.features.player.domain.PlayerPosition
 import com.example.penasim.features.player.domain.Position
 import com.example.penasim.features.player.domain.TotalBattingStats
 import com.example.penasim.features.player.domain.TotalPitchingStats
 import com.example.penasim.features.player.domain.toShortJa
+import com.example.penasim.core.designsystem.theme.color
 import com.example.penasim.core.designsystem.theme.lightWhiteColor
 import com.example.penasim.core.designsystem.theme.orderActiveColor
 import com.example.penasim.core.designsystem.theme.outfielderColor

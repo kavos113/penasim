@@ -2,122 +2,49 @@ package com.example.penasim.features.game.usecase
 
 import com.example.penasim.features.game.domain.GameInfo
 import com.example.penasim.features.team.domain.Team
-import com.example.penasim.features.schedule.domain.repository.GameFixtureRepository
 import com.example.penasim.features.game.domain.repository.GameResultRepository
-import com.example.penasim.features.team.domain.repository.TeamRepository
+import com.example.penasim.features.schedule.usecase.GameScheduleResolver
 import java.time.LocalDate
 import javax.inject.Inject
 
 class GameInfoUseCase @Inject constructor(
-  private val gameFixtureRepository: GameFixtureRepository,
   private val gameResultRepository: GameResultRepository,
-  private val teamRepository: TeamRepository
+  private val gameScheduleResolver: GameScheduleResolver,
+  private val gameInfoAssembler: GameInfoAssembler
 ) {
   suspend fun getById(id: Int): GameInfo {
-    val fixture = gameFixtureRepository.getGameFixture(id)
+    val schedule = gameScheduleResolver.getByFixtureId(id)
       ?: throw IllegalArgumentException("Game fixture with id $id not found")
-
-    val homeTeam = teamRepository.getTeam(fixture.homeTeamId)
-      ?: throw IllegalArgumentException("Home team with id ${fixture.homeTeamId} not found")
-
-    val awayTeam = teamRepository.getTeam(fixture.awayTeamId)
-      ?: throw IllegalArgumentException("Away team with id ${fixture.awayTeamId} not found")
-
     val gameResult = gameResultRepository.getGameByFixtureId(id)
       ?: throw IllegalArgumentException("Game result for fixture with id $id not found")
 
-    return GameInfo(
-      fixture = fixture,
-      homeTeam = homeTeam,
-      awayTeam = awayTeam,
-      result = gameResult
-    )
+    return gameInfoAssembler.fromSchedule(schedule, gameResult)
   }
 
   suspend fun getAll(): List<GameInfo> {
-    val fixtures = gameFixtureRepository.getAllGameFixtures()
-
-    val teams = fixtures.flatMap { listOf(it.homeTeamId, it.awayTeamId) }
-      .distinct()
-      .mapNotNull { teamRepository.getTeam(it) }
-
+    val schedules = gameScheduleResolver.getAll()
     val results = gameResultRepository.getGamesByFixtureIds(
-      fixtures.map { it.id }
+      schedules.map { it.fixture.id }
     )
 
-    return results.map { gameResult ->
-      val fixture = fixtures.find { it.id == gameResult.fixtureId }
-        ?: throw IllegalArgumentException("Fixture with id ${gameResult.fixtureId} not found")
-
-      val homeTeam = teams.find { it.id == fixture.homeTeamId }
-        ?: throw IllegalArgumentException("Home team with id ${fixture.homeTeamId} not found")
-      val awayTeam = teams.find { it.id == fixture.awayTeamId }
-        ?: throw IllegalArgumentException("Away team with id ${fixture.awayTeamId} not found")
-
-      GameInfo(
-        fixture = fixture,
-        homeTeam = homeTeam,
-        awayTeam = awayTeam,
-        result = gameResult
-      )
-    }
+    return gameInfoAssembler.fromSchedules(schedules, results)
   }
 
   suspend fun getByDate(date: LocalDate): List<GameInfo> {
-    val fixtures = gameFixtureRepository.getGameFixturesByDate(date)
-
-    val teams = fixtures.flatMap { listOf(it.homeTeamId, it.awayTeamId) }
-      .distinct()
-      .mapNotNull { teamRepository.getTeam(it) }
-
+    val schedules = gameScheduleResolver.getByDate(date)
     val gameResults = gameResultRepository.getGamesByFixtureIds(
-      fixtures.map { it.id }
+      schedules.map { it.fixture.id }
     )
 
-    return gameResults.map { gameResult ->
-      val fixture = fixtures.find { it.id == gameResult.fixtureId }
-        ?: throw IllegalArgumentException("Fixture with id ${gameResult.fixtureId} not found")
-
-      val homeTeam = teams.find { it.id == fixture.homeTeamId }
-        ?: throw IllegalArgumentException("Home team with id ${fixture.homeTeamId} not found")
-      val awayTeam = teams.find { it.id == fixture.awayTeamId }
-        ?: throw IllegalArgumentException("Away team with id ${fixture.awayTeamId} not found")
-
-      GameInfo(
-        fixture = fixture,
-        homeTeam = homeTeam,
-        awayTeam = awayTeam,
-        result = gameResult
-      )
-    }
+    return gameInfoAssembler.fromSchedules(schedules, gameResults)
   }
 
   suspend fun getByTeam(team: Team): List<GameInfo> {
-    val fixtures = gameFixtureRepository.getGameFixturesByTeam(team)
-
-    val teams = fixtures.flatMap { listOf(it.homeTeamId, it.awayTeamId) }
-      .distinct()
-      .mapNotNull { teamRepository.getTeam(it) }
-
+    val schedules = gameScheduleResolver.getByTeam(team)
     val results = gameResultRepository.getGamesByFixtureIds(
-      fixtures.map { it.id }
+      schedules.map { it.fixture.id }
     )
 
-    return results.map { gameResult ->
-      val fixture = fixtures.find { it.id == gameResult.fixtureId }
-        ?: throw IllegalArgumentException("Fixture with id ${gameResult.fixtureId} not found")
-
-      val homeTeam = teams.find { it.id == fixture.homeTeamId }
-        ?: throw IllegalArgumentException("Home team with id ${fixture.homeTeamId} not found")
-      val awayTeam = teams.find { it.id == fixture.awayTeamId }
-        ?: throw IllegalArgumentException("Away team with id ${fixture.awayTeamId} not found")
-
-      GameInfo(
-        fixture = fixture,
-        homeTeam = homeTeam,
-        awayTeam = awayTeam,
-        result = gameResult
-      )
-    }
+    return gameInfoAssembler.fromSchedules(schedules, results)
   }
 }

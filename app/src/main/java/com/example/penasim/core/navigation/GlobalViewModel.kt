@@ -3,7 +3,8 @@ package com.example.penasim.core.navigation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.penasim.const.Constants
-import com.example.penasim.features.game.usecase.GameInfoUseCase
+import com.example.penasim.core.session.SelectedTeamStore
+import com.example.penasim.features.game.usecase.CurrentDayUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,16 +15,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GlobalViewModel @Inject constructor(
-  private val gameInfoUseCase: GameInfoUseCase
+  private val currentDayUseCase: CurrentDayUseCase,
+  private val selectedTeamStore: SelectedTeamStore
 ) : ViewModel() {
-  private val _state = MutableStateFlow(GlobalState())
+  private val _state = MutableStateFlow(
+    GlobalState(
+      currentDay = Constants.START,
+      teamId = selectedTeamStore.currentTeamId()
+    )
+  )
   val state: StateFlow<GlobalState> = _state.asStateFlow()
 
   init {
     viewModelScope.launch {
-      val gameInfos = gameInfoUseCase.getAll()
-      val currentDay = gameInfos.maxOfOrNull { it.fixture.date }?.plusDays(1)
-        ?: Constants.START
+      val currentDay = currentDayUseCase.getCurrentDay()
 
       _state.update { currentState ->
         currentState.copy(
@@ -34,7 +39,6 @@ class GlobalViewModel @Inject constructor(
   }
 
   fun nextDay() {
-    println("Next Day Called: ${_state.value.currentDay}")
     _state.update { currentState ->
       currentState.copy(
         currentDay = currentState.currentDay.plusDays(1)

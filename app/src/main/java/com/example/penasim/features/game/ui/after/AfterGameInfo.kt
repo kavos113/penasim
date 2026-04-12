@@ -1,7 +1,6 @@
 package com.example.penasim.features.game.ui.after
 
 import com.example.penasim.const.Constants
-import com.example.penasim.const.DataSource
 import com.example.penasim.features.game.domain.InningScore
 import com.example.penasim.features.game.ui.common.FielderResult
 import com.example.penasim.features.game.ui.common.PitcherResult
@@ -20,6 +19,6 @@ data class AfterGameInfo(
   val awayPitcherResults: List<PitcherResult> = emptyList(),
   val homeFielderResults: List<FielderResult> = emptyList(),
   val awayFielderResults: List<FielderResult> = emptyList(),
-  val rankings: List<RankingUiInfo> = DataSource.rankings,
+  val rankings: List<RankingUiInfo> = emptyList(),
   val games: List<GameUiInfo> = emptyList(),
 )

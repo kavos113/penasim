@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.example.penasim.R
 import com.example.penasim.features.command.domain.OrderType
 import com.example.penasim.features.player.domain.Position
-import com.example.penasim.features.command.ui.model.DisplayFielder
+import com.example.penasim.core.ui.model.DisplayFielder
 import com.example.penasim.features.player.ui.component.FielderDetail
 import com.example.penasim.features.player.ui.component.OrderPlayerItem
 import com.example.penasim.features.player.ui.component.SimplePlayerItem

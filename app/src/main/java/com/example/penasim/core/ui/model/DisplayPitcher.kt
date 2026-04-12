@@ -1,4 +1,4 @@
-package com.example.penasim.features.command.ui.model
+package com.example.penasim.core.ui.model
 
 import com.example.penasim.features.command.domain.PitcherType
 

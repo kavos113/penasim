@@ -28,10 +28,10 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.penasim.core.ui.model.DisplayFielder
 import com.example.penasim.features.game.application.model.AtBatResultType
 import com.example.penasim.features.game.application.model.InGameAtBatResult
 import com.example.penasim.features.player.domain.Position
-import com.example.penasim.features.command.ui.model.DisplayFielder
 import com.example.penasim.core.designsystem.component.PressingButton
 import com.example.penasim.core.designsystem.component.InningScoresTable
 import com.example.penasim.features.player.ui.component.OrderPlayerItem

@@ -1,5 +1,8 @@
 package com.example.penasim.features.command.ui.command
 
+import com.example.penasim.core.designsystem.theme.color
+import com.example.penasim.core.ui.model.DisplayFielder
+import com.example.penasim.core.ui.model.DisplayPitcher
 import com.example.penasim.features.command.domain.FielderAppointment
 import com.example.penasim.features.team.domain.League
 import com.example.penasim.features.command.domain.MainMember
@@ -11,10 +14,7 @@ import com.example.penasim.features.player.domain.PlayerInfo
 import com.example.penasim.features.player.domain.Position
 import com.example.penasim.features.team.domain.Team
 import com.example.penasim.features.player.domain.isStarting
-import com.example.penasim.features.command.ui.model.DisplayFielder
-import com.example.penasim.features.command.ui.model.DisplayPitcher
 import com.example.penasim.features.player.ui.component.DisplayPlayerDetail
-import com.example.penasim.features.player.ui.component.color
 
 data class CommandUiState(
   val team: Team = Team(0, "", League.L1),
@@ -125,7 +125,6 @@ data class CommandUiState(
   fun getDisplayPlayerDetail(playerId: Int): DisplayPlayerDetail? {
     val playerInfo = players.find { it.player.id == playerId } ?: return null
     val color = playerInfo.primaryPosition.color()
-    println("PlayerID: $playerId, Info: $playerInfo, Color: $color")
     return DisplayPlayerDetail(
       player = playerInfo.player,
       positions = playerInfo.positions,

@@ -3,8 +3,10 @@ package com.example.penasim.features.schedule.ui.calender
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.penasim.const.Constants
+import com.example.penasim.core.session.SelectedTeamStore
 import com.example.penasim.features.team.domain.League
 import com.example.penasim.features.game.application.ExecuteGamesByDate
+import com.example.penasim.features.game.usecase.CurrentDayUseCase
 import com.example.penasim.features.schedule.ui.model.GameUiInfo
 import com.example.penasim.features.schedule.ui.model.toGameUiInfo
 import com.example.penasim.features.schedule.ui.model.toGameUiInfoWithResult
@@ -23,8 +25,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
+  private val selectedTeamStore: SelectedTeamStore,
   private val gameScheduleUseCase: GameScheduleUseCase,
   private val gameInfoUseCase: GameInfoUseCase,
+  private val currentDayUseCase: CurrentDayUseCase,
   private val getRankingUseCase: RankingUseCase,
   private val executeGamesByDate: ExecuteGamesByDate
 ) : ViewModel() {
@@ -59,12 +63,9 @@ class CalendarViewModel @Inject constructor(
       val rankings =
         (getRankingUseCase.getByLeague(League.L1) + getRankingUseCase.getByLeague(League.L2))
           .sortedBy { it.rank }
-          .map { it.toRankingUiInfo() }
+          .map { it.toRankingUiInfo(selectedTeamStore.currentTeamId()) }
 
-      val currentDay = gameInfos.maxOfOrNull { it.fixture.date }?.plusDays(1)
-        ?: Constants.START
-
-      println("Initial currentDay: $currentDay")
+      val currentDay = currentDayUseCase.getCurrentDay()
 
       _uiState.update { currentState ->
         currentState.copy(
@@ -73,14 +74,12 @@ class CalendarViewModel @Inject constructor(
           currentDay = currentDay
         )
       }
-      println("[CalendarViewModel] Initial data loaded, total days: ${clauses.size}")
     }
   }
 
   fun nextGame() {
     val currentDate = _uiState.value.currentDay
     if (currentDate > Constants.END) {
-      println("[CalendarViewModel] All games have been processed.")
       return
     }
 
@@ -94,23 +93,11 @@ class CalendarViewModel @Inject constructor(
         val rankings =
           (getRankingUseCase.getByLeague(League.L1) + getRankingUseCase.getByLeague(League.L2))
             .sortedBy { it.rank }
-            .map { it.toRankingUiInfo() }
+            .map { it.toRankingUiInfo(selectedTeamStore.currentTeamId()) }
 
         currentState.copy(
           games = newGames,
           rankings = rankings,
-        )
-      }
-
-      println("[CalendarViewModel] Current Game: $currentDate ======================")
-      val league1Rankings = getRankingUseCase.getByLeague(League.L1)
-      league1Rankings.forEach {
-        println(
-          "[CalendarViewModel] L1 Ranking - Rank: ${it.rank}, Team: ${it.team.name}, Wins: ${it.wins}, Losses: ${it.losses}, GB: ${
-            "%.1f".format(
-              it.gameBack
-            )
-          }"
         )
       }
     }

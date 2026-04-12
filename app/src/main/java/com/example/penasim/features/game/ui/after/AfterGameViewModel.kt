@@ -2,7 +2,7 @@ package com.example.penasim.features.game.ui.after
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.penasim.const.Constants
+import com.example.penasim.core.session.SelectedTeamStore
 import com.example.penasim.features.game.application.ExecuteGamesByDate
 import com.example.penasim.features.game.ui.common.toFielderResult
 import com.example.penasim.features.game.ui.common.toPitcherResult
@@ -26,6 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AfterGameViewModel @Inject constructor(
+  private val selectedTeamStore: SelectedTeamStore,
   private val gameScheduleUseCase: GameScheduleUseCase,
   private val executeGamesByDate: ExecuteGamesByDate,
   private val inningScoreUseCase: InningScoreUseCase,
@@ -55,7 +56,7 @@ class AfterGameViewModel @Inject constructor(
   fun skipGame() {
     viewModelScope.launch {
       val ranking = rankingUseCase.getAll()
-        .map { it.toRankingUiInfo() }
+        .map { it.toRankingUiInfo(selectedTeamStore.currentTeamId()) }
       val recentGames = gameInfoUseCase.getByDate(uiState.value.date)
 
       _uiState.update { currentState ->
@@ -70,18 +71,18 @@ class AfterGameViewModel @Inject constructor(
   fun initData() {
     viewModelScope.launch {
       val schedules = gameScheduleUseCase.getByDate(uiState.value.date)
+      val currentTeamId = selectedTeamStore.currentTeamId()
       val mySchedule = schedules.find {
-        it.homeTeam.id == Constants.TEAM_ID || it.awayTeam.id == Constants.TEAM_ID
+        it.homeTeam.id == currentTeamId || it.awayTeam.id == currentTeamId
       }?: return@launch
 
       val homePlayers = playerInfoUseCase.getByTeamId(mySchedule.homeTeam.id)
       val awayPlayers = playerInfoUseCase.getByTeamId(mySchedule.awayTeam.id)
 
       val inningScores = inningScoreUseCase.getByFixtureId(mySchedule.fixture.id)
-      println(inningScores)
       val pitchingStats = pitchingScoreUseCase.getByFixtureId(mySchedule.fixture.id)
       val ranking = rankingUseCase.getAll()
-        .map { it.toRankingUiInfo() }
+        .map { it.toRankingUiInfo(currentTeamId) }
 
       val homePitchingStats =
         pitchingStats.filter { homePlayers.any { p -> p.player.id == it.playerId } }
