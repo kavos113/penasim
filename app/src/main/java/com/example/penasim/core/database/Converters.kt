@@ -1,4 +1,4 @@
-package com.example.penasim.data.repository
+package com.example.penasim.core.database
 
 import androidx.room.TypeConverter
 import com.example.penasim.domain.PitcherType

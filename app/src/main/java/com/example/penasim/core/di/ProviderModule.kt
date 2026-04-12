@@ -1,4 +1,4 @@
-package com.example.penasim.data.di
+package com.example.penasim.core.di
 
 import com.example.penasim.domain.TransactionProvider
 import dagger.Binds

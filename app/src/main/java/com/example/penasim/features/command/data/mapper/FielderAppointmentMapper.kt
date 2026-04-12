@@ -1,4 +1,4 @@
-package com.example.penasim.data.mapper
+package com.example.penasim.features.command.data.mapper
 
 import com.example.penasim.data.entity.FielderAppointmentEntity
 import com.example.penasim.domain.FielderAppointment

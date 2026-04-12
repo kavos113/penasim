@@ -1,4 +1,4 @@
-package com.example.penasim.data.mapper
+package com.example.penasim.features.schedule.data.mapper
 
 import com.example.penasim.data.entity.GameFixtureEntity
 import com.example.penasim.domain.GameFixture

@@ -1,4 +1,4 @@
-package com.example.penasim.data.dao
+package com.example.penasim.features.command.data.dao
 
 import androidx.room.Dao
 import androidx.room.Delete

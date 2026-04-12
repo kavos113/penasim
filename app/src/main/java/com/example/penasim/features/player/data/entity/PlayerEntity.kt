@@ -1,4 +1,4 @@
-package com.example.penasim.data.entity
+package com.example.penasim.features.player.data.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey

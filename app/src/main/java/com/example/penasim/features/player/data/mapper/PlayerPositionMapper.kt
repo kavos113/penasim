@@ -1,4 +1,4 @@
-package com.example.penasim.data.mapper
+package com.example.penasim.features.player.data.mapper
 
 import com.example.penasim.data.entity.PlayerPositionEntity
 import com.example.penasim.domain.PlayerPosition

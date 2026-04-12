@@ -1,4 +1,4 @@
-package com.example.penasim.data
+package com.example.penasim.core.database
 
 import androidx.room.withTransaction
 import com.example.penasim.domain.TransactionProvider

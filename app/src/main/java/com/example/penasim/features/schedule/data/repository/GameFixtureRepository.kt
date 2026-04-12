@@ -1,4 +1,4 @@
-package com.example.penasim.data.repository
+package com.example.penasim.features.schedule.data.repository
 
 import com.example.penasim.data.dao.GameFixtureDao
 import com.example.penasim.data.mapper.toDomain
