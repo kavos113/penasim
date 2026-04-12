@@ -1,8 +1,8 @@
 package com.example.penasim.core.database
 
 import androidx.room.TypeConverter
-import com.example.penasim.domain.PitcherType
-import com.example.penasim.domain.Position
+import com.example.penasim.features.command.domain.PitcherType
+import com.example.penasim.features.player.domain.Position
 import java.time.LocalDate
 
 class Converters {

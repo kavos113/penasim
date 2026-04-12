@@ -2,9 +2,9 @@ package com.example.penasim.features.home.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.penasim.domain.League
-import com.example.penasim.usecase.GameScheduleUseCase
-import com.example.penasim.usecase.RankingUseCase
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.features.schedule.usecase.GameScheduleUseCase
+import com.example.penasim.features.standing.usecase.RankingUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

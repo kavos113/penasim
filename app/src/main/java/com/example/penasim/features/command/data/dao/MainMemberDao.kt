@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.penasim.data.entity.MainMemberEntity
+import com.example.penasim.features.command.data.entity.MainMemberEntity
 
 @Dao
 interface MainMemberDao {

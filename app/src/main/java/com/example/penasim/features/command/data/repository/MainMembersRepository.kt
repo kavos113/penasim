@@ -1,10 +1,10 @@
 package com.example.penasim.features.command.data.repository
 
-import com.example.penasim.data.dao.MainMemberDao
-import com.example.penasim.data.mapper.toDomain
-import com.example.penasim.data.mapper.toEntity
-import com.example.penasim.domain.MainMember
-import com.example.penasim.domain.repository.MainMembersRepository
+import com.example.penasim.features.command.data.dao.MainMemberDao
+import com.example.penasim.features.command.data.mapper.toDomain
+import com.example.penasim.features.command.data.mapper.toEntity
+import com.example.penasim.features.command.domain.MainMember
+import com.example.penasim.features.command.domain.repository.MainMembersRepository
 import javax.inject.Inject
 
 class MainMembersRepository @Inject constructor(

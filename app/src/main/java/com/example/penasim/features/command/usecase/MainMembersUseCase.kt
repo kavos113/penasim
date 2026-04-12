@@ -1,7 +1,7 @@
 package com.example.penasim.features.command.usecase
 
-import com.example.penasim.domain.MainMember
-import com.example.penasim.domain.repository.MainMembersRepository
+import com.example.penasim.features.command.domain.MainMember
+import com.example.penasim.features.command.domain.repository.MainMembersRepository
 import javax.inject.Inject
 
 class MainMembersUseCase @Inject constructor(

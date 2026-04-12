@@ -1,7 +1,7 @@
 package com.example.penasim.features.team.domain.repository
 
-import com.example.penasim.domain.League
-import com.example.penasim.domain.Team
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.features.team.domain.Team
 
 interface TeamRepository {
   suspend fun getTeam(id: Int): Team?

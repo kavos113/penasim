@@ -3,7 +3,7 @@ package com.example.penasim.core.navigation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.penasim.const.Constants
-import com.example.penasim.usecase.GameInfoUseCase
+import com.example.penasim.features.game.usecase.GameInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

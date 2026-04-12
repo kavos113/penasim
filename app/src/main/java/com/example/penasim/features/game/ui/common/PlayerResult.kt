@@ -1,8 +1,8 @@
 package com.example.penasim.features.game.ui.common
 
-import com.example.penasim.domain.HomeRun
-import com.example.penasim.domain.PitchingStat
-import com.example.penasim.domain.PlayerInfo
+import com.example.penasim.features.game.domain.HomeRun
+import com.example.penasim.features.game.domain.PitchingStat
+import com.example.penasim.features.player.domain.PlayerInfo
 
 data class PitcherResult(
   val displayName: String,

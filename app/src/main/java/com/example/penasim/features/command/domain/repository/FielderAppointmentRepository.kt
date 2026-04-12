@@ -1,6 +1,6 @@
 package com.example.penasim.features.command.domain.repository
 
-import com.example.penasim.domain.FielderAppointment
+import com.example.penasim.features.command.domain.FielderAppointment
 
 interface FielderAppointmentRepository {
   suspend fun getFielderAppointmentsByTeamId(teamId: Int): List<FielderAppointment>

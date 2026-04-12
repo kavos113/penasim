@@ -1,6 +1,6 @@
 package com.example.penasim.features.game.domain.repository
 
-import com.example.penasim.domain.InningScore
+import com.example.penasim.features.game.domain.InningScore
 
 interface InningScoreRepository {
   suspend fun getByFixtureId(fixtureId: Int): List<InningScore>

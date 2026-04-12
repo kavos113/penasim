@@ -1,7 +1,7 @@
 package com.example.penasim.features.game.data.mapper
 
-import com.example.penasim.data.entity.StatEntity
-import com.example.penasim.domain.Stat
+import com.example.penasim.features.game.data.entity.StatEntity
+import com.example.penasim.features.game.domain.Stat
 
 fun StatEntity.toDomain(): Stat = Stat(
   id = id,

@@ -2,7 +2,7 @@ package com.example.penasim.features.team.data.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.example.penasim.data.entity.TeamEntity
+import com.example.penasim.features.team.data.entity.TeamEntity
 
 @Dao
 interface TeamDao {

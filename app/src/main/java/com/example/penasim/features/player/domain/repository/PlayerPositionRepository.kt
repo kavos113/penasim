@@ -1,7 +1,7 @@
 package com.example.penasim.features.player.domain.repository
 
-import com.example.penasim.domain.PlayerPosition
-import com.example.penasim.domain.Position
+import com.example.penasim.features.player.domain.PlayerPosition
+import com.example.penasim.features.player.domain.Position
 
 interface PlayerPositionRepository {
   suspend fun getPlayerPositions(playerId: Int): List<PlayerPosition>

@@ -5,7 +5,8 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import com.example.penasim.data.repository.Converters
+import com.example.penasim.core.database.Converters
+import com.example.penasim.features.team.data.entity.TeamEntity
 import java.time.LocalDate
 
 @Entity(

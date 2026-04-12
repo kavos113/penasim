@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.example.penasim.features.team.data.entity.TeamEntity
 
 @Entity(
   tableName = "players",

@@ -1,5 +1,6 @@
 package com.example.penasim.features.player.domain
 
+import com.example.penasim.features.game.domain.PitchingStat
 import java.util.Locale
 
 data class TotalPitchingStats(

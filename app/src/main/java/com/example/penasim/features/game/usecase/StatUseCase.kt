@@ -1,7 +1,7 @@
 package com.example.penasim.features.game.usecase
 
-import com.example.penasim.domain.Stat
-import com.example.penasim.domain.repository.StatRepository
+import com.example.penasim.features.game.domain.Stat
+import com.example.penasim.features.game.domain.repository.StatRepository
 import javax.inject.Inject
 
 class StatUseCase @Inject constructor(

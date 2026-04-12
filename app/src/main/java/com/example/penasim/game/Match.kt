@@ -1,15 +1,15 @@
 package com.example.penasim.game
 
-import com.example.penasim.domain.BattingStat
-import com.example.penasim.domain.GameResult
-import com.example.penasim.domain.GameSchedule
-import com.example.penasim.domain.HomeRun
-import com.example.penasim.domain.InningScore
-import com.example.penasim.domain.PitcherType
-import com.example.penasim.domain.PitchingStat
-import com.example.penasim.domain.Stat
-import com.example.penasim.domain.TeamPlayers
-import com.example.penasim.domain.isStarting
+import com.example.penasim.features.game.domain.BattingStat
+import com.example.penasim.features.game.domain.GameResult
+import com.example.penasim.features.schedule.domain.GameSchedule
+import com.example.penasim.features.game.domain.HomeRun
+import com.example.penasim.features.game.domain.InningScore
+import com.example.penasim.features.command.domain.PitcherType
+import com.example.penasim.features.command.domain.TeamPlayers
+import com.example.penasim.features.game.domain.PitchingStat
+import com.example.penasim.features.game.domain.Stat
+import com.example.penasim.features.player.domain.isStarting
 
 const val MAX_INNINGS = 9
 

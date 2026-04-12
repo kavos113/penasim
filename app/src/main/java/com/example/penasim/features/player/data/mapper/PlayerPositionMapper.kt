@@ -1,7 +1,7 @@
 package com.example.penasim.features.player.data.mapper
 
-import com.example.penasim.data.entity.PlayerPositionEntity
-import com.example.penasim.domain.PlayerPosition
+import com.example.penasim.features.player.data.entity.PlayerPositionEntity
+import com.example.penasim.features.player.domain.PlayerPosition
 
 fun PlayerPositionEntity.toDomain(): PlayerPosition = PlayerPosition(
   playerId = playerId,

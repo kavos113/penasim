@@ -1,6 +1,6 @@
 package com.example.penasim.features.command.ui.model
 
-import com.example.penasim.domain.PitcherType
+import com.example.penasim.features.command.domain.PitcherType
 
 data class DisplayPitcher(
   val id: Int,

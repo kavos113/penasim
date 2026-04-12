@@ -1,10 +1,10 @@
 package com.example.penasim.features.standing.usecase
 
-import com.example.penasim.domain.League
-import com.example.penasim.domain.TeamStanding
-import com.example.penasim.domain.repository.GameFixtureRepository
-import com.example.penasim.domain.repository.GameResultRepository
-import com.example.penasim.domain.repository.TeamRepository
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.features.schedule.domain.repository.GameFixtureRepository
+import com.example.penasim.features.game.domain.repository.GameResultRepository
+import com.example.penasim.features.standing.domain.TeamStanding
+import com.example.penasim.features.team.domain.repository.TeamRepository
 import javax.inject.Inject
 
 class RankingUseCase @Inject constructor(

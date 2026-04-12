@@ -18,8 +18,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.penasim.ui.navigation.PenasimNavHost
-import com.example.penasim.ui.theme.PenasimTheme
+import com.example.penasim.core.designsystem.theme.PenasimTheme
+import com.example.penasim.core.navigation.PenasimNavHost
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

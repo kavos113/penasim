@@ -1,15 +1,15 @@
 package com.example.penasim.game
 
-import com.example.penasim.domain.GameInfo
-import com.example.penasim.domain.TransactionProvider
-import com.example.penasim.usecase.BattingStatUseCase
-import com.example.penasim.usecase.ExecuteGameUseCase
-import com.example.penasim.usecase.GameScheduleUseCase
-import com.example.penasim.usecase.HomeRunUseCase
-import com.example.penasim.usecase.InningScoreUseCase
-import com.example.penasim.usecase.PitchingStatUseCase
-import com.example.penasim.usecase.StatUseCase
-import com.example.penasim.usecase.TeamUseCase
+import com.example.penasim.features.game.domain.GameInfo
+import com.example.penasim.features.game.domain.TransactionProvider
+import com.example.penasim.features.game.usecase.BattingStatUseCase
+import com.example.penasim.features.game.usecase.ExecuteGameUseCase
+import com.example.penasim.features.schedule.usecase.GameScheduleUseCase
+import com.example.penasim.features.game.usecase.HomeRunUseCase
+import com.example.penasim.features.game.usecase.InningScoreUseCase
+import com.example.penasim.features.game.usecase.PitchingStatUseCase
+import com.example.penasim.features.game.usecase.StatUseCase
+import com.example.penasim.features.team.usecase.TeamUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

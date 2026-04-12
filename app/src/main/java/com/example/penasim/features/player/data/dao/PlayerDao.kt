@@ -2,7 +2,7 @@ package com.example.penasim.features.player.data.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.example.penasim.data.entity.PlayerEntity
+import com.example.penasim.features.player.data.entity.PlayerEntity
 
 @Dao
 interface PlayerDao {

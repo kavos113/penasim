@@ -1,7 +1,7 @@
 package com.example.penasim.features.command.ui.model
 
 import androidx.compose.ui.graphics.Color
-import com.example.penasim.domain.Position
+import com.example.penasim.features.player.domain.Position
 
 data class DisplayFielder(
   val id: Int,

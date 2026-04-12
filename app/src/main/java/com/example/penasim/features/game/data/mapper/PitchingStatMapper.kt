@@ -1,7 +1,7 @@
 package com.example.penasim.features.game.data.mapper
 
-import com.example.penasim.data.entity.PitchingStatEntity
-import com.example.penasim.domain.PitchingStat
+import com.example.penasim.features.game.data.entity.PitchingStatEntity
+import com.example.penasim.features.game.domain.PitchingStat
 
 fun PitchingStatEntity.toDomain(): PitchingStat = PitchingStat(
   gameFixtureId = gameFixtureId,

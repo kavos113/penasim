@@ -32,18 +32,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.penasim.R
-import com.example.penasim.domain.OrderType
-import com.example.penasim.domain.Position
-import com.example.penasim.ui.common.DisplayFielder
-import com.example.penasim.ui.common.FielderDetail
-import com.example.penasim.ui.common.OrderPlayerItem
-import com.example.penasim.ui.common.SimplePlayerItem
-import com.example.penasim.ui.theme.catcherColor
-import com.example.penasim.ui.theme.infielderColor
-import com.example.penasim.ui.theme.outfielderColor
-import com.example.penasim.ui.theme.pitcherColor
-import com.example.penasim.ui.theme.playerBorderColor
-import com.example.penasim.ui.theme.substituteBackgroundColor
+import com.example.penasim.features.command.domain.OrderType
+import com.example.penasim.features.player.domain.Position
+import com.example.penasim.features.command.ui.model.DisplayFielder
+import com.example.penasim.features.player.ui.component.FielderDetail
+import com.example.penasim.features.player.ui.component.OrderPlayerItem
+import com.example.penasim.features.player.ui.component.SimplePlayerItem
+import com.example.penasim.core.designsystem.theme.catcherColor
+import com.example.penasim.core.designsystem.theme.infielderColor
+import com.example.penasim.core.designsystem.theme.outfielderColor
+import com.example.penasim.core.designsystem.theme.pitcherColor
+import com.example.penasim.core.designsystem.theme.playerBorderColor
+import com.example.penasim.core.designsystem.theme.substituteBackgroundColor
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

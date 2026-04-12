@@ -1,12 +1,12 @@
 package com.example.penasim.core.di
 
-import com.example.penasim.domain.TransactionProvider
+import com.example.penasim.features.game.domain.TransactionProvider
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import com.example.penasim.data.TransactionProvider as TransactionProviderImpl
+import com.example.penasim.core.database.TransactionProvider as TransactionProviderImpl
 
 @Module
 @InstallIn(SingletonComponent::class)

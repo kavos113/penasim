@@ -1,8 +1,8 @@
 package com.example.penasim.features.command.usecase
 
-import com.example.penasim.domain.FielderAppointment
-import com.example.penasim.domain.Team
-import com.example.penasim.domain.repository.FielderAppointmentRepository
+import com.example.penasim.features.command.domain.FielderAppointment
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.command.domain.repository.FielderAppointmentRepository
 import javax.inject.Inject
 
 class FielderAppointmentUseCase @Inject constructor(

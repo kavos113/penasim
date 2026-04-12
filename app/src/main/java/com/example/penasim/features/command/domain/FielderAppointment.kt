@@ -1,5 +1,7 @@
 package com.example.penasim.features.command.domain
 
+import com.example.penasim.features.player.domain.Position
+
 data class FielderAppointment(
   val teamId: Int,
   val playerId: Int,

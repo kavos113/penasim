@@ -1,11 +1,11 @@
 package com.example.penasim.features.team.data.repository
 
-import com.example.penasim.data.dao.TeamDao
-import com.example.penasim.data.mapper.toDomain
-import com.example.penasim.domain.League
-import com.example.penasim.domain.Team
-import com.example.penasim.domain.repository.TeamRepository
-import com.example.penasim.domain.toId
+import com.example.penasim.features.team.data.dao.TeamDao
+import com.example.penasim.features.team.data.mapper.toDomain
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.team.domain.repository.TeamRepository
+import com.example.penasim.features.team.domain.toId
 import javax.inject.Inject
 
 class TeamRepository @Inject constructor(

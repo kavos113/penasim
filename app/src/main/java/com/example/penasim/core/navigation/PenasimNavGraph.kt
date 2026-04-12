@@ -10,20 +10,20 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.penasim.ui.calender.CalendarDestination
-import com.example.penasim.ui.calender.CalendarScreen
-import com.example.penasim.ui.command.CommandDestination
-import com.example.penasim.ui.command.CommandScreen
-import com.example.penasim.ui.game.AfterGameDestination
-import com.example.penasim.ui.game.AfterGameScreen
-import com.example.penasim.ui.game.AfterGameScreenWithoutGameResult
-import com.example.penasim.ui.game.AfterGameWithoutGameResultDestination
-import com.example.penasim.ui.game.BeforeGameDestination
-import com.example.penasim.ui.game.BeforeGameScreen
-import com.example.penasim.ui.game.InGameDestination
-import com.example.penasim.ui.game.InGameScreen
-import com.example.penasim.ui.home.HomeDestination
-import com.example.penasim.ui.home.HomeScreen
+import com.example.penasim.features.schedule.ui.calender.CalendarDestination
+import com.example.penasim.features.schedule.ui.calender.CalendarScreen
+import com.example.penasim.features.command.ui.command.CommandDestination
+import com.example.penasim.features.command.ui.command.CommandScreen
+import com.example.penasim.features.game.ui.after.AfterGameDestination
+import com.example.penasim.features.game.ui.after.AfterGameScreen
+import com.example.penasim.features.game.ui.after.AfterGameScreenWithoutGameResult
+import com.example.penasim.features.game.ui.after.AfterGameWithoutGameResultDestination
+import com.example.penasim.features.game.ui.before.BeforeGameDestination
+import com.example.penasim.features.game.ui.before.BeforeGameScreen
+import com.example.penasim.features.game.ui.ingame.InGameDestination
+import com.example.penasim.features.game.ui.ingame.InGameScreen
+import com.example.penasim.features.home.ui.home.HomeDestination
+import com.example.penasim.features.home.ui.home.HomeScreen
 
 @Composable
 fun PenasimNavHost(

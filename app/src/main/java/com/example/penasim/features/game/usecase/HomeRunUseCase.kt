@@ -1,7 +1,7 @@
 package com.example.penasim.features.game.usecase
 
-import com.example.penasim.domain.HomeRun
-import com.example.penasim.domain.repository.HomeRunRepository
+import com.example.penasim.features.game.domain.HomeRun
+import com.example.penasim.features.game.domain.repository.HomeRunRepository
 import javax.inject.Inject
 
 class HomeRunUseCase @Inject constructor(

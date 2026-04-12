@@ -1,11 +1,11 @@
 package com.example.penasim.game
 
-import com.example.penasim.domain.BattingStat
-import com.example.penasim.domain.GameResult
-import com.example.penasim.domain.HomeRun
-import com.example.penasim.domain.InningScore
-import com.example.penasim.domain.PitchingStat
-import com.example.penasim.domain.Stat
+import com.example.penasim.features.game.domain.BattingStat
+import com.example.penasim.features.game.domain.GameResult
+import com.example.penasim.features.game.domain.HomeRun
+import com.example.penasim.features.game.domain.InningScore
+import com.example.penasim.features.game.domain.PitchingStat
+import com.example.penasim.features.game.domain.Stat
 
 data class TeamStat(
   val fixtureId: Int,

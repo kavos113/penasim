@@ -1,9 +1,9 @@
 package com.example.penasim.features.game.usecase
 
-import com.example.penasim.domain.GameInfo
-import com.example.penasim.domain.repository.GameFixtureRepository
-import com.example.penasim.domain.repository.GameResultRepository
-import com.example.penasim.domain.repository.TeamRepository
+import com.example.penasim.features.game.domain.GameInfo
+import com.example.penasim.features.schedule.domain.repository.GameFixtureRepository
+import com.example.penasim.features.game.domain.repository.GameResultRepository
+import com.example.penasim.features.team.domain.repository.TeamRepository
 import javax.inject.Inject
 
 // game情報を格納

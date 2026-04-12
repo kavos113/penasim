@@ -2,8 +2,8 @@ package com.example.penasim.features.standing.ui.model
 
 import com.example.penasim.const.Constants
 import com.example.penasim.const.icon
-import com.example.penasim.domain.League
-import com.example.penasim.domain.TeamStanding
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.features.standing.domain.TeamStanding
 
 data class RankingUiInfo(
   val league: League,

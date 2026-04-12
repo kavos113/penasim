@@ -1,10 +1,10 @@
 package com.example.penasim.features.command.data.repository
 
-import com.example.penasim.data.dao.FielderAppointmentDao
-import com.example.penasim.data.mapper.toDomain
-import com.example.penasim.data.mapper.toEntity
-import com.example.penasim.domain.FielderAppointment
-import com.example.penasim.domain.repository.FielderAppointmentRepository
+import com.example.penasim.features.command.data.dao.FielderAppointmentDao
+import com.example.penasim.features.command.data.mapper.toDomain
+import com.example.penasim.features.command.data.mapper.toEntity
+import com.example.penasim.features.command.domain.FielderAppointment
+import com.example.penasim.features.command.domain.repository.FielderAppointmentRepository
 import javax.inject.Inject
 
 class FielderAppointmentRepository @Inject constructor(

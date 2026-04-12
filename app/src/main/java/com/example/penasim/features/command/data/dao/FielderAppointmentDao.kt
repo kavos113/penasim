@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.example.penasim.data.entity.FielderAppointmentEntity
+import com.example.penasim.features.command.data.entity.FielderAppointmentEntity
 
 @Dao
 interface FielderAppointmentDao {

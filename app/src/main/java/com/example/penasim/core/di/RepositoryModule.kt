@@ -1,36 +1,36 @@
 package com.example.penasim.core.di
 
-import com.example.penasim.domain.repository.BattingStatRepository
-import com.example.penasim.domain.repository.FielderAppointmentRepository
-import com.example.penasim.domain.repository.GameFixtureRepository
-import com.example.penasim.domain.repository.GameResultRepository
-import com.example.penasim.domain.repository.HomeRunRepository
-import com.example.penasim.domain.repository.InningScoreRepository
-import com.example.penasim.domain.repository.MainMembersRepository
-import com.example.penasim.domain.repository.PitcherAppointmentRepository
-import com.example.penasim.domain.repository.PitchingStatRepository
-import com.example.penasim.domain.repository.PlayerPositionRepository
-import com.example.penasim.domain.repository.PlayerRepository
-import com.example.penasim.domain.repository.StatRepository
-import com.example.penasim.domain.repository.TeamRepository
+import com.example.penasim.features.game.domain.repository.BattingStatRepository
+import com.example.penasim.features.command.domain.repository.FielderAppointmentRepository
+import com.example.penasim.features.schedule.domain.repository.GameFixtureRepository
+import com.example.penasim.features.game.domain.repository.GameResultRepository
+import com.example.penasim.features.game.domain.repository.HomeRunRepository
+import com.example.penasim.features.game.domain.repository.InningScoreRepository
+import com.example.penasim.features.command.domain.repository.MainMembersRepository
+import com.example.penasim.features.command.domain.repository.PitcherAppointmentRepository
+import com.example.penasim.features.game.domain.repository.PitchingStatRepository
+import com.example.penasim.features.player.domain.repository.PlayerPositionRepository
+import com.example.penasim.features.player.domain.repository.PlayerRepository
+import com.example.penasim.features.game.domain.repository.StatRepository
+import com.example.penasim.features.team.domain.repository.TeamRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
-import com.example.penasim.data.repository.BattingStatRepository as BattingStatRepositoryImpl
-import com.example.penasim.data.repository.FielderAppointmentRepository as FielderAppointmentRepositoryImpl
-import com.example.penasim.data.repository.GameFixtureRepository as GameFixtureRepositoryImpl
-import com.example.penasim.data.repository.GameResultRepository as GameResultRepositoryImpl
-import com.example.penasim.data.repository.HomeRunRepository as HomeRunRepositoryImpl
-import com.example.penasim.data.repository.InningScoreRepository as InningScoreRepositoryImpl
-import com.example.penasim.data.repository.MainMembersRepository as MainMembersRepositoryImpl
-import com.example.penasim.data.repository.PitcherAppointmentRepository as PitcherAppointmentRepositoryImpl
-import com.example.penasim.data.repository.PitchingStatRepository as PitchingStatRepositoryImpl
-import com.example.penasim.data.repository.PlayerPositionRepository as PlayerPositionRepositoryImpl
-import com.example.penasim.data.repository.PlayerRepository as PlayerRepositoryImpl
-import com.example.penasim.data.repository.StatRepository as StatRepositoryImpl
-import com.example.penasim.data.repository.TeamRepository as TeamRepositoryImpl
+import com.example.penasim.features.game.data.repository.BattingStatRepository as BattingStatRepositoryImpl
+import com.example.penasim.features.command.data.repository.FielderAppointmentRepository as FielderAppointmentRepositoryImpl
+import com.example.penasim.features.schedule.data.repository.GameFixtureRepository as GameFixtureRepositoryImpl
+import com.example.penasim.features.game.data.repository.GameResultRepository as GameResultRepositoryImpl
+import com.example.penasim.features.game.data.repository.HomeRunRepository as HomeRunRepositoryImpl
+import com.example.penasim.features.game.data.repository.InningScoreRepository as InningScoreRepositoryImpl
+import com.example.penasim.features.command.data.repository.MainMembersRepository as MainMembersRepositoryImpl
+import com.example.penasim.features.command.data.repository.PitcherAppointmentRepository as PitcherAppointmentRepositoryImpl
+import com.example.penasim.features.game.data.repository.PitchingStatRepository as PitchingStatRepositoryImpl
+import com.example.penasim.features.player.data.repository.PlayerPositionRepository as PlayerPositionRepositoryImpl
+import com.example.penasim.features.player.data.repository.PlayerRepository as PlayerRepositoryImpl
+import com.example.penasim.features.game.data.repository.StatRepository as StatRepositoryImpl
+import com.example.penasim.features.team.data.repository.TeamRepository as TeamRepositoryImpl
 
 @Module
 @InstallIn(SingletonComponent::class)

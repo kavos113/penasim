@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.penasim.R
-import com.example.penasim.ui.navigation.NavigationDestination
+import com.example.penasim.core.navigation.NavigationDestination
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 

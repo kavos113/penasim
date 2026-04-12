@@ -1,10 +1,10 @@
 package com.example.penasim.features.player.data.repository
 
-import com.example.penasim.data.dao.PlayerPositionDao
-import com.example.penasim.data.mapper.toDomain
-import com.example.penasim.domain.PlayerPosition
-import com.example.penasim.domain.Position
-import com.example.penasim.domain.repository.PlayerPositionRepository
+import com.example.penasim.features.player.data.dao.PlayerPositionDao
+import com.example.penasim.features.player.data.mapper.toDomain
+import com.example.penasim.features.player.domain.PlayerPosition
+import com.example.penasim.features.player.domain.Position
+import com.example.penasim.features.player.domain.repository.PlayerPositionRepository
 import javax.inject.Inject
 
 class PlayerPositionRepository @Inject constructor(

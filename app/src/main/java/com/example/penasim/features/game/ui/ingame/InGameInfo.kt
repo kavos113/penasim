@@ -1,12 +1,12 @@
 package com.example.penasim.features.game.ui.ingame
 
 import com.example.penasim.const.Constants
-import com.example.penasim.domain.InningScore
-import com.example.penasim.domain.Position
+import com.example.penasim.features.game.domain.InningScore
+import com.example.penasim.features.player.domain.Position
 import com.example.penasim.game.LastResult
 import com.example.penasim.game.Result
-import com.example.penasim.ui.common.DisplayFielder
-import com.example.penasim.ui.theme.outfielderColor
+import com.example.penasim.features.command.ui.model.DisplayFielder
+import com.example.penasim.core.designsystem.theme.outfielderColor
 import java.time.LocalDate
 
 data class InGameInfo(

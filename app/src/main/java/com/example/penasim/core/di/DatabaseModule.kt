@@ -2,7 +2,7 @@ package com.example.penasim.core.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.penasim.data.PennantDatabase
+import com.example.penasim.core.database.PennantDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

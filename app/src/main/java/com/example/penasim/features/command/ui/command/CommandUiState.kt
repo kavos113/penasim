@@ -1,20 +1,20 @@
 package com.example.penasim.features.command.ui.command
 
-import com.example.penasim.domain.FielderAppointment
-import com.example.penasim.domain.League
-import com.example.penasim.domain.MainMember
-import com.example.penasim.domain.MemberType
-import com.example.penasim.domain.OrderType
-import com.example.penasim.domain.PitcherAppointment
-import com.example.penasim.domain.PitcherType
-import com.example.penasim.domain.PlayerInfo
-import com.example.penasim.domain.Position
-import com.example.penasim.domain.Team
-import com.example.penasim.domain.isStarting
-import com.example.penasim.ui.common.DisplayFielder
-import com.example.penasim.ui.common.DisplayPitcher
-import com.example.penasim.ui.common.DisplayPlayerDetail
-import com.example.penasim.ui.common.color
+import com.example.penasim.features.command.domain.FielderAppointment
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.features.command.domain.MainMember
+import com.example.penasim.features.command.domain.MemberType
+import com.example.penasim.features.command.domain.OrderType
+import com.example.penasim.features.command.domain.PitcherAppointment
+import com.example.penasim.features.command.domain.PitcherType
+import com.example.penasim.features.player.domain.PlayerInfo
+import com.example.penasim.features.player.domain.Position
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.player.domain.isStarting
+import com.example.penasim.features.command.ui.model.DisplayFielder
+import com.example.penasim.features.command.ui.model.DisplayPitcher
+import com.example.penasim.features.player.ui.component.DisplayPlayerDetail
+import com.example.penasim.features.player.ui.component.color
 
 data class CommandUiState(
   val team: Team = Team(0, "", League.L1),

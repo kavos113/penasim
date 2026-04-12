@@ -1,5 +1,7 @@
 package com.example.penasim.features.player.domain
 
+import com.example.penasim.features.team.domain.Team
+
 data class PlayerInfo(
   val player: Player,
   val positions: List<PlayerPosition>,

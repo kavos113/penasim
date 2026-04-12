@@ -26,8 +26,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.penasim.R
-import com.example.penasim.ui.navigation.NavigationDestination
-import com.example.penasim.ui.theme.PenasimTheme
+import com.example.penasim.core.navigation.NavigationDestination
+import com.example.penasim.core.designsystem.theme.PenasimTheme
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 

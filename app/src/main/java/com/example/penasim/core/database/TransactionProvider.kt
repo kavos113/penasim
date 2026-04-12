@@ -1,7 +1,7 @@
 package com.example.penasim.core.database
 
 import androidx.room.withTransaction
-import com.example.penasim.domain.TransactionProvider
+import com.example.penasim.features.game.domain.TransactionProvider
 import javax.inject.Inject
 
 class TransactionProvider @Inject constructor(

@@ -1,23 +1,23 @@
 package com.example.penasim.features.player.ui.component
 
 import androidx.compose.ui.graphics.Color
-import com.example.penasim.domain.Player
-import com.example.penasim.domain.PlayerPosition
-import com.example.penasim.domain.Position
-import com.example.penasim.domain.TotalBattingStats
-import com.example.penasim.domain.TotalPitchingStats
-import com.example.penasim.ui.theme.aColor
-import com.example.penasim.ui.theme.bColor
-import com.example.penasim.ui.theme.cColor
-import com.example.penasim.ui.theme.catcherColor
-import com.example.penasim.ui.theme.dColor
-import com.example.penasim.ui.theme.eColor
-import com.example.penasim.ui.theme.fColor
-import com.example.penasim.ui.theme.gColor
-import com.example.penasim.ui.theme.infielderColor
-import com.example.penasim.ui.theme.outfielderColor
-import com.example.penasim.ui.theme.pitcherColor
-import com.example.penasim.ui.theme.sColor
+import com.example.penasim.features.player.domain.Player
+import com.example.penasim.features.player.domain.PlayerPosition
+import com.example.penasim.features.player.domain.Position
+import com.example.penasim.features.player.domain.TotalBattingStats
+import com.example.penasim.features.player.domain.TotalPitchingStats
+import com.example.penasim.core.designsystem.theme.aColor
+import com.example.penasim.core.designsystem.theme.bColor
+import com.example.penasim.core.designsystem.theme.cColor
+import com.example.penasim.core.designsystem.theme.catcherColor
+import com.example.penasim.core.designsystem.theme.dColor
+import com.example.penasim.core.designsystem.theme.eColor
+import com.example.penasim.core.designsystem.theme.fColor
+import com.example.penasim.core.designsystem.theme.gColor
+import com.example.penasim.core.designsystem.theme.infielderColor
+import com.example.penasim.core.designsystem.theme.outfielderColor
+import com.example.penasim.core.designsystem.theme.pitcherColor
+import com.example.penasim.core.designsystem.theme.sColor
 
 data class DisplayPlayerDetail(
   val player: Player,

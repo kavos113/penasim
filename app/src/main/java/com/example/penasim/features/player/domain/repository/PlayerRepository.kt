@@ -1,6 +1,6 @@
 package com.example.penasim.features.player.domain.repository
 
-import com.example.penasim.domain.Player
+import com.example.penasim.features.player.domain.Player
 
 interface PlayerRepository {
   suspend fun getPlayerCount(teamId: Int): Int

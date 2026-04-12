@@ -1,9 +1,9 @@
 package com.example.penasim.features.schedule.usecase
 
-import com.example.penasim.domain.GameSchedule
-import com.example.penasim.domain.Team
-import com.example.penasim.domain.repository.GameFixtureRepository
-import com.example.penasim.domain.repository.TeamRepository
+import com.example.penasim.features.schedule.domain.GameSchedule
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.schedule.domain.repository.GameFixtureRepository
+import com.example.penasim.features.team.domain.repository.TeamRepository
 import java.time.LocalDate
 import javax.inject.Inject
 

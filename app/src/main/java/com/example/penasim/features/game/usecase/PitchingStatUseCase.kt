@@ -1,7 +1,7 @@
 package com.example.penasim.features.game.usecase
 
-import com.example.penasim.domain.PitchingStat
-import com.example.penasim.domain.repository.PitchingStatRepository
+import com.example.penasim.features.game.domain.PitchingStat
+import com.example.penasim.features.game.domain.repository.PitchingStatRepository
 import javax.inject.Inject
 
 class PitchingStatUseCase @Inject constructor(

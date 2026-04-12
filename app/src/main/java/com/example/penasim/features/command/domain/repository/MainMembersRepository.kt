@@ -1,6 +1,6 @@
 package com.example.penasim.features.command.domain.repository
 
-import com.example.penasim.domain.MainMember
+import com.example.penasim.features.command.domain.MainMember
 
 interface MainMembersRepository {
   suspend fun getMainMembersByTeamId(teamId: Int): List<MainMember>

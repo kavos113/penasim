@@ -1,8 +1,8 @@
 package com.example.penasim.const
 
 import com.example.penasim.R
-import com.example.penasim.domain.toLeague
-import com.example.penasim.ui.common.RankingUiInfo
+import com.example.penasim.features.team.domain.toLeague
+import com.example.penasim.features.standing.ui.model.RankingUiInfo
 
 object DataSource {
   val rankings = List(12) {

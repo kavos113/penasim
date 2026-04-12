@@ -1,10 +1,10 @@
 package com.example.penasim.features.schedule.data.repository
 
-import com.example.penasim.data.dao.GameFixtureDao
-import com.example.penasim.data.mapper.toDomain
-import com.example.penasim.domain.GameFixture
-import com.example.penasim.domain.Team
-import com.example.penasim.domain.repository.GameFixtureRepository
+import com.example.penasim.features.schedule.data.dao.GameFixtureDao
+import com.example.penasim.features.schedule.data.mapper.toDomain
+import com.example.penasim.features.schedule.domain.GameFixture
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.schedule.domain.repository.GameFixtureRepository
 import java.time.LocalDate
 import javax.inject.Inject
 

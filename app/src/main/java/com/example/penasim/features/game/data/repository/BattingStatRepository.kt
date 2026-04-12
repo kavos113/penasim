@@ -1,10 +1,10 @@
 package com.example.penasim.features.game.data.repository
 
-import com.example.penasim.data.dao.BattingStatDao
-import com.example.penasim.data.mapper.toDomain
-import com.example.penasim.data.mapper.toEntity
-import com.example.penasim.domain.BattingStat
-import com.example.penasim.domain.repository.BattingStatRepository
+import com.example.penasim.features.game.data.dao.BattingStatDao
+import com.example.penasim.features.game.data.mapper.toDomain
+import com.example.penasim.features.game.data.mapper.toEntity
+import com.example.penasim.features.game.domain.BattingStat
+import com.example.penasim.features.game.domain.repository.BattingStatRepository
 import javax.inject.Inject
 
 class BattingStatRepository @Inject constructor(

@@ -1,7 +1,7 @@
 package com.example.penasim.features.schedule.data.mapper
 
-import com.example.penasim.data.entity.GameFixtureEntity
-import com.example.penasim.domain.GameFixture
+import com.example.penasim.features.schedule.data.entity.GameFixtureEntity
+import com.example.penasim.features.schedule.domain.GameFixture
 
 fun GameFixtureEntity.toDomain(): GameFixture = GameFixture(
   id = id,

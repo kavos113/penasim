@@ -1,9 +1,9 @@
 package com.example.penasim.features.player.data.repository
 
-import com.example.penasim.data.dao.PlayerDao
-import com.example.penasim.data.mapper.toDomain
-import com.example.penasim.domain.Player
-import com.example.penasim.domain.repository.PlayerRepository
+import com.example.penasim.features.player.data.dao.PlayerDao
+import com.example.penasim.features.player.data.mapper.toDomain
+import com.example.penasim.features.player.domain.Player
+import com.example.penasim.features.player.domain.repository.PlayerRepository
 import javax.inject.Inject
 
 class PlayerRepository @Inject constructor(

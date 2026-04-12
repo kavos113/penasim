@@ -21,17 +21,18 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.example.penasim.domain.Player
-import com.example.penasim.domain.PlayerPosition
-import com.example.penasim.domain.Position
-import com.example.penasim.domain.TotalBattingStats
-import com.example.penasim.domain.TotalPitchingStats
-import com.example.penasim.domain.toShortJa
-import com.example.penasim.ui.theme.lightWhiteColor
-import com.example.penasim.ui.theme.orderActiveColor
-import com.example.penasim.ui.theme.outfielderColor
-import com.example.penasim.ui.theme.pitcherColor
-import com.example.penasim.ui.theme.playerBorderColor
+import com.example.penasim.features.command.ui.model.DisplayFielder
+import com.example.penasim.features.player.domain.Player
+import com.example.penasim.features.player.domain.PlayerPosition
+import com.example.penasim.features.player.domain.Position
+import com.example.penasim.features.player.domain.TotalBattingStats
+import com.example.penasim.features.player.domain.TotalPitchingStats
+import com.example.penasim.features.player.domain.toShortJa
+import com.example.penasim.core.designsystem.theme.lightWhiteColor
+import com.example.penasim.core.designsystem.theme.orderActiveColor
+import com.example.penasim.core.designsystem.theme.outfielderColor
+import com.example.penasim.core.designsystem.theme.pitcherColor
+import com.example.penasim.core.designsystem.theme.playerBorderColor
 
 
 @Composable

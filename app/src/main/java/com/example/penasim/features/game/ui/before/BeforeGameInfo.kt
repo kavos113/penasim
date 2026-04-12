@@ -1,8 +1,8 @@
 package com.example.penasim.features.game.ui.before
 
 import com.example.penasim.const.Constants
-import com.example.penasim.domain.TeamStanding
-import com.example.penasim.ui.common.DisplayFielder
+import com.example.penasim.features.command.ui.model.DisplayFielder
+import com.example.penasim.features.standing.domain.TeamStanding
 import java.time.LocalDate
 
 data class BeforeGameInfo(

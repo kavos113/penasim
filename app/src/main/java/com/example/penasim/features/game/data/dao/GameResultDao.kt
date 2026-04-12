@@ -3,7 +3,7 @@ package com.example.penasim.features.game.data.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.example.penasim.data.entity.GameResultEntity
+import com.example.penasim.features.game.data.entity.GameResultEntity
 
 @Dao
 interface GameResultDao {

@@ -1,8 +1,8 @@
 package com.example.penasim.features.schedule.ui.model
 
 import com.example.penasim.const.icon
-import com.example.penasim.domain.GameInfo
-import com.example.penasim.domain.GameSchedule
+import com.example.penasim.features.game.domain.GameInfo
+import com.example.penasim.features.schedule.domain.GameSchedule
 
 data class GameUiInfo(
   val homeTeamIcon: Int,

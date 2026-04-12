@@ -2,7 +2,7 @@ package com.example.penasim.features.player.data.entity
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
-import com.example.penasim.domain.Position
+import com.example.penasim.features.player.domain.Position
 
 @Entity(
   tableName = "player_positions",

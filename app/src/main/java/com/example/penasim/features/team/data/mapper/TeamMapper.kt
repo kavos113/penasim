@@ -1,9 +1,9 @@
 package com.example.penasim.features.team.data.mapper
 
-import com.example.penasim.data.entity.TeamEntity
-import com.example.penasim.domain.Team
-import com.example.penasim.domain.toId
-import com.example.penasim.domain.toLeague
+import com.example.penasim.features.team.data.entity.TeamEntity
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.team.domain.toId
+import com.example.penasim.features.team.domain.toLeague
 
 fun TeamEntity.toDomain(): Team = Team(
   id = id,

@@ -1,7 +1,7 @@
 package com.example.penasim.features.game.data.mapper
 
-import com.example.penasim.data.entity.GameResultEntity
-import com.example.penasim.domain.GameResult
+import com.example.penasim.features.game.data.entity.GameResultEntity
+import com.example.penasim.features.game.domain.GameResult
 
 fun GameResultEntity.toDomain() = GameResult(
   fixtureId = gameFixtureId,

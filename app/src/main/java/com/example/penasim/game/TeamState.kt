@@ -1,8 +1,8 @@
 package com.example.penasim.game
 
-import com.example.penasim.domain.PitcherType
-import com.example.penasim.domain.TeamPlayers
-import com.example.penasim.domain.isStarting
+import com.example.penasim.features.command.domain.PitcherType
+import com.example.penasim.features.command.domain.TeamPlayers
+import com.example.penasim.features.player.domain.isStarting
 
 data class PitcherState(
   val playerId: Int,

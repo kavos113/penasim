@@ -1,7 +1,7 @@
 package com.example.penasim.features.player.data.mapper
 
-import com.example.penasim.data.entity.PlayerEntity
-import com.example.penasim.domain.Player
+import com.example.penasim.features.player.data.entity.PlayerEntity
+import com.example.penasim.features.player.domain.Player
 
 fun PlayerEntity.toDomain(): Player = Player(
   id = id,

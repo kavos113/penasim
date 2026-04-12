@@ -1,7 +1,7 @@
 package com.example.penasim.features.schedule.domain.repository
 
-import com.example.penasim.domain.GameFixture
-import com.example.penasim.domain.Team
+import com.example.penasim.features.schedule.domain.GameFixture
+import com.example.penasim.features.team.domain.Team
 import java.time.LocalDate
 
 interface GameFixtureRepository {

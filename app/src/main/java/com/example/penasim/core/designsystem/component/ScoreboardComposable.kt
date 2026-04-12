@@ -18,11 +18,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.penasim.domain.InningScore
-import com.example.penasim.ui.theme.hitColor
-import com.example.penasim.ui.theme.onPrimaryLight
-import com.example.penasim.ui.theme.playerBorderColor
-import com.example.penasim.ui.theme.primaryLight
+import com.example.penasim.features.game.domain.InningScore
+import com.example.penasim.core.designsystem.theme.hitColor
+import com.example.penasim.core.designsystem.theme.onPrimaryLight
+import com.example.penasim.core.designsystem.theme.playerBorderColor
+import com.example.penasim.core.designsystem.theme.primaryLight
 
 private const val MAX_INNINGS = 9
 

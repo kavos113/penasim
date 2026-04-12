@@ -23,16 +23,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.penasim.const.icon
-import com.example.penasim.domain.League
-import com.example.penasim.domain.Position
-import com.example.penasim.domain.Team
-import com.example.penasim.domain.TeamStanding
-import com.example.penasim.ui.common.DisplayFielder
-import com.example.penasim.ui.common.OrderPlayerItem
-import com.example.penasim.ui.theme.catcherColor
-import com.example.penasim.ui.theme.infielderColor
-import com.example.penasim.ui.theme.outfielderColor
-import com.example.penasim.ui.theme.pitcherColor
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.features.player.domain.Position
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.command.ui.model.DisplayFielder
+import com.example.penasim.features.standing.domain.TeamStanding
+import com.example.penasim.features.player.ui.component.OrderPlayerItem
+import com.example.penasim.core.designsystem.theme.catcherColor
+import com.example.penasim.core.designsystem.theme.infielderColor
+import com.example.penasim.core.designsystem.theme.outfielderColor
+import com.example.penasim.core.designsystem.theme.pitcherColor
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 

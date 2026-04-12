@@ -1,7 +1,7 @@
 package com.example.penasim.features.command.data.mapper
 
-import com.example.penasim.data.entity.FielderAppointmentEntity
-import com.example.penasim.domain.FielderAppointment
+import com.example.penasim.features.command.data.entity.FielderAppointmentEntity
+import com.example.penasim.features.command.domain.FielderAppointment
 
 fun FielderAppointmentEntity.toDomain(): FielderAppointment = FielderAppointment(
   teamId = teamId,

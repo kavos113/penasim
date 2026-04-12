@@ -3,12 +3,12 @@ package com.example.penasim.features.game.ui.ingame
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.penasim.const.Constants
-import com.example.penasim.domain.GameSchedule
-import com.example.penasim.domain.OrderType
-import com.example.penasim.domain.Position
+import com.example.penasim.features.schedule.domain.GameSchedule
+import com.example.penasim.features.command.domain.OrderType
+import com.example.penasim.features.player.domain.Position
 import com.example.penasim.game.ExecuteGameByOne
-import com.example.penasim.ui.common.GetDisplayFielder
-import com.example.penasim.usecase.GameScheduleUseCase
+import com.example.penasim.features.command.ui.GetDisplayFielder
+import com.example.penasim.features.schedule.usecase.GameScheduleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,13 +1,15 @@
 package com.example.penasim.features.command.ui
 
-import com.example.penasim.domain.OrderType
-import com.example.penasim.domain.PitcherType
-import com.example.penasim.domain.Position
-import com.example.penasim.domain.Team
-import com.example.penasim.domain.isStarting
-import com.example.penasim.usecase.FielderAppointmentUseCase
-import com.example.penasim.usecase.PitcherAppointmentUseCase
-import com.example.penasim.usecase.PlayerInfoUseCase
+import com.example.penasim.features.command.domain.OrderType
+import com.example.penasim.features.command.domain.PitcherType
+import com.example.penasim.features.command.ui.model.DisplayFielder
+import com.example.penasim.features.player.domain.Position
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.player.domain.isStarting
+import com.example.penasim.features.player.ui.component.color
+import com.example.penasim.features.command.usecase.FielderAppointmentUseCase
+import com.example.penasim.features.command.usecase.PitcherAppointmentUseCase
+import com.example.penasim.features.player.usecase.PlayerInfoUseCase
 import javax.inject.Inject
 
 class GetDisplayFielder @Inject constructor(

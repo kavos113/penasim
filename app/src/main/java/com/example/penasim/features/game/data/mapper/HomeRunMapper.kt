@@ -1,7 +1,7 @@
 package com.example.penasim.features.game.data.mapper
 
-import com.example.penasim.data.entity.HomeRunEntity
-import com.example.penasim.domain.HomeRun
+import com.example.penasim.features.game.data.entity.HomeRunEntity
+import com.example.penasim.features.game.domain.HomeRun
 
 fun HomeRunEntity.toDomain(): HomeRun {
   return HomeRun(

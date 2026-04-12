@@ -1,6 +1,6 @@
 package com.example.penasim.features.game.domain.repository
 
-import com.example.penasim.domain.HomeRun
+import com.example.penasim.features.game.domain.HomeRun
 
 interface HomeRunRepository {
   suspend fun getHomeRunsByFixtureId(fixtureId: Int): List<HomeRun>

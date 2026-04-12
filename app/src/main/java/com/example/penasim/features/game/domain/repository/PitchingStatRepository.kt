@@ -1,6 +1,6 @@
 package com.example.penasim.features.game.domain.repository
 
-import com.example.penasim.domain.PitchingStat
+import com.example.penasim.features.game.domain.PitchingStat
 
 interface PitchingStatRepository {
   suspend fun getByFixtureId(fixtureId: Int): List<PitchingStat>

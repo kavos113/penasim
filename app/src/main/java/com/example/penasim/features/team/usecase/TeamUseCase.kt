@@ -1,16 +1,16 @@
 package com.example.penasim.features.team.usecase
 
-import com.example.penasim.domain.PlayerInfo
-import com.example.penasim.domain.TeamPlayers
-import com.example.penasim.domain.repository.BattingStatRepository
-import com.example.penasim.domain.repository.FielderAppointmentRepository
-import com.example.penasim.domain.repository.PitcherAppointmentRepository
-import com.example.penasim.domain.repository.PitchingStatRepository
-import com.example.penasim.domain.repository.PlayerPositionRepository
-import com.example.penasim.domain.repository.PlayerRepository
-import com.example.penasim.domain.repository.TeamRepository
-import com.example.penasim.domain.toTotalBattingStats
-import com.example.penasim.domain.toTotalPitchingStats
+import com.example.penasim.features.player.domain.PlayerInfo
+import com.example.penasim.features.command.domain.TeamPlayers
+import com.example.penasim.features.game.domain.repository.BattingStatRepository
+import com.example.penasim.features.command.domain.repository.FielderAppointmentRepository
+import com.example.penasim.features.command.domain.repository.PitcherAppointmentRepository
+import com.example.penasim.features.game.domain.repository.PitchingStatRepository
+import com.example.penasim.features.player.domain.repository.PlayerPositionRepository
+import com.example.penasim.features.player.domain.repository.PlayerRepository
+import com.example.penasim.features.team.domain.repository.TeamRepository
+import com.example.penasim.features.player.domain.toTotalBattingStats
+import com.example.penasim.features.player.domain.toTotalPitchingStats
 import javax.inject.Inject
 
 class TeamUseCase @Inject constructor(

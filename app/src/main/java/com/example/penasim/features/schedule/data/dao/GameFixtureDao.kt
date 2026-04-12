@@ -2,7 +2,7 @@ package com.example.penasim.features.schedule.data.dao
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.example.penasim.data.entity.GameFixtureEntity
+import com.example.penasim.features.schedule.data.entity.GameFixtureEntity
 import java.time.LocalDate
 
 @Dao

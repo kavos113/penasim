@@ -27,10 +27,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.penasim.R
 import com.example.penasim.const.Constants
-import com.example.penasim.ui.common.Clause
-import com.example.penasim.ui.common.Ranking
-import com.example.penasim.ui.navigation.NavigationDestination
-import com.example.penasim.ui.theme.PenasimTheme
+import com.example.penasim.features.schedule.ui.component.Clause
+import com.example.penasim.features.standing.ui.component.Ranking
+import com.example.penasim.core.navigation.NavigationDestination
+import com.example.penasim.core.designsystem.theme.PenasimTheme
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit

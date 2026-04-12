@@ -3,6 +3,8 @@ package com.example.penasim.features.game.data.entity
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
+import com.example.penasim.features.schedule.data.entity.GameFixtureEntity
+import com.example.penasim.features.team.data.entity.TeamEntity
 
 @Entity(
   tableName = "inning_scores",
