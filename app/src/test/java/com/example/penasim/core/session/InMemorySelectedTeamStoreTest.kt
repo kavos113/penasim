@@ -23,3 +23,5 @@ class InMemorySelectedTeamStoreTest {
     assertEquals(7, store.teamId.value)
   }
 }
+
+
