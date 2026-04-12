@@ -1,0 +1,105 @@
+package com.example.penasim.features.schedule.ui.calender
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.penasim.const.Constants
+import com.example.penasim.core.session.SelectedTeamStore
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.features.game.application.ExecuteGamesByDate
+import com.example.penasim.features.game.usecase.CurrentDayUseCase
+import com.example.penasim.features.schedule.ui.model.GameUiInfo
+import com.example.penasim.features.schedule.ui.model.toGameUiInfo
+import com.example.penasim.features.schedule.ui.model.toGameUiInfoWithResult
+import com.example.penasim.features.standing.ui.model.toRankingUiInfo
+import com.example.penasim.features.game.usecase.GameInfoUseCase
+import com.example.penasim.features.schedule.usecase.GameScheduleUseCase
+import com.example.penasim.features.standing.usecase.RankingUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.time.LocalDate
+import javax.inject.Inject
+
+@HiltViewModel
+class CalendarViewModel @Inject constructor(
+  private val selectedTeamStore: SelectedTeamStore,
+  private val gameScheduleUseCase: GameScheduleUseCase,
+  private val gameInfoUseCase: GameInfoUseCase,
+  private val currentDayUseCase: CurrentDayUseCase,
+  private val getRankingUseCase: RankingUseCase,
+  private val executeGamesByDate: ExecuteGamesByDate
+) : ViewModel() {
+  private val _uiState = MutableStateFlow(CalendarUiState())
+  val uiState: StateFlow<CalendarUiState> = _uiState.asStateFlow()
+
+  fun setCurrentDay(day: LocalDate) {
+    _uiState.value = _uiState.value.copy(
+      currentDay = day
+    )
+  }
+
+  init {
+    viewModelScope.launch {
+      val gameSchedules = gameScheduleUseCase.getAll()
+      val gameInfos = gameInfoUseCase.getAll()
+      val map = gameSchedules.groupBy { it.fixture.date }
+      val clauses: Map<LocalDate, List<GameUiInfo>> =
+        generateSequence(Constants.START) { it.plusDays(1) }
+          .takeWhile { !it.isAfter(Constants.END) }
+          .associateWith { date ->
+            map[date]?.map {
+              val info = gameInfos.find { info -> info.fixture.id == it.fixture.id }
+              if (info != null) {
+                it.toGameUiInfoWithResult(info)
+              } else {
+                it.toGameUiInfo()
+              }
+            } ?: emptyList()
+          }
+
+      val rankings =
+        (getRankingUseCase.getByLeague(League.L1) + getRankingUseCase.getByLeague(League.L2))
+          .sortedBy { it.rank }
+          .map { it.toRankingUiInfo(selectedTeamStore.currentTeamId()) }
+
+      val currentDay = currentDayUseCase.getCurrentDay()
+
+      _uiState.update { currentState ->
+        currentState.copy(
+          games = clauses,
+          rankings = rankings,
+          currentDay = currentDay
+        )
+      }
+    }
+  }
+
+  fun nextGame() {
+    val currentDate = _uiState.value.currentDay
+    if (currentDate > Constants.END) {
+      return
+    }
+
+    viewModelScope.launch {
+      val recentGames = executeGamesByDate.execute(currentDate)
+
+      _uiState.update { currentState ->
+        val newGames = currentState.games.toMutableMap()
+        newGames[currentDate] = recentGames.map { it.toGameUiInfo() }
+
+        val rankings =
+          (getRankingUseCase.getByLeague(League.L1) + getRankingUseCase.getByLeague(League.L2))
+            .sortedBy { it.rank }
+            .map { it.toRankingUiInfo(selectedTeamStore.currentTeamId()) }
+
+        currentState.copy(
+          games = newGames,
+          rankings = rankings,
+        )
+      }
+    }
+  }
+}

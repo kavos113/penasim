@@ -1,0 +1,60 @@
+package com.example.penasim.features.game.ui.ingame
+
+import com.example.penasim.const.Constants
+import com.example.penasim.core.ui.model.DisplayFielder
+import com.example.penasim.features.game.application.model.AtBatResultType
+import com.example.penasim.features.game.application.model.InGameAtBatResult
+import com.example.penasim.features.game.domain.InningScore
+import com.example.penasim.features.player.domain.Position
+import com.example.penasim.core.designsystem.theme.outfielderColor
+import java.time.LocalDate
+
+data class InGameInfo(
+  val date: LocalDate = Constants.START,
+  val homeTeam: InGameTeamInfo = InGameTeamInfo(),
+  val awayTeam: InGameTeamInfo = InGameTeamInfo(),
+  val outCount: Int = 0,
+  val firstBase: DisplayFielder? = null,
+  val secondBase: DisplayFielder? = null,
+  val thirdBase: DisplayFielder? = null,
+  val lastResult: InGameAtBatResult = InGameAtBatResult(
+    type = AtBatResultType.OUT,
+    isHit = false,
+    isScored = false
+  )
+) {
+  fun getByPlayerId(id: Int): DisplayFielder {
+    return homeTeam.players.find { it.id == id }
+      ?: awayTeam.players.find { it.id == id }
+      ?: DisplayFielder(
+        id = 0,
+        displayName = "Unknown Player",
+        position = Position.OUTFIELDER,
+        number = 1,
+        color = outfielderColor
+      )
+  }
+}
+
+data class InGameTeamInfo(
+  val name: String = "",
+  val inningScores: List<InningScore> = emptyList(),
+  val players: List<DisplayFielder> = emptyList(),
+  val activePlayerId: Int = 0, // 打線 or pitcher
+  val activeNumber: Int? = null // activeな打順
+) {
+  val mainFielders: List<DisplayFielder>
+    get() = players.filterNot { it.position == Position.BENCH }
+
+  val subFielders: List<DisplayFielder>
+    get() = players.filter { it.position == Position.BENCH }
+
+  val activePlayer: DisplayFielder
+    get() = players.find { it.id == activePlayerId } ?: DisplayFielder(
+      id = 0,
+      displayName = "Unknown Player",
+      position = Position.OUTFIELDER,
+      number = activeNumber ?: 1,
+      color = outfielderColor
+    )
+}

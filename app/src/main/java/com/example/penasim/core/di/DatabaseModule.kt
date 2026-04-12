@@ -1,0 +1,70 @@
+package com.example.penasim.core.di
+
+import android.content.Context
+import androidx.room.Room
+import com.example.penasim.core.database.PennantDatabase
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
+
+  @Provides
+  @Singleton
+  fun provideDatabase(
+    @ApplicationContext context: Context
+  ): PennantDatabase {
+    return Room.databaseBuilder(
+      context,
+      PennantDatabase::class.java,
+      "pennant_database"
+    )
+      .createFromAsset("databases/pennant_database.db")
+      .fallbackToDestructiveMigration(false)
+      .build()
+  }
+
+  @Provides
+  fun provideTeamDao(database: PennantDatabase) = database.teamDao()
+
+  @Provides
+  fun provideGameFixtureDao(database: PennantDatabase) = database.gameFixtureDao()
+
+  @Provides
+  fun provideGameResultDao(database: PennantDatabase) = database.gameResultDao()
+
+  @Provides
+  fun providePlayerDao(database: PennantDatabase) = database.playerDao()
+
+  @Provides
+  fun providePlayerPositionDao(database: PennantDatabase) = database.playerPositionDao()
+
+  @Provides
+  fun provideFielderAppointmentDao(database: PennantDatabase) = database.fielderAppointmentDao()
+
+  @Provides
+  fun providePitcherAppointmentDao(database: PennantDatabase) = database.pitcherAppointmentDao()
+
+  @Provides
+  fun provideMainMemberDao(database: PennantDatabase) = database.mainMemberDao()
+
+  @Provides
+  fun provideInningScoreDao(database: PennantDatabase) = database.inningScoreDao()
+
+  @Provides
+  fun provideBattingStatDao(database: PennantDatabase) = database.battingStatDao()
+
+  @Provides
+  fun providePitchingStatDao(database: PennantDatabase) = database.pitchingStatDao()
+
+  @Provides
+  fun provideHomeRunDao(database: PennantDatabase) = database.homeRunDao()
+
+  @Provides
+  fun provideStatDao(database: PennantDatabase) = database.statDao()
+}

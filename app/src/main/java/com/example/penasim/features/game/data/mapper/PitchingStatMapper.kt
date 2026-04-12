@@ -1,0 +1,38 @@
+package com.example.penasim.features.game.data.mapper
+
+import com.example.penasim.features.game.data.entity.PitchingStatEntity
+import com.example.penasim.features.game.domain.PitchingStat
+
+fun PitchingStatEntity.toDomain(): PitchingStat = PitchingStat(
+  gameFixtureId = gameFixtureId,
+  playerId = playerId,
+  inningPitched = inningPitched,
+  hit = hit,
+  run = run,
+  earnedRun = earnedRun,
+  walk = walk,
+  strikeOut = strikeOut,
+  homeRun = homeRun,
+  win = win,
+  lose = loss,
+  hold = hold,
+  save = save,
+  numberOfPitches = numberOfPitches,
+)
+
+fun PitchingStat.toEntity(): PitchingStatEntity = PitchingStatEntity(
+  gameFixtureId = gameFixtureId,
+  playerId = playerId,
+  inningPitched = inningPitched,
+  hit = hit,
+  run = run,
+  earnedRun = earnedRun,
+  walk = walk,
+  strikeOut = strikeOut,
+  homeRun = homeRun,
+  win = win,
+  loss = lose,
+  hold = hold,
+  save = save,
+  numberOfPitches = numberOfPitches,
+)

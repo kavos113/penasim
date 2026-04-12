@@ -1,0 +1,660 @@
+package com.example.penasim.features.game.ui.after
+
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.penasim.R
+import com.example.penasim.features.game.domain.InningScore
+import com.example.penasim.features.game.ui.common.FielderResult
+import com.example.penasim.features.game.ui.common.HomeRunType
+import com.example.penasim.features.game.ui.common.PitcherResult
+import com.example.penasim.features.game.ui.common.toStringJp
+import com.example.penasim.features.schedule.ui.component.ClauseWithoutDate
+import com.example.penasim.features.schedule.ui.model.GameUiInfo
+import com.example.penasim.core.designsystem.component.InningScoresTable
+import com.example.penasim.features.standing.ui.model.RankingUiInfo
+import com.example.penasim.features.standing.ui.component.Ranking
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.core.navigation.NavigationDestination
+import com.example.penasim.core.designsystem.theme.errorContainerLight
+import com.example.penasim.core.designsystem.theme.playerBorderColor
+import com.example.penasim.core.designsystem.theme.primaryContainerLight
+import kotlinx.serialization.Serializable
+import java.time.LocalDate
+
+@Serializable
+data class AfterGameDestination(val isSkipped: Boolean)
+
+@Serializable
+object AfterGameWithoutGameResultDestination
+
+@Composable
+fun AfterGameScreen(
+  modifier: Modifier = Modifier,
+  onClickFinish: () -> Unit = { },
+  viewModel: AfterGameViewModel,
+  currentDay: LocalDate,
+  isSkipped: Boolean
+) {
+  val uiState by viewModel.uiState.collectAsState()
+
+  LaunchedEffect(currentDay) {
+    viewModel.setDate(currentDay)
+  }
+
+  LaunchedEffect(Unit) {
+    if (isSkipped) {
+      viewModel.runGame()
+    }
+    viewModel.initData()
+  }
+
+  BackHandler(
+    enabled = true,
+    onBack = { /* Do nothing */ }
+  )
+
+  AfterGameContent(
+    afterGameInfo = uiState,
+    modifier = modifier,
+    onClickFinish = onClickFinish
+  )
+}
+
+@Composable
+fun AfterGameScreenWithoutGameResult(
+  modifier: Modifier = Modifier,
+  onClickFinish: () -> Unit = { },
+  viewModel: AfterGameViewModel,
+  currentDay: LocalDate
+) {
+  val uiState by viewModel.uiState.collectAsState()
+
+  LaunchedEffect(currentDay) {
+    viewModel.setDate(currentDay)
+  }
+
+  LaunchedEffect(Unit) {
+    viewModel.runGame()
+    viewModel.skipGame()
+  }
+
+  BackHandler(
+    enabled = true,
+    onBack = { /* Do nothing */ }
+  )
+
+  AfterGameContentWithoutGameResult(
+    afterGameInfo = uiState,
+    modifier = modifier,
+    onClickFinish = onClickFinish
+  )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AfterGameContent(
+  afterGameInfo: AfterGameInfo,
+  modifier: Modifier = Modifier,
+  onClickFinish: () -> Unit = { }
+) {
+  Scaffold(
+    topBar = {
+      CenterAlignedTopAppBar(
+        title = {
+          Text(
+            text = "${afterGameInfo.date.monthValue}月${afterGameInfo.date.dayOfMonth}日",
+            fontSize = 20.sp,
+            modifier = Modifier
+          )
+        }
+      )
+    }
+  ) { innerPadding ->
+    Column(
+      modifier = modifier
+        .fillMaxSize()
+        .padding(innerPadding),
+    ) {
+      InningScoresTable(
+        homeTeamName = afterGameInfo.homeTeamName,
+        awayTeamName = afterGameInfo.awayTeamName,
+        homeInningScores = afterGameInfo.homeScores,
+        awayInningScores = afterGameInfo.awayScores,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(8.dp)
+      )
+
+      Row(
+        modifier = Modifier
+          .height(IntrinsicSize.Min)
+      ) {
+        SingleTeamPitcherResults(
+          pitcherResults = afterGameInfo.awayPitcherResults,
+          modifier = Modifier
+            .weight(1f)
+            .padding(8.dp)
+        )
+        VerticalDivider(
+          color = playerBorderColor,
+          modifier = Modifier
+            .fillMaxHeight()
+            .padding(vertical = 8.dp)
+        )
+        SingleTeamPitcherResults(
+          pitcherResults = afterGameInfo.homePitcherResults,
+          modifier = Modifier
+            .weight(1f)
+            .padding(8.dp)
+        )
+      }
+
+      HorizontalDivider(
+        color = playerBorderColor,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 8.dp)
+      )
+
+      Row(
+        modifier = Modifier
+          .height(IntrinsicSize.Min)
+      ) {
+        SingleTeamFielderResults(
+          fielderResults = afterGameInfo.awayFielderResults,
+          modifier = Modifier
+            .weight(1f)
+            .padding(8.dp)
+        )
+        VerticalDivider(
+          color = playerBorderColor,
+          modifier = Modifier
+            .fillMaxHeight()
+            .padding(vertical = 8.dp)
+        )
+        SingleTeamFielderResults(
+          fielderResults = afterGameInfo.homeFielderResults,
+          modifier = Modifier
+            .weight(1f)
+            .padding(8.dp)
+        )
+      }
+
+      Spacer(modifier = Modifier.weight(1f))
+
+      ClauseWithoutDate(
+        games = afterGameInfo.games,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 8.dp)
+      )
+
+      Ranking(
+        rankings = afterGameInfo.rankings,
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(horizontal = 8.dp, vertical = 8.dp)
+      )
+
+      Button(
+        onClick = onClickFinish,
+        modifier = Modifier
+          .padding(24.dp)
+          .align(Alignment.CenterHorizontally)
+      ) {
+        Text(text = "終了")
+      }
+    }
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AfterGameContentWithoutGameResult(
+  afterGameInfo: AfterGameInfo,
+  modifier: Modifier = Modifier,
+  onClickFinish: () -> Unit = { }
+) {
+  Scaffold(
+    topBar = {
+      CenterAlignedTopAppBar(
+        title = {
+          Text(
+            text = "${afterGameInfo.date.monthValue}月${afterGameInfo.date.dayOfMonth}日",
+            fontSize = 20.sp,
+            modifier = Modifier
+          )
+        }
+      )
+    }
+  ) { innerPadding ->
+    Box(
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(innerPadding),
+    ) {
+      Column(
+        modifier = Modifier.align(Alignment.BottomCenter)
+      ) {
+        ClauseWithoutDate(
+          games = afterGameInfo.games,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+        )
+
+        Ranking(
+          rankings = afterGameInfo.rankings,
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+        )
+
+        Button(
+          onClick = onClickFinish,
+          modifier = Modifier
+            .padding(24.dp)
+            .align(Alignment.CenterHorizontally)
+        ) {
+          Text(text = "終了")
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun SingleTeamPitcherResults(
+  pitcherResults: List<PitcherResult>,
+  modifier: Modifier = Modifier
+) {
+  Column(
+    modifier = modifier
+  ) {
+    pitcherResults.forEach { pitcherResult ->
+      PitcherResultItem(
+        pitcherResult = pitcherResult,
+        modifier = Modifier
+          .fillMaxWidth()
+      )
+    }
+  }
+}
+
+private fun displayPitcherResults(pitcherResult: PitcherResult): String {
+  val sb = StringBuilder()
+  sb.append(pitcherResult.displayName)
+  if (pitcherResult.wins > 0) {
+    sb.append(" ${pitcherResult.wins}勝")
+  }
+  if (pitcherResult.losses > 0) {
+    sb.append(" ${pitcherResult.losses}敗")
+  }
+  if (pitcherResult.holds > 0) {
+    sb.append(" ${pitcherResult.holds}H")
+  }
+  if (pitcherResult.saves > 0) {
+    sb.append(" ${pitcherResult.saves}S")
+  }
+  return sb.toString()
+}
+
+@Composable
+private fun PitcherResultItem(
+  pitcherResult: PitcherResult,
+  modifier: Modifier = Modifier
+) {
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier
+  ) {
+    if (pitcherResult.isWin) {
+      Text(
+        text = "勝",
+        fontSize = 16.sp,
+        modifier = Modifier
+          .background(errorContainerLight)
+          .padding(horizontal = 4.dp)
+      )
+    } else if (pitcherResult.isLoss) {
+      Text(
+        text = "敗",
+        fontSize = 16.sp,
+        modifier = Modifier
+          .background(primaryContainerLight)
+          .padding(horizontal = 4.dp)
+      )
+    } else if (pitcherResult.isHold) {
+      Text(
+        text = "Ｈ",
+        fontSize = 16.sp,
+        modifier = Modifier
+          .padding(horizontal = 4.dp)
+      )
+    } else if (pitcherResult.isSave) {
+      Text(
+        text = "Ｓ",
+        fontSize = 16.sp,
+        modifier = Modifier
+          .padding(horizontal = 4.dp)
+      )
+    } else {
+      Text(
+        text = "　",
+        fontSize = 16.sp,
+        modifier = Modifier
+          .padding(horizontal = 4.dp)
+      )
+    }
+    Text(
+      text = displayPitcherResults(pitcherResult),
+      fontSize = 16.sp,
+      modifier = Modifier
+        .weight(1f)
+    )
+  }
+}
+
+@Composable
+private fun SingleTeamFielderResults(
+  fielderResults: List<FielderResult>,
+  modifier: Modifier = Modifier
+) {
+  Column(
+    modifier = modifier
+  ) {
+    fielderResults.forEach { fielderResult ->
+      FielderResultItem(
+        fielderResult = fielderResult,
+        modifier = Modifier
+          .fillMaxWidth()
+      )
+    }
+  }
+}
+
+@Composable
+private fun FielderResultItem(
+  fielderResult: FielderResult,
+  modifier: Modifier = Modifier
+) {
+  Text(
+    text = "${fielderResult.displayName} ${fielderResult.inning}回 ${fielderResult.numberOfHomeRuns}号 ${fielderResult.type.toStringJp()}",
+    fontSize = 16.sp,
+    modifier = modifier
+      .padding(horizontal = 4.dp, vertical = 2.dp)
+  )
+}
+
+private val SAMPLE_HOME_INNING_SCORES = listOf(
+  InningScore(fixtureId = 0, teamId = 0, inning = 1, score = 0),
+  InningScore(fixtureId = 0, teamId = 0, inning = 2, score = 1),
+  InningScore(fixtureId = 0, teamId = 0, inning = 3, score = 0),
+  InningScore(fixtureId = 0, teamId = 0, inning = 4, score = 2),
+  InningScore(fixtureId = 0, teamId = 0, inning = 5, score = 0),
+  InningScore(fixtureId = 0, teamId = 0, inning = 6, score = 0),
+  InningScore(fixtureId = 0, teamId = 0, inning = 7, score = 0),
+  InningScore(fixtureId = 0, teamId = 0, inning = 8, score = 1),
+  InningScore(fixtureId = 0, teamId = 0, inning = 9, score = 0),
+)
+
+private val SAMPLE_AWAY_INNING_SCORES = listOf(
+  InningScore(fixtureId = 0, teamId = 1, inning = 1, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 2, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 3, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 4, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 5, score = 1),
+  InningScore(fixtureId = 0, teamId = 1, inning = 6, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 7, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 8, score = 0),
+  InningScore(fixtureId = 0, teamId = 1, inning = 9, score = 0),
+)
+
+private val SAMPLE_WIN_PITCHER_RESULTS = listOf(
+  PitcherResult(
+    displayName = "高橋",
+    number = 1,
+    wins = 12,
+    losses = 3,
+    holds = 0,
+    saves = 0,
+    isWin = true,
+    isLoss = false,
+    isHold = false,
+    isSave = false
+  ),
+  PitcherResult(
+    displayName = "田中",
+    number = 2,
+    wins = 5,
+    losses = 2,
+    holds = 14,
+    saves = 0,
+    isWin = false,
+    isLoss = false,
+    isHold = true,
+    isSave = false
+  ),
+  PitcherResult(
+    displayName = "鈴木",
+    number = 3,
+    wins = 3,
+    losses = 4,
+    holds = 0,
+    saves = 25,
+    isWin = false,
+    isLoss = false,
+    isHold = false,
+    isSave = true
+  ),
+)
+
+private val SAMPLE_LOSE_PITCHER_RESULTS = listOf(
+  PitcherResult(
+    displayName = "佐藤",
+    number = 4,
+    wins = 8,
+    losses = 7,
+    holds = 0,
+    saves = 0,
+    isWin = false,
+    isLoss = true,
+    isHold = false,
+    isSave = false
+  ),
+  PitcherResult(
+    displayName = "山田",
+    number = 5,
+    wins = 2,
+    losses = 6,
+    holds = 0,
+    saves = 0,
+    isWin = false,
+    isLoss = false,
+    isHold = false,
+    isSave = false
+  ),
+)
+
+private val SAMPLE_FIELDER_RESULTS = listOf(
+  FielderResult(
+    displayName = "渡辺",
+    inning = 6,
+    numberOfHomeRuns = 13,
+    type = HomeRunType.TWO_RUN
+  ),
+)
+
+private val SAMPLE_RANKINGS = listOf(
+  RankingUiInfo(league = League.L1, rank = 1, teamIcon = R.drawable.team1_icon, gameBack = 0.0, isMyTeam = true),
+  RankingUiInfo(league = League.L1, rank = 2, teamIcon = R.drawable.team3_icon, gameBack = 1.5, isMyTeam = false),
+  RankingUiInfo(league = League.L2, rank = 1, teamIcon = R.drawable.team2_icon, gameBack = 0.0, isMyTeam = false),
+)
+
+@Preview
+@Composable
+private fun SingleTeamPitcherResultsPreview() {
+  SingleTeamPitcherResults(
+    pitcherResults = SAMPLE_WIN_PITCHER_RESULTS,
+    modifier = Modifier
+      .fillMaxWidth()
+  )
+}
+
+@Preview
+@Composable
+private fun SingleTeamFielderResultsPreview() {
+  SingleTeamFielderResults(
+    fielderResults = SAMPLE_FIELDER_RESULTS,
+    modifier = Modifier
+      .fillMaxWidth()
+  )
+}
+
+@Preview
+@Composable
+private fun AfterGameContentPreview() {
+  AfterGameContent(
+    afterGameInfo = AfterGameInfo(
+      date = LocalDate.of(2024, 4, 1),
+      homeScores = SAMPLE_HOME_INNING_SCORES,
+      awayScores = SAMPLE_AWAY_INNING_SCORES,
+      homePitcherResults = SAMPLE_WIN_PITCHER_RESULTS,
+      awayPitcherResults = SAMPLE_LOSE_PITCHER_RESULTS,
+      homeFielderResults = SAMPLE_FIELDER_RESULTS,
+      awayFielderResults = emptyList(),
+      rankings = SAMPLE_RANKINGS,
+      games = listOf(
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team1_icon,
+          homeTeamScore = 3,
+          awayTeamIcon = R.drawable.team2_icon,
+          awayTeamScore = 1,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team3_icon,
+          homeTeamScore = 2,
+          awayTeamIcon = R.drawable.team4_icon,
+          awayTeamScore = 2,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team5_icon,
+          homeTeamScore = 0,
+          awayTeamIcon = R.drawable.team6_icon,
+          awayTeamScore = 1,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team7_icon,
+          homeTeamScore = 0,
+          awayTeamIcon = R.drawable.team8_icon,
+          awayTeamScore = 3,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team9_icon,
+          homeTeamScore = 1,
+          awayTeamIcon = R.drawable.team10_icon,
+          awayTeamScore = 0,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team11_icon,
+          homeTeamScore = 2,
+          awayTeamIcon = R.drawable.team12_icon,
+          awayTeamScore = 2,
+          isGameFinished = true
+        )
+      ),
+    )
+  )
+}
+
+@Preview
+@Composable
+private fun AfterGameContentWithoutGameResultPreview() {
+  AfterGameContentWithoutGameResult(
+    afterGameInfo = AfterGameInfo(
+      date = LocalDate.of(2024, 4, 1),
+      homeScores = SAMPLE_HOME_INNING_SCORES,
+      awayScores = SAMPLE_AWAY_INNING_SCORES,
+      homePitcherResults = SAMPLE_WIN_PITCHER_RESULTS,
+      awayPitcherResults = SAMPLE_LOSE_PITCHER_RESULTS,
+      homeFielderResults = SAMPLE_FIELDER_RESULTS,
+      awayFielderResults = emptyList(),
+      rankings = SAMPLE_RANKINGS,
+      games = listOf(
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team1_icon,
+          homeTeamScore = 3,
+          awayTeamIcon = R.drawable.team2_icon,
+          awayTeamScore = 1,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team3_icon,
+          homeTeamScore = 2,
+          awayTeamIcon = R.drawable.team4_icon,
+          awayTeamScore = 2,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team5_icon,
+          homeTeamScore = 0,
+          awayTeamIcon = R.drawable.team6_icon,
+          awayTeamScore = 1,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team7_icon,
+          homeTeamScore = 0,
+          awayTeamIcon = R.drawable.team8_icon,
+          awayTeamScore = 3,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team9_icon,
+          homeTeamScore = 1,
+          awayTeamIcon = R.drawable.team10_icon,
+          awayTeamScore = 0,
+          isGameFinished = true
+        ),
+        GameUiInfo(
+          homeTeamIcon = R.drawable.team11_icon,
+          homeTeamScore = 2,
+          awayTeamIcon = R.drawable.team12_icon,
+          awayTeamScore = 2,
+          isGameFinished = true
+        )
+      ),
+    )
+  )
+}

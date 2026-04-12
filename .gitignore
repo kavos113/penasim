@@ -6,3 +6,5 @@ local.properties
 .github/copilot-instructions.md
 out/
 bin/
+input.bin
+AGENTS.md

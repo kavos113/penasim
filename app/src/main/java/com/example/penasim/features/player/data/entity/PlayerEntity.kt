@@ -1,0 +1,42 @@
+package com.example.penasim.features.player.data.entity
+
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import com.example.penasim.features.team.data.entity.TeamEntity
+
+@Entity(
+  tableName = "players",
+  foreignKeys = [
+    ForeignKey(
+      entity = TeamEntity::class,
+      parentColumns = ["id"],
+      childColumns = ["teamId"],
+      onDelete = ForeignKey.CASCADE,
+    ),
+  ],
+  indices = [
+    Index(value = ["teamId"])
+  ]
+)
+data class PlayerEntity(
+  @PrimaryKey val id: Int,
+  val firstName: String,
+  val lastName: String,
+  val teamId: Int,
+
+  val meet: Int,
+  val power: Int,
+  val speed: Int,
+  val throwing: Int,
+  val defense: Int,
+  val catching: Int,
+
+  val ballSpeed: Int,
+  val control: Int,
+  val stamina: Int,
+
+  val starter: Int,
+  val reliever: Int,
+)

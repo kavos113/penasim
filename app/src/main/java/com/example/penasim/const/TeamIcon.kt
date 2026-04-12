@@ -1,7 +1,7 @@
 package com.example.penasim.const
 
 import com.example.penasim.R
-import com.example.penasim.domain.Team
+import com.example.penasim.features.team.domain.Team
 
 fun Team.icon(): Int = when (id) {
   0 -> R.drawable.team1_icon

@@ -1,0 +1,28 @@
+package com.example.penasim.features.game.data.dao
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.example.penasim.features.game.data.entity.BattingStatEntity
+
+@Dao
+interface BattingStatDao {
+  @Query("SELECT * FROM batting_stats WHERE gameFixtureId = :fixtureId")
+  suspend fun getByFixtureId(fixtureId: Int): List<BattingStatEntity>
+
+  @Query("SELECT * FROM batting_stats WHERE gameFixtureId IN (:fixtureIds)")
+  suspend fun getByFixtureIds(fixtureIds: List<Int>): List<BattingStatEntity>
+
+  @Query("SELECT * FROM batting_stats WHERE playerId = :playerId")
+  suspend fun getByPlayerId(playerId: Int): List<BattingStatEntity>
+
+  @Query("SELECT * FROM batting_stats WHERE playerId IN (:playerIds)")
+  suspend fun getByPlayerIds(playerIds: List<Int>): List<BattingStatEntity>
+
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  suspend fun insertAll(items: List<BattingStatEntity>)
+
+  @Query("DELETE FROM batting_stats WHERE gameFixtureId = :fixtureId")
+  suspend fun deleteByFixtureId(fixtureId: Int)
+}
