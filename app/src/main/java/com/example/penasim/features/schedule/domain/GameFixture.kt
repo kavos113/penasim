@@ -1,4 +1,4 @@
-package com.example.penasim.domain
+package com.example.penasim.features.schedule.domain
 
 import java.time.LocalDate
 

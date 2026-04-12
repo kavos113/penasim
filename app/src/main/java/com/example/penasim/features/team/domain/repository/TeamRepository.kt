@@ -1,4 +1,4 @@
-package com.example.penasim.domain.repository
+package com.example.penasim.features.team.domain.repository
 
 import com.example.penasim.domain.League
 import com.example.penasim.domain.Team

@@ -1,4 +1,4 @@
-package com.example.penasim.domain
+package com.example.penasim.features.game.domain
 
 data class GameResult(
   val fixtureId: Int,

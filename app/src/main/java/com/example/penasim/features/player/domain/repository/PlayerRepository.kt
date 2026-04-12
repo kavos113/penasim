@@ -1,4 +1,4 @@
-package com.example.penasim.domain.repository
+package com.example.penasim.features.player.domain.repository
 
 import com.example.penasim.domain.Player
 

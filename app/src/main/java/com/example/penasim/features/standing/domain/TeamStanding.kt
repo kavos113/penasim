@@ -1,4 +1,4 @@
-package com.example.penasim.domain
+package com.example.penasim.features.standing.domain
 
 data class TeamStanding(
   val team: Team = Team(),

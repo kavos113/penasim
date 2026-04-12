@@ -1,4 +1,4 @@
-package com.example.penasim.domain
+package com.example.penasim.features.team.domain
 
 data class Team(
   val id: Int = 0,

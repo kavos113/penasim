@@ -1,4 +1,4 @@
-package com.example.penasim.domain
+package com.example.penasim.features.command.domain
 
 data class MainMember(
   val teamId: Int,
