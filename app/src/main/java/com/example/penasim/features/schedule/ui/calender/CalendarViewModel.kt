@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.penasim.const.Constants
 import com.example.penasim.features.team.domain.League
-import com.example.penasim.game.ExecuteGamesByDate
+import com.example.penasim.features.game.application.ExecuteGamesByDate
 import com.example.penasim.features.schedule.ui.model.GameUiInfo
 import com.example.penasim.features.schedule.ui.model.toGameUiInfo
 import com.example.penasim.features.schedule.ui.model.toGameUiInfoWithResult

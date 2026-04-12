@@ -1,4 +1,4 @@
-package com.example.penasim.game
+package com.example.penasim.features.game.engine
 
 import com.example.penasim.features.game.domain.BattingStat
 import com.example.penasim.features.game.domain.GameResult
@@ -19,7 +19,6 @@ data class TeamStat(
   val awayHomeRuns: MutableList<HomeRun> = mutableListOf(),
   val stats: MutableList<Stat> = mutableListOf()
 ) {
-
   fun recordStat(
     batterId: Int,
     pitcherId: Int,
@@ -76,10 +75,10 @@ data class TeamStat(
 
   fun homeRuns(): List<HomeRun> = homeHomeRuns + awayHomeRuns
 
-  fun newInning(half: Half) {
+  fun newInning(half: HalfInning) {
     when (half) {
-      Half.INNING_TOP -> awayScores.add(0)
-      Half.INNING_BOTTOM -> homeScores.add(0)
+      HalfInning.TOP -> awayScores.add(0)
+      HalfInning.BOTTOM -> homeScores.add(0)
     }
   }
 
@@ -87,23 +86,15 @@ data class TeamStat(
     awayScores.removeAt(awayScores.lastIndex)
 
     if (homeScore > awayScore) {
-      pitchingStats[homePitcherId] = pitchingStats[homePitcherId]!!.copy(
-        win = true,
-      )
-      pitchingStats[awayPitcherId] = pitchingStats[awayPitcherId]!!.copy(
-        lose = true,
-      )
+      pitchingStats[homePitcherId] = pitchingStats[homePitcherId]!!.copy(win = true)
+      pitchingStats[awayPitcherId] = pitchingStats[awayPitcherId]!!.copy(lose = true)
     } else {
-      pitchingStats[homePitcherId] = pitchingStats[homePitcherId]!!.copy(
-        lose = true,
-      )
-      pitchingStats[awayPitcherId] = pitchingStats[awayPitcherId]!!.copy(
-        win = true,
-      )
+      pitchingStats[homePitcherId] = pitchingStats[homePitcherId]!!.copy(lose = true)
+      pitchingStats[awayPitcherId] = pitchingStats[awayPitcherId]!!.copy(win = true)
     }
   }
 
-  fun score(batterId: Int, pitcherId: Int, half: Half, count: Int) {
+  fun score(batterId: Int, pitcherId: Int, half: HalfInning, count: Int) {
     if (batterId in battingStats) {
       battingStats[batterId] = battingStats[batterId]!!.copy(
         rbi = battingStats[batterId]!!.rbi + count,
@@ -131,12 +122,11 @@ data class TeamStat(
     }
 
     when (half) {
-      Half.INNING_TOP -> {
+      HalfInning.TOP -> {
         awayScore += count
         awayScores[awayScores.lastIndex] += count
       }
-
-      Half.INNING_BOTTOM -> {
+      HalfInning.BOTTOM -> {
         homeScore += count
         homeScores[homeScores.lastIndex] += count
       }
@@ -257,7 +247,7 @@ data class TeamStat(
     }
   }
 
-  fun homeRun(batterId: Int, pitcherId: Int, half: Half, inning: Int, count: Int) {
+  fun homeRun(batterId: Int, pitcherId: Int, half: HalfInning, inning: Int, count: Int) {
     if (batterId in battingStats) {
       battingStats[batterId] = battingStats[batterId]!!.copy(
         atBat = battingStats[batterId]!!.atBat + 1,
@@ -296,8 +286,8 @@ data class TeamStat(
     )
 
     when (half) {
-      Half.INNING_TOP -> awayHomeRuns.add(homeRun)
-      Half.INNING_BOTTOM -> homeHomeRuns.add(homeRun)
+      HalfInning.TOP -> awayHomeRuns.add(homeRun)
+      HalfInning.BOTTOM -> homeHomeRuns.add(homeRun)
     }
   }
 }

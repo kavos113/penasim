@@ -3,10 +3,10 @@ package com.example.penasim.features.game.ui.ingame
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.penasim.const.Constants
+import com.example.penasim.features.game.application.ExecuteGameByOne
 import com.example.penasim.features.schedule.domain.GameSchedule
 import com.example.penasim.features.command.domain.OrderType
 import com.example.penasim.features.player.domain.Position
-import com.example.penasim.game.ExecuteGameByOne
 import com.example.penasim.features.command.ui.GetDisplayFielder
 import com.example.penasim.features.schedule.usecase.GameScheduleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +22,8 @@ import javax.inject.Inject
 class InGameViewModel @Inject constructor(
   private val executeGameByOne: ExecuteGameByOne,
   private val gameScheduleUseCase: GameScheduleUseCase,
-  private val getDisplayFielder: GetDisplayFielder
+  private val getDisplayFielder: GetDisplayFielder,
+  private val inGameInfoAssembler: InGameInfoAssembler
 ) : ViewModel() {
   private val _uiState = MutableStateFlow(InGameInfo())
   val uiState: StateFlow<InGameInfo> = _uiState.asStateFlow()
@@ -74,27 +75,8 @@ class InGameViewModel @Inject constructor(
   // return true if finished
   fun next(): Boolean {
     val (flag, result) = executeGameByOne.next()
-    val homeScores = result.scores.filter { it.teamId == schedule.homeTeam.id }
-    val awayScores = result.scores.filter { it.teamId == schedule.awayTeam.id }
-
     _uiState.update { currentState ->
-      currentState.copy(
-        homeTeam = currentState.homeTeam.copy(
-          inningScores = homeScores,
-          activePlayerId = if (result.isHomeBatting) result.homeBatterState.playerId else result.homePitcherState.playerId,
-          activeNumber = if (result.isHomeBatting) result.homeBatterState.battingOrder else null
-        ),
-        awayTeam = currentState.awayTeam.copy(
-          inningScores = awayScores,
-          activePlayerId = if (result.isHomeBatting) result.awayPitcherState.playerId else result.awayBatterState.playerId,
-          activeNumber = if (result.isHomeBatting) null else result.awayBatterState.battingOrder
-        ),
-        outCount = result.outCount,
-        firstBase = result.baseState.firstBaseId?.let { currentState.getByPlayerId(it) },
-        secondBase = result.baseState.secondBaseId?.let { currentState.getByPlayerId(it) },
-        thirdBase = result.baseState.thirdBaseId?.let { currentState.getByPlayerId(it) },
-        lastResult = result.lastResult
-      )
+      inGameInfoAssembler.applySnapshot(currentState, result, schedule)
     }
 
     if (!flag) {
@@ -109,26 +91,8 @@ class InGameViewModel @Inject constructor(
   fun skip() {
     while (true) {
       val (flag, result) = executeGameByOne.next()
-      val homeScores = result.scores.filter { it.teamId == schedule.homeTeam.id }
-      val awayScores = result.scores.filter { it.teamId == schedule.awayTeam.id }
       _uiState.update { currentState ->
-        currentState.copy(
-          homeTeam = currentState.homeTeam.copy(
-            inningScores = homeScores,
-            activePlayerId = if (result.isHomeBatting) result.homeBatterState.playerId else result.homePitcherState.playerId,
-            activeNumber = if (result.isHomeBatting) result.homeBatterState.battingOrder else null
-          ),
-          awayTeam = currentState.awayTeam.copy(
-            inningScores = awayScores,
-            activePlayerId = if (result.isHomeBatting) result.awayPitcherState.playerId else result.awayBatterState.playerId,
-            activeNumber = if (result.isHomeBatting) null else result.awayBatterState.battingOrder
-          ),
-          outCount = result.outCount,
-          firstBase = result.baseState.firstBaseId?.let { currentState.getByPlayerId(it) },
-          secondBase = result.baseState.secondBaseId?.let { currentState.getByPlayerId(it) },
-          thirdBase = result.baseState.thirdBaseId?.let { currentState.getByPlayerId(it) },
-          lastResult = result.lastResult
-        )
+        inGameInfoAssembler.applySnapshot(currentState, result, schedule)
       }
 
       if (!flag) {

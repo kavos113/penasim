@@ -1,4 +1,4 @@
-package com.example.penasim.game
+package com.example.penasim.features.game.engine
 
 data class BaseState(
   var firstBaseId: Int? = null,
@@ -11,7 +11,6 @@ data class BaseState(
     thirdBaseId = null
   }
 
-  // return score count
   fun single(batter: Int): Int {
     var scoreCount = 0
     if (thirdBaseId != null) {
@@ -29,7 +28,6 @@ data class BaseState(
     return scoreCount
   }
 
-  // return score count
   fun double(batter: Int): Int {
     var scoreCount = 0
     if (thirdBaseId != null) {
@@ -48,7 +46,6 @@ data class BaseState(
     return scoreCount
   }
 
-  // return score count
   fun triple(batter: Int): Int {
     var scoreCount = 0
     if (thirdBaseId != null) {
@@ -67,7 +64,6 @@ data class BaseState(
     return scoreCount
   }
 
-  // return score count
   fun homeRun(): Int {
     var scoreCount = 1
     if (thirdBaseId != null) {

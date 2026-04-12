@@ -1,4 +1,4 @@
-package com.example.penasim.game
+package com.example.penasim.features.game.engine
 
 import com.example.penasim.features.command.domain.PitcherType
 import com.example.penasim.features.command.domain.TeamPlayers
@@ -11,7 +11,7 @@ data class PitcherState(
 
 data class BatterState(
   val playerId: Int,
-  val battingOrder: Int // 1〜9
+  val battingOrder: Int
 )
 
 data class TeamState(
@@ -25,16 +25,21 @@ data class TeamState(
     battingOrder = 1
   )
 ) {
-
   init {
-    val pitcherAppointment = players.pitcherAppointments.find { it.type == PitcherType.STARTER && it.number == 1 } ?: throw IllegalStateException("Starting pitcher not found")
-    val pitcherInfo = players.players.find { it.player.id == pitcherAppointment.playerId } ?: throw IllegalStateException("Pitcher info not found for playerId ${pitcherAppointment.playerId}")
+    val pitcherAppointment = players.pitcherAppointments.find {
+      it.type == PitcherType.STARTER && it.number == 1
+    } ?: throw IllegalStateException("Starting pitcher not found")
+    val pitcherInfo = players.players.find {
+      it.player.id == pitcherAppointment.playerId
+    } ?: throw IllegalStateException("Pitcher info not found for playerId ${pitcherAppointment.playerId}")
     pitcher = PitcherState(
       playerId = pitcherAppointment.playerId,
       stamina = pitcherInfo.player.stamina
     )
 
-    val batterAppointment = players.fielderAppointments.find { it.position.isStarting() && it.number == 1 } ?: throw IllegalStateException("Starting batter not found")
+    val batterAppointment = players.fielderAppointments.find {
+      it.position.isStarting() && it.number == 1
+    } ?: throw IllegalStateException("Starting batter not found")
     batter = BatterState(
       playerId = batterAppointment.playerId,
       battingOrder = 1
@@ -55,10 +60,8 @@ data class TeamState(
 
   fun decreasePitcherStamina() {
     val rate = (2..3).random()
-
     pitcher = pitcher.copy(
       stamina = pitcher.stamina - rate
     )
   }
 }
-

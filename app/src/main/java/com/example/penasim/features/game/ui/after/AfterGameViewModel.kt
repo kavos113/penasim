@@ -3,7 +3,7 @@ package com.example.penasim.features.game.ui.after
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.penasim.const.Constants
-import com.example.penasim.game.ExecuteGamesByDate
+import com.example.penasim.features.game.application.ExecuteGamesByDate
 import com.example.penasim.features.game.ui.common.toFielderResult
 import com.example.penasim.features.game.ui.common.toPitcherResult
 import com.example.penasim.features.schedule.ui.model.toGameUiInfo

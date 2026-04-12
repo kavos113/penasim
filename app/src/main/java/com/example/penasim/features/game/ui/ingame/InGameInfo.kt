@@ -1,10 +1,10 @@
 package com.example.penasim.features.game.ui.ingame
 
 import com.example.penasim.const.Constants
+import com.example.penasim.features.game.application.model.AtBatResultType
+import com.example.penasim.features.game.application.model.InGameAtBatResult
 import com.example.penasim.features.game.domain.InningScore
 import com.example.penasim.features.player.domain.Position
-import com.example.penasim.game.LastResult
-import com.example.penasim.game.Result
 import com.example.penasim.features.command.ui.model.DisplayFielder
 import com.example.penasim.core.designsystem.theme.outfielderColor
 import java.time.LocalDate
@@ -17,8 +17,8 @@ data class InGameInfo(
   val firstBase: DisplayFielder? = null,
   val secondBase: DisplayFielder? = null,
   val thirdBase: DisplayFielder? = null,
-  val lastResult: LastResult = LastResult(
-    result = Result.OUT,
+  val lastResult: InGameAtBatResult = InGameAtBatResult(
+    type = AtBatResultType.OUT,
     isHit = false,
     isScored = false
   )

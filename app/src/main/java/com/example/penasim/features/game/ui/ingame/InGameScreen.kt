@@ -28,9 +28,9 @@ import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.penasim.features.game.application.model.AtBatResultType
+import com.example.penasim.features.game.application.model.InGameAtBatResult
 import com.example.penasim.features.player.domain.Position
-import com.example.penasim.game.LastResult
-import com.example.penasim.game.Result
 import com.example.penasim.features.command.ui.model.DisplayFielder
 import com.example.penasim.core.designsystem.component.PressingButton
 import com.example.penasim.core.designsystem.component.InningScoresTable
@@ -134,7 +134,7 @@ private fun PlayerInfoContent(
   secondBase: DisplayFielder?,
   thirdBase: DisplayFielder?,
   outCount: Int,
-  lastResult: LastResult,
+  lastResult: InGameAtBatResult,
   modifier: Modifier = Modifier
 ) {
   Row(
@@ -177,7 +177,7 @@ private fun BaseInfo(
   secondBase: DisplayFielder?,
   thirdBase: DisplayFielder?,
   outCount: Int,
-  lastResult: LastResult,
+  lastResult: InGameAtBatResult,
   modifier: Modifier = Modifier
 ) {
   Box(
@@ -381,26 +381,26 @@ private fun FooterItems(
 
 @Composable
 private fun LastResultText(
-  lastResult: LastResult,
+  lastResult: InGameAtBatResult,
   modifier: Modifier = Modifier
 ) {
   if (lastResult.isScored) {
     Text(
-      text = lastResult.result.randomResult(),
+      text = lastResult.type.toPlayDescription(),
       modifier = modifier
         .background(color = scoreColor)
         .padding(4.dp)
     )
   } else if (lastResult.isHit) {
     Text(
-      text = lastResult.result.randomResult(),
+      text = lastResult.type.toPlayDescription(),
       modifier = modifier
         .background(color = hitColor)
         .padding(4.dp)
     )
   } else {
     Text(
-      text = lastResult.result.randomResult(),
+      text = lastResult.type.toPlayDescription(),
       modifier = modifier
         .padding(4.dp)
     )
@@ -453,24 +453,24 @@ private fun SubstituteList(
 private fun LastResultTextPreview() {
   Column {
     LastResultText(
-      lastResult = LastResult(
-        result = Result.HOMERUN,
+      lastResult = InGameAtBatResult(
+        type = AtBatResultType.HOMERUN,
         isHit = true,
         isScored = true
       ),
       modifier = Modifier.padding(8.dp)
     )
     LastResultText(
-      lastResult = LastResult(
-        result = Result.SINGLE_HIT,
+      lastResult = InGameAtBatResult(
+        type = AtBatResultType.SINGLE_HIT,
         isHit = true,
         isScored = false
       ),
       modifier = Modifier.padding(8.dp)
     )
     LastResultText(
-      lastResult = LastResult(
-        result = Result.OUT,
+      lastResult = InGameAtBatResult(
+        type = AtBatResultType.OUT,
         isHit = false,
         isScored = false
       ),
@@ -689,8 +689,8 @@ private fun BaseInfoPreview() {
       outfielderColor
     ),
     outCount = 1,
-    lastResult = LastResult(
-      result = Result.OUT,
+    lastResult = InGameAtBatResult(
+      type = AtBatResultType.OUT,
       isHit = true,
       isScored = false
     )
@@ -721,8 +721,8 @@ private fun PlayerInfoContentPreview() {
       outfielderColor
     ),
     outCount = 1,
-    lastResult = LastResult(
-      result = Result.SINGLE_HIT,
+    lastResult = InGameAtBatResult(
+      type = AtBatResultType.SINGLE_HIT,
       isHit = true,
       isScored = true
     )
@@ -779,8 +779,8 @@ private fun InGameContentPreview() {
         outfielderColor
       ),
       outCount = 1,
-      lastResult = LastResult(
-        result = Result.SINGLE_HIT,
+      lastResult = InGameAtBatResult(
+        type = AtBatResultType.SINGLE_HIT,
         isHit = true,
         isScored = true
       )
