@@ -1,8 +1,9 @@
 package com.example.penasim.usecase
 
-import com.example.penasim.domain.MainMember
-import com.example.penasim.domain.MemberType
-import com.example.penasim.domain.repository.MainMembersRepository
+import com.example.penasim.features.command.domain.MainMember
+import com.example.penasim.features.command.domain.MemberType
+import com.example.penasim.features.command.domain.repository.MainMembersRepository
+import com.example.penasim.features.command.usecase.MainMembersUseCase
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -218,4 +219,5 @@ class MainMembersUseCaseTest {
         verify(repo, never()).updateMainMembers(any())
     }
 }
+
 

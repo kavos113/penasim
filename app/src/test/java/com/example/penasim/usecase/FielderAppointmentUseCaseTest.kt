@@ -1,10 +1,11 @@
 package com.example.penasim.usecase
 
-import com.example.penasim.domain.FielderAppointment
-import com.example.penasim.domain.OrderType
-import com.example.penasim.domain.Position
-import com.example.penasim.domain.Team
-import com.example.penasim.domain.repository.FielderAppointmentRepository
+import com.example.penasim.features.command.domain.FielderAppointment
+import com.example.penasim.features.command.domain.OrderType
+import com.example.penasim.features.command.usecase.FielderAppointmentUseCase
+import com.example.penasim.features.player.domain.Position
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.command.domain.repository.FielderAppointmentRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -88,7 +89,7 @@ class FielderAppointmentUseCaseTest {
     fun insertMany_doesNotCallRepository_whenEmpty() = runTest {
         useCase.insertMany(emptyList())
 
-        verify(repo, never()).insertFielderAppointments(any())
+        verify(repo, never()).insertFielderAppointments(any<List<FielderAppointment>>())
     }
 
     @Test
@@ -118,7 +119,7 @@ class FielderAppointmentUseCaseTest {
     fun deleteMany_doesNotCallRepository_whenEmpty() = runTest {
         useCase.deleteMany(emptyList())
 
-        verify(repo, never()).deleteFielderAppointments(any())
+        verify(repo, never()).deleteFielderAppointments(any<List<FielderAppointment>>())
     }
 
     @Test
@@ -148,7 +149,7 @@ class FielderAppointmentUseCaseTest {
     fun updateMany_doesNotCallRepository_whenEmpty() = runTest {
         useCase.updateMany(emptyList())
 
-        verify(repo, never()).updateFielderAppointments(any())
+        verify(repo, never()).updateFielderAppointments(any<List<FielderAppointment>>())
     }
 
     @Test
@@ -231,7 +232,7 @@ class FielderAppointmentUseCaseTest {
 
         useCase.updateOnlyDiff(current)
 
-        verify(repo, never()).updateFielderAppointments(any())
+        verify(repo, never()).updateFielderAppointments(any<List<FielderAppointment>>())
     }
 
     @Test
@@ -249,3 +250,4 @@ class FielderAppointmentUseCaseTest {
         verify(repo).updateFielderAppointments(newApps)
     }
 }
+

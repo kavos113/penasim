@@ -1,5 +1,6 @@
 package com.example.penasim.game
 
+import com.example.penasim.features.game.engine.BaseState
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -101,3 +102,4 @@ class BaseStateTest {
         assertEquals(1, scored)
     }
 }
+

@@ -1,9 +1,10 @@
 package com.example.penasim.usecase
 
-import com.example.penasim.domain.PitcherAppointment
-import com.example.penasim.domain.PitcherType
-import com.example.penasim.domain.Team
-import com.example.penasim.domain.repository.PitcherAppointmentRepository
+import com.example.penasim.features.command.domain.PitcherAppointment
+import com.example.penasim.features.command.domain.PitcherType
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.command.domain.repository.PitcherAppointmentRepository
+import com.example.penasim.features.command.usecase.PitcherAppointmentUseCase
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -239,4 +240,5 @@ class PitcherAppointmentUseCaseTest {
         verify(repo).updatePitcherAppointments(newApps)
     }
 }
+
 

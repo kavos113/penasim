@@ -1,7 +1,8 @@
 package com.example.penasim.usecase
 
-import com.example.penasim.domain.PitchingStat
-import com.example.penasim.domain.repository.PitchingStatRepository
+import com.example.penasim.features.game.domain.PitchingStat
+import com.example.penasim.features.game.domain.repository.PitchingStatRepository
+import com.example.penasim.features.game.usecase.PitchingStatUseCase
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -78,4 +79,5 @@ class PitchingStatUseCaseTest {
         verify(repo).deleteByFixtureId(23)
     }
 }
+
 

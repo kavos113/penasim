@@ -1,14 +1,16 @@
 package com.example.penasim.ui.home
 
 import com.example.penasim.const.Constants
-import com.example.penasim.domain.GameFixture
-import com.example.penasim.domain.GameSchedule
-import com.example.penasim.domain.League
-import com.example.penasim.domain.Team
-import com.example.penasim.domain.TeamStanding
+import com.example.penasim.features.home.ui.home.HomeViewModel
+import com.example.penasim.features.schedule.domain.GameFixture
+import com.example.penasim.features.schedule.domain.GameSchedule
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.standing.domain.TeamStanding
 import com.example.penasim.testing.MainDispatcherRule
-import com.example.penasim.usecase.GameScheduleUseCase
-import com.example.penasim.usecase.RankingUseCase
+import com.example.penasim.features.schedule.usecase.GameScheduleUseCase
+import com.example.penasim.features.standing.usecase.RankingUseCase
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -48,10 +50,12 @@ class HomeViewModelTest {
         vm.setTeamId(teamA.id)
         vm.setCurrentDay(today)
         vm.update()
+        advanceUntilIdle()
 
         val state = vm.uiState.value
         assertEquals(1, state.rank) // teamA has 1 win
         assertTrue(state.isGameDay)
     }
 }
+
 

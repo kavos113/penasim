@@ -1,7 +1,8 @@
 package com.example.penasim.usecase
 
-import com.example.penasim.domain.HomeRun
-import com.example.penasim.domain.repository.HomeRunRepository
+import com.example.penasim.features.game.domain.HomeRun
+import com.example.penasim.features.game.domain.repository.HomeRunRepository
+import com.example.penasim.features.game.usecase.HomeRunUseCase
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -65,3 +66,4 @@ class HomeRunUseCaseTest {
         verify(repo).insertHomeRuns(items)
     }
 }
+

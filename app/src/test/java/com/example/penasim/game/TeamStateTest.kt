@@ -1,17 +1,18 @@
 package com.example.penasim.game
 
-import com.example.penasim.domain.FielderAppointment
-import com.example.penasim.domain.OrderType
-import com.example.penasim.domain.Player
-import com.example.penasim.domain.PlayerInfo
-import com.example.penasim.domain.PlayerPosition
-import com.example.penasim.domain.PitcherAppointment
-import com.example.penasim.domain.PitcherType
-import com.example.penasim.domain.Position
-import com.example.penasim.domain.Team
-import com.example.penasim.domain.TeamPlayers
-import com.example.penasim.domain.TotalBattingStats
-import com.example.penasim.domain.TotalPitchingStats
+import com.example.penasim.features.command.domain.FielderAppointment
+import com.example.penasim.features.command.domain.OrderType
+import com.example.penasim.features.game.engine.TeamState
+import com.example.penasim.features.player.domain.Player
+import com.example.penasim.features.player.domain.PlayerInfo
+import com.example.penasim.features.player.domain.PlayerPosition
+import com.example.penasim.features.command.domain.PitcherAppointment
+import com.example.penasim.features.command.domain.PitcherType
+import com.example.penasim.features.player.domain.Position
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.command.domain.TeamPlayers
+import com.example.penasim.features.player.domain.TotalBattingStats
+import com.example.penasim.features.player.domain.TotalPitchingStats
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -126,3 +127,4 @@ class TeamStateTest {
         assertTrue(after == before - 2 || after == before - 3, "stamina should decrease by 2 or 3")
     }
 }
+

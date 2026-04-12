@@ -1,17 +1,20 @@
 package com.example.penasim.ui.common
 
-import com.example.penasim.domain.FielderAppointment
-import com.example.penasim.domain.OrderType
-import com.example.penasim.domain.PitcherAppointment
-import com.example.penasim.domain.PitcherType
-import com.example.penasim.domain.Player
-import com.example.penasim.domain.PlayerInfo
-import com.example.penasim.domain.PlayerPosition
-import com.example.penasim.domain.Position
-import com.example.penasim.domain.Team
-import com.example.penasim.usecase.FielderAppointmentUseCase
-import com.example.penasim.usecase.PitcherAppointmentUseCase
-import com.example.penasim.usecase.PlayerInfoUseCase
+import com.example.penasim.features.command.domain.FielderAppointment
+import com.example.penasim.features.command.domain.OrderType
+import com.example.penasim.features.command.domain.PitcherAppointment
+import com.example.penasim.features.command.domain.PitcherType
+import com.example.penasim.features.command.usecase.DisplayFielderUseCase
+import com.example.penasim.features.command.usecase.FielderAppointmentUseCase
+import com.example.penasim.features.command.usecase.PitcherAppointmentUseCase
+import com.example.penasim.features.player.domain.Player
+import com.example.penasim.features.player.domain.PlayerInfo
+import com.example.penasim.features.player.domain.PlayerPosition
+import com.example.penasim.features.player.domain.Position
+import com.example.penasim.features.player.domain.TotalBattingStats
+import com.example.penasim.features.player.domain.TotalPitchingStats
+import com.example.penasim.features.player.usecase.PlayerInfoUseCase
+import com.example.penasim.features.team.domain.Team
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -25,7 +28,7 @@ class GetDisplayFielderTest {
   private val fielderAppointmentUseCase: FielderAppointmentUseCase = mock()
   private val pitcherAppointmentUseCase: PitcherAppointmentUseCase = mock()
 
-  private val target = GetDisplayFielder(
+  private val target = DisplayFielderUseCase(
     playerInfoUseCase = playerInfoUseCase,
     fielderAppointmentUseCase = fielderAppointmentUseCase,
     pitcherAppointmentUseCase = pitcherAppointmentUseCase,
@@ -70,7 +73,7 @@ class GetDisplayFielderTest {
     val appointments = listOf(
       FielderAppointment(teamId = team.id, playerId = 101, position = Position.CATCHER, number = 2, orderType = orderType),
       FielderAppointment(teamId = team.id, playerId = 100, position = Position.SHORTSTOP, number = 1, orderType = orderType),
-      FielderAppointment(teamId = team.id, playerId = 999, position = Position.BENCH, number = 99, orderType = orderType), // filtered out
+      FielderAppointment(teamId = team.id, playerId = 999, position = Position.BENCH, number = 99, orderType = orderType),
     )
 
     whenever(fielderAppointmentUseCase.getByTeam(team)).thenReturn(appointments)
@@ -141,7 +144,6 @@ class GetDisplayFielderTest {
 
     val actual = target.getMainMember(team, orderType)
 
-    // starting fielders (pitcher replaced) + bench pitchers (excluding SUB and excluding starter)
     assertEquals(
       listOf(201, starterId, relieverId, closerId),
       actual.map { it.id }
@@ -219,17 +221,8 @@ class GetDisplayFielderTest {
       player = player,
       positions = listOf(PlayerPosition(playerId = id, position = primaryPosition, defense = 50)),
       team = team,
-      battingStat = dummyTotalBattingStats(id),
-      pitchingStat = dummyTotalPitchingStats(id),
+      battingStat = TotalBattingStats(playerId = id),
+      pitchingStat = TotalPitchingStats(playerId = id),
     )
   }
-
-  // PlayerInfo は stats 必須なので、テスト用途のダミーを用意
-  private fun dummyTotalBattingStats(playerId: Int) = com.example.penasim.domain.TotalBattingStats(
-    playerId = playerId,
-  )
-
-  private fun dummyTotalPitchingStats(playerId: Int) = com.example.penasim.domain.TotalPitchingStats(
-    playerId = playerId,
-  )
 }

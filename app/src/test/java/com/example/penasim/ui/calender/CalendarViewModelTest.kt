@@ -1,12 +1,15 @@
 package com.example.penasim.ui.calender
 
 import com.example.penasim.const.Constants
-import com.example.penasim.domain.League
-import com.example.penasim.game.ExecuteGamesByDate
+import com.example.penasim.core.session.InMemorySelectedTeamStore
+import com.example.penasim.features.game.application.ExecuteGamesByDate
+import com.example.penasim.features.game.usecase.CurrentDayUseCase
+import com.example.penasim.features.game.usecase.GameInfoUseCase
+import com.example.penasim.features.schedule.ui.calender.CalendarViewModel
+import com.example.penasim.features.schedule.usecase.GameScheduleUseCase
+import com.example.penasim.features.standing.usecase.RankingUseCase
 import com.example.penasim.testing.MainDispatcherRule
-import com.example.penasim.usecase.GameInfoUseCase
-import com.example.penasim.usecase.GameScheduleUseCase
-import com.example.penasim.usecase.RankingUseCase
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -20,28 +23,36 @@ class CalendarViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
+    private val selectedTeamStore = InMemorySelectedTeamStore()
     private val gameScheduleUseCase: GameScheduleUseCase = mock()
     private val gameInfoUseCase: GameInfoUseCase = mock()
+    private val currentDayUseCase: CurrentDayUseCase = mock()
     private val rankingUseCase: RankingUseCase = mock()
     private val executeGamesByDate: ExecuteGamesByDate = mock()
 
     private suspend fun buildViewModel(): CalendarViewModel {
         whenever(gameScheduleUseCase.getAll()).thenReturn(emptyList())
         whenever(gameInfoUseCase.getAll()).thenReturn(emptyList())
+        whenever(currentDayUseCase.getCurrentDay()).thenReturn(Constants.START)
         whenever(rankingUseCase.getByLeague(any())).thenReturn(emptyList())
-        return CalendarViewModel(gameScheduleUseCase, gameInfoUseCase, rankingUseCase, executeGamesByDate)
+        return CalendarViewModel(
+            selectedTeamStore,
+            gameScheduleUseCase,
+            gameInfoUseCase,
+            currentDayUseCase,
+            rankingUseCase,
+            executeGamesByDate
+        )
     }
 
     @Test
     fun init_buildsEmptyGames_whenNoSchedulesOrResults() = runTest {
         val vm = buildViewModel()
+        advanceUntilIdle()
 
-        // currentDay should be START when there is no game info
         assertEquals(Constants.START, vm.uiState.value.currentDay)
-        // games map should contain START with empty list
         assertTrue(vm.uiState.value.games.containsKey(Constants.START))
         assertTrue(vm.uiState.value.games[Constants.START]?.isEmpty() == true)
-        // rankings should be empty when mock returns empty
         assertTrue(vm.uiState.value.rankings.isEmpty())
     }
 
@@ -49,9 +60,11 @@ class CalendarViewModelTest {
     fun nextGame_updatesGamesForCurrentDay_withEmptyRecentGames() = runTest {
         whenever(executeGamesByDate.execute(any())).thenReturn(emptyList())
         val vm = buildViewModel()
+        advanceUntilIdle()
 
         val day = vm.uiState.value.currentDay
         vm.nextGame()
+        advanceUntilIdle()
 
         assertTrue(vm.uiState.value.games.containsKey(day))
         assertTrue(vm.uiState.value.games[day]?.isEmpty() == true)

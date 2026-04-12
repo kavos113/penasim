@@ -1,7 +1,24 @@
 package com.example.penasim.usecase
 
-import com.example.penasim.domain.*
-import com.example.penasim.domain.repository.*
+import com.example.penasim.features.command.domain.FielderAppointment
+import com.example.penasim.features.command.domain.OrderType
+import com.example.penasim.features.command.domain.PitcherAppointment
+import com.example.penasim.features.command.domain.PitcherType
+import com.example.penasim.features.game.domain.BattingStat
+import com.example.penasim.features.game.domain.PitchingStat
+import com.example.penasim.features.player.domain.Player
+import com.example.penasim.features.player.domain.PlayerPosition
+import com.example.penasim.features.player.domain.Position
+import com.example.penasim.features.team.usecase.TeamUseCase
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.command.domain.repository.FielderAppointmentRepository
+import com.example.penasim.features.command.domain.repository.PitcherAppointmentRepository
+import com.example.penasim.features.game.domain.repository.BattingStatRepository
+import com.example.penasim.features.game.domain.repository.PitchingStatRepository
+import com.example.penasim.features.player.domain.repository.PlayerPositionRepository
+import com.example.penasim.features.player.domain.repository.PlayerRepository
+import com.example.penasim.features.team.domain.repository.TeamRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -132,4 +149,5 @@ class TeamUseCaseTest {
         assertFailsWith<IllegalArgumentException> { useCase.getTeamPlayers(1) }
     }
 }
+
 

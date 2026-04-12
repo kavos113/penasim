@@ -1,14 +1,33 @@
 package com.example.penasim.ui.command
 
-import com.example.penasim.domain.*
+import com.example.penasim.core.session.InMemorySelectedTeamStore
+import com.example.penasim.features.command.domain.FielderAppointment
+import com.example.penasim.features.command.domain.MainMember
+import com.example.penasim.features.command.domain.MemberType
+import com.example.penasim.features.command.domain.OrderType
+import com.example.penasim.features.command.domain.PitcherAppointment
+import com.example.penasim.features.command.domain.PitcherType
+import com.example.penasim.features.command.ui.command.CommandViewModel
+import com.example.penasim.features.player.domain.Player
+import com.example.penasim.features.player.domain.PlayerInfo
+import com.example.penasim.features.player.domain.PlayerPosition
+import com.example.penasim.features.player.domain.Position
+import com.example.penasim.features.player.domain.TotalBattingStats
+import com.example.penasim.features.player.domain.TotalPitchingStats
+import com.example.penasim.features.standing.domain.TeamStanding
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.features.team.domain.Team
 import com.example.penasim.testing.MainDispatcherRule
-import com.example.penasim.usecase.FielderAppointmentUseCase
-import com.example.penasim.usecase.MainMembersUseCase
-import com.example.penasim.usecase.PitcherAppointmentUseCase
-import com.example.penasim.usecase.PlayerInfoUseCase
-import com.example.penasim.usecase.TeamUseCase
+import com.example.penasim.features.command.usecase.FielderAppointmentUseCase
+import com.example.penasim.features.command.usecase.MainMembersUseCase
+import com.example.penasim.features.command.usecase.PitcherAppointmentUseCase
+import com.example.penasim.features.player.usecase.PlayerInfoUseCase
+import com.example.penasim.features.team.usecase.TeamUseCase
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -19,6 +38,7 @@ class CommandViewModelTest {
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
+    private val selectedTeamStore = InMemorySelectedTeamStore()
     private val teamUseCase: TeamUseCase = mock()
     private val playerInfoUseCase: PlayerInfoUseCase = mock()
     private val fielderAppointmentUseCase: FielderAppointmentUseCase = mock()
@@ -71,9 +91,17 @@ class CommandViewModelTest {
         whenever(pitcherAppointmentUseCase.getByTeam(any())).thenReturn(pitcherAppointments)
         whenever(mainMembersUseCase.getByTeamId(team.id)).thenReturn(mainMembers)
 
-        val vm = CommandViewModel(teamUseCase, playerInfoUseCase, fielderAppointmentUseCase, pitcherAppointmentUseCase, mainMembersUseCase)
+        val vm = CommandViewModel(
+            selectedTeamStore,
+            teamUseCase,
+            playerInfoUseCase,
+            fielderAppointmentUseCase,
+            pitcherAppointmentUseCase,
+            mainMembersUseCase
+        )
 
         vm.setTeamId(team.id)
+        advanceUntilIdle()
 
         val state = vm.uiState.value
         assertEquals(team, state.team)
@@ -114,32 +142,35 @@ class CommandViewModelTest {
         whenever(pitcherAppointmentUseCase.getByTeam(any())).thenReturn(pitcherAppointments)
         whenever(mainMembersUseCase.getByTeamId(team.id)).thenReturn(mainMembers)
 
-        val vm = CommandViewModel(teamUseCase, playerInfoUseCase, fielderAppointmentUseCase, pitcherAppointmentUseCase, mainMembersUseCase)
+        val vm = CommandViewModel(
+            selectedTeamStore,
+            teamUseCase,
+            playerInfoUseCase,
+            fielderAppointmentUseCase,
+            pitcherAppointmentUseCase,
+            mainMembersUseCase
+        )
         vm.setTeamId(team.id)
+        advanceUntilIdle()
 
-        // updateMainFielder: change player 2 from SUB to MAIN
         vm.updateMainFielder(2, MemberType.MAIN)
         val updatedMember = vm.uiState.value.mainMembers.find { it.playerId == 2 }
         assertEquals(MemberType.MAIN, updatedMember?.memberType)
 
-        // updateFielderAppointment: set player 2 from BENCH to OUTFIELDER number 3
         vm.updateFielderAppointment(2, Position.OUTFIELDER, 3, OrderType.NORMAL)
         val updatedApp = vm.uiState.value.fielderAppointments.find { it.playerId == 2 && it.orderType == OrderType.NORMAL }
         assertEquals(Position.OUTFIELDER, updatedApp?.position)
         assertEquals(3, updatedApp?.number)
 
-        // selectFielder: select player1 then player2 -> since one was BENCH, swap position & number
-        vm.selectFielder(1, OrderType.NORMAL) // select currentSelected = 1
-        vm.selectFielder(2, OrderType.NORMAL) // swap
+        vm.selectFielder(1, OrderType.NORMAL)
+        vm.selectFielder(2, OrderType.NORMAL)
         val app1 = vm.uiState.value.fielderAppointments.find { it.playerId == 1 && it.orderType == OrderType.NORMAL }
         val app2 = vm.uiState.value.fielderAppointments.find { it.playerId == 2 && it.orderType == OrderType.NORMAL }
-        // After swap, player1 should take player2's previous pos/num (OUTFIELDER,3) and player2 takes player1's previous
         assertEquals(Position.OUTFIELDER, app1?.position)
         assertEquals(3, app1?.number)
         assertEquals(Position.OUTFIELDER, app2?.position)
         assertEquals(1, app2?.number)
 
-        // selectPitcher toggle and swap numbers/types
         vm.selectPitcher(1)
         vm.selectPitcher(2)
         val p1 = vm.uiState.value.pitcherAppointments.find { it.playerId == 1 }
@@ -150,4 +181,3 @@ class CommandViewModelTest {
         assertEquals(1, p2?.number)
     }
 }
-

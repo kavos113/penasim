@@ -1,10 +1,11 @@
 package com.example.penasim.usecase
 
-import com.example.penasim.domain.GameFixture
-import com.example.penasim.domain.League
-import com.example.penasim.domain.Team
-import com.example.penasim.domain.repository.GameFixtureRepository
-import com.example.penasim.domain.repository.TeamRepository
+import com.example.penasim.features.schedule.domain.GameFixture
+import com.example.penasim.features.schedule.domain.GameSchedule
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.schedule.usecase.GameScheduleResolver
+import com.example.penasim.features.schedule.usecase.GameScheduleUseCase
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -17,165 +18,119 @@ class GameScheduleUseCaseTest {
 
     @Test
     fun getByFixtureId_returnsSchedule_whenDataExists() = runTest {
-        val fixtureRepo: GameFixtureRepository = mock()
-        val teamRepo: TeamRepository = mock()
+        val resolver: GameScheduleResolver = mock()
 
         val league = League.L1
         val home = Team(1, "H", league)
         val away = Team(2, "A", league)
         val fixture = GameFixture(10, LocalDate.now(), 1, 1, 2)
+        val schedule = GameSchedule(fixture, home, away)
 
-        whenever(fixtureRepo.getGameFixture(10)).thenReturn(fixture)
-        whenever(teamRepo.getTeam(1)).thenReturn(home)
-        whenever(teamRepo.getTeam(2)).thenReturn(away)
+        whenever(resolver.getByFixtureId(10)).thenReturn(schedule)
 
-        val useCase = GameScheduleUseCase(fixtureRepo, teamRepo)
-        val schedule = useCase.getByFixtureId(10)
-        assertEquals(fixture, schedule.fixture)
-        assertEquals(home, schedule.homeTeam)
-        assertEquals(away, schedule.awayTeam)
+        val useCase = GameScheduleUseCase(resolver)
+        val actual = useCase.getByFixtureId(10)
+        assertEquals(fixture, actual.fixture)
+        assertEquals(home, actual.homeTeam)
+        assertEquals(away, actual.awayTeam)
     }
 
     @Test
     fun getByFixtureId_throws_whenMissing() = runTest {
-        val league = League.L1
-        val home = Team(1, "H", league)
-        val away = Team(2, "A", league)
-        val fixture = GameFixture(10, LocalDate.now(), 1, 1, 2)
+        val resolver: GameScheduleResolver = mock()
+        whenever(resolver.getByFixtureId(10)).thenReturn(null)
 
-        // Missing fixture
         assertFailsWith<IllegalArgumentException> {
-            val fixtureRepo: GameFixtureRepository = mock()
-            val teamRepo: TeamRepository = mock()
-            whenever(fixtureRepo.getGameFixture(10)).thenReturn(null)
-            GameScheduleUseCase(fixtureRepo, teamRepo).getByFixtureId(10)
-        }
-        // Missing home team
-        assertFailsWith<IllegalArgumentException> {
-            val fixtureRepo: GameFixtureRepository = mock()
-            val teamRepo: TeamRepository = mock()
-            whenever(fixtureRepo.getGameFixture(10)).thenReturn(fixture)
-            whenever(teamRepo.getTeam(2)).thenReturn(away)
-            GameScheduleUseCase(fixtureRepo, teamRepo).getByFixtureId(10)
-        }
-        // Missing away team
-        assertFailsWith<IllegalArgumentException> {
-            val fixtureRepo: GameFixtureRepository = mock()
-            val teamRepo: TeamRepository = mock()
-            whenever(fixtureRepo.getGameFixture(10)).thenReturn(fixture)
-            whenever(teamRepo.getTeam(1)).thenReturn(home)
-            GameScheduleUseCase(fixtureRepo, teamRepo).getByFixtureId(10)
+            GameScheduleUseCase(resolver).getByFixtureId(10)
         }
     }
 
     @Test
     fun getByTeam_returnsSchedules_forTeam() = runTest {
-        val fixtureRepo: GameFixtureRepository = mock()
-        val teamRepo: TeamRepository = mock()
+        val resolver: GameScheduleResolver = mock()
 
         val league = League.L1
         val team = Team(1, "A", league)
         val opponent = Team(2, "B", league)
-        val fixtures = listOf(
-            GameFixture(10, LocalDate.now(), 1, 1, 2),
-            GameFixture(11, LocalDate.now(), 2, 2, 1)
+        val schedules = listOf(
+            GameSchedule(GameFixture(10, LocalDate.now(), 1, 1, 2), team, opponent),
+            GameSchedule(GameFixture(11, LocalDate.now(), 2, 2, 1), opponent, team)
         )
 
-        whenever(fixtureRepo.getGameFixturesByTeam(team)).thenReturn(fixtures)
-        whenever(teamRepo.getTeam(1)).thenReturn(team)
-        whenever(teamRepo.getTeam(2)).thenReturn(opponent)
+        whenever(resolver.getByTeam(team)).thenReturn(schedules)
 
-        val useCase = GameScheduleUseCase(fixtureRepo, teamRepo)
-        val schedules = useCase.getByTeam(team)
-        assertEquals(2, schedules.size)
-        assertEquals(10, schedules[0].fixture.id)
-        assertEquals(11, schedules[1].fixture.id)
+        val useCase = GameScheduleUseCase(resolver)
+        val actual = useCase.getByTeam(team)
+        assertEquals(2, actual.size)
+        assertEquals(10, actual[0].fixture.id)
+        assertEquals(11, actual[1].fixture.id)
     }
 
     @Test
-    fun getByTeam_throws_whenTeamMissing() = runTest {
-        val fixtureRepo: GameFixtureRepository = mock()
-        val teamRepo: TeamRepository = mock()
-
+    fun getByTeam_returnsEmpty_whenResolverReturnsEmpty() = runTest {
+        val resolver: GameScheduleResolver = mock()
         val team = Team(1, "A", League.L1)
-        val fixtures = listOf(GameFixture(10, LocalDate.now(), 1, 1, 2))
+        whenever(resolver.getByTeam(team)).thenReturn(emptyList())
 
-        whenever(fixtureRepo.getGameFixturesByTeam(team)).thenReturn(fixtures)
-        // Do not mock getTeam — Mockito returns null by default, so teams list is empty
-
-        val useCase = GameScheduleUseCase(fixtureRepo, teamRepo)
-        assertFailsWith<IllegalArgumentException> { useCase.getByTeam(team) }
+        val actual = GameScheduleUseCase(resolver).getByTeam(team)
+        assertEquals(emptyList<GameSchedule>(), actual)
     }
 
     @Test
     fun getByDate_returnsSchedules_forDate() = runTest {
-        val fixtureRepo: GameFixtureRepository = mock()
-        val teamRepo: TeamRepository = mock()
+        val resolver: GameScheduleResolver = mock()
 
         val league = League.L1
         val teamA = Team(1, "A", league)
         val teamB = Team(2, "B", league)
         val date = LocalDate.of(2025, 7, 1)
-        val fixtures = listOf(GameFixture(10, date, 1, 1, 2))
+        val schedules = listOf(GameSchedule(GameFixture(10, date, 1, 1, 2), teamA, teamB))
 
-        whenever(fixtureRepo.getGameFixturesByDate(date)).thenReturn(fixtures)
-        whenever(teamRepo.getTeam(1)).thenReturn(teamA)
-        whenever(teamRepo.getTeam(2)).thenReturn(teamB)
+        whenever(resolver.getByDate(date)).thenReturn(schedules)
 
-        val useCase = GameScheduleUseCase(fixtureRepo, teamRepo)
-        val schedules = useCase.getByDate(date)
-        assertEquals(1, schedules.size)
-        assertEquals(10, schedules[0].fixture.id)
+        val useCase = GameScheduleUseCase(resolver)
+        val actual = useCase.getByDate(date)
+        assertEquals(1, actual.size)
+        assertEquals(10, actual[0].fixture.id)
     }
 
     @Test
-    fun getByDate_throws_whenTeamMissing() = runTest {
-        val fixtureRepo: GameFixtureRepository = mock()
-        val teamRepo: TeamRepository = mock()
-
+    fun getByDate_returnsEmpty_whenResolverReturnsEmpty() = runTest {
+        val resolver: GameScheduleResolver = mock()
         val date = LocalDate.now()
-        val fixtures = listOf(GameFixture(10, date, 1, 1, 2))
+        whenever(resolver.getByDate(date)).thenReturn(emptyList())
 
-        whenever(fixtureRepo.getGameFixturesByDate(date)).thenReturn(fixtures)
-
-        val useCase = GameScheduleUseCase(fixtureRepo, teamRepo)
-        assertFailsWith<IllegalArgumentException> { useCase.getByDate(date) }
+        val actual = GameScheduleUseCase(resolver).getByDate(date)
+        assertEquals(emptyList<GameSchedule>(), actual)
     }
 
     @Test
     fun getAll_returnsSchedules_forAllFixtures() = runTest {
-        val fixtureRepo: GameFixtureRepository = mock()
-        val teamRepo: TeamRepository = mock()
+        val resolver: GameScheduleResolver = mock()
 
         val league = League.L1
         val teamA = Team(1, "A", league)
         val teamB = Team(2, "B", league)
-        val fixtures = listOf(
-            GameFixture(10, LocalDate.now(), 1, 1, 2),
-            GameFixture(11, LocalDate.now().plusDays(1), 2, 2, 1)
+        val schedules = listOf(
+            GameSchedule(GameFixture(10, LocalDate.now(), 1, 1, 2), teamA, teamB),
+            GameSchedule(GameFixture(11, LocalDate.now().plusDays(1), 2, 2, 1), teamB, teamA)
         )
 
-        whenever(fixtureRepo.getAllGameFixtures()).thenReturn(fixtures)
-        whenever(teamRepo.getTeam(1)).thenReturn(teamA)
-        whenever(teamRepo.getTeam(2)).thenReturn(teamB)
+        whenever(resolver.getAll()).thenReturn(schedules)
 
-        val useCase = GameScheduleUseCase(fixtureRepo, teamRepo)
-        val schedules = useCase.getAll()
-        assertEquals(2, schedules.size)
-        assertEquals(1, schedules.first().homeTeam.id)
-        assertEquals(2, schedules.first().awayTeam.id)
+        val useCase = GameScheduleUseCase(resolver)
+        val actual = useCase.getAll()
+        assertEquals(2, actual.size)
+        assertEquals(1, actual.first().homeTeam.id)
+        assertEquals(2, actual.first().awayTeam.id)
     }
 
     @Test
-    fun getAll_throws_whenTeamMissing() = runTest {
-        val fixtureRepo: GameFixtureRepository = mock()
-        val teamRepo: TeamRepository = mock()
+    fun getAll_returnsEmpty_whenResolverReturnsEmpty() = runTest {
+        val resolver: GameScheduleResolver = mock()
+        whenever(resolver.getAll()).thenReturn(emptyList())
 
-        val fixtures = listOf(GameFixture(10, LocalDate.now(), 1, 1, 2))
-
-        whenever(fixtureRepo.getAllGameFixtures()).thenReturn(fixtures)
-
-        val useCase = GameScheduleUseCase(fixtureRepo, teamRepo)
-        assertFailsWith<IllegalArgumentException> { useCase.getAll() }
+        val actual = GameScheduleUseCase(resolver).getAll()
+        assertEquals(emptyList<GameSchedule>(), actual)
     }
 }

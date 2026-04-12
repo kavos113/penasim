@@ -1,9 +1,14 @@
 package com.example.penasim.usecase
 
-import com.example.penasim.domain.*
-import com.example.penasim.domain.repository.GameFixtureRepository
-import com.example.penasim.domain.repository.GameResultRepository
-import com.example.penasim.domain.repository.TeamRepository
+import com.example.penasim.features.schedule.domain.GameFixture
+import com.example.penasim.features.game.domain.GameResult
+import com.example.penasim.features.standing.domain.TeamStanding
+import com.example.penasim.features.standing.usecase.RankingUseCase
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.features.team.domain.Team
+import com.example.penasim.features.schedule.domain.repository.GameFixtureRepository
+import com.example.penasim.features.game.domain.repository.GameResultRepository
+import com.example.penasim.features.team.domain.repository.TeamRepository
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test

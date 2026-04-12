@@ -1,7 +1,8 @@
 package com.example.penasim.usecase
 
-import com.example.penasim.domain.InningScore
-import com.example.penasim.domain.repository.InningScoreRepository
+import com.example.penasim.features.game.domain.InningScore
+import com.example.penasim.features.game.domain.repository.InningScoreRepository
+import com.example.penasim.features.game.usecase.InningScoreUseCase
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -68,4 +69,5 @@ class InningScoreUseCaseTest {
         verify(repo).insertAll(listOf(item))
     }
 }
+
 

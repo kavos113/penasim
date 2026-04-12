@@ -1,13 +1,11 @@
 package com.example.penasim.ui.navigation
 
 import com.example.penasim.const.Constants
-import com.example.penasim.domain.GameFixture
-import com.example.penasim.domain.GameInfo
-import com.example.penasim.domain.GameResult
-import com.example.penasim.domain.League
-import com.example.penasim.domain.Team
+import com.example.penasim.core.navigation.GlobalViewModel
+import com.example.penasim.core.session.InMemorySelectedTeamStore
+import com.example.penasim.features.game.usecase.CurrentDayUseCase
 import com.example.penasim.testing.MainDispatcherRule
-import com.example.penasim.usecase.GameInfoUseCase
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -21,41 +19,31 @@ class GlobalViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @Test
-    fun init_setsCurrentDay_fromMaxFixtureDatePlusOne() = runTest {
-        val home = Team(1, "Home", League.L1)
-        val away = Team(2, "Away", League.L1)
-        val d1 = LocalDate.of(2025, 7, 1)
-        val d2 = LocalDate.of(2025, 7, 5)
-        val fixture1 = GameFixture(10, d1, 1, home.id, away.id)
-        val fixture2 = GameFixture(11, d2, 1, home.id, away.id)
+    fun init_setsCurrentDay_fromUseCase_andSelectedTeamStore() = runTest {
+        val currentDayUseCase: CurrentDayUseCase = mock()
+        val selectedTeamStore = InMemorySelectedTeamStore().also { it.setTeamId(3) }
+        val expectedDay = LocalDate.of(2025, 7, 6)
+        whenever(currentDayUseCase.getCurrentDay()).thenReturn(expectedDay)
 
-        val gameInfoUseCase: GameInfoUseCase = mock()
-        whenever(gameInfoUseCase.getAll()).thenReturn(
-            listOf(
-                GameInfo(fixture = fixture1, homeTeam = home, awayTeam = away, result = GameResult(10, 1, 0)),
-                GameInfo(fixture = fixture2, homeTeam = home, awayTeam = away, result = GameResult(11, 2, 3))
-            )
-        )
+        val vm = GlobalViewModel(currentDayUseCase, selectedTeamStore)
+        advanceUntilIdle()
 
-        val vm = GlobalViewModel(gameInfoUseCase)
-
-        val expected = d2.plusDays(1)
-        assertEquals(expected, vm.state.value.currentDay)
+        assertEquals(expectedDay, vm.state.value.currentDay)
+        assertEquals(3, vm.state.value.teamId)
     }
 
     @Test
     fun nextDay_incrementsCurrentDay() = runTest {
-        val gameInfoUseCase: GameInfoUseCase = mock()
-        whenever(gameInfoUseCase.getAll()).thenReturn(emptyList())
+        val currentDayUseCase: CurrentDayUseCase = mock()
+        val selectedTeamStore = InMemorySelectedTeamStore()
+        whenever(currentDayUseCase.getCurrentDay()).thenReturn(Constants.START)
 
-        val vm = GlobalViewModel(gameInfoUseCase)
+        val vm = GlobalViewModel(currentDayUseCase, selectedTeamStore)
+        advanceUntilIdle()
 
         val initial = vm.state.value.currentDay
-        assertEquals(Constants.START, initial)
-
         vm.nextDay()
 
         assertEquals(initial.plusDays(1), vm.state.value.currentDay)
     }
 }
-

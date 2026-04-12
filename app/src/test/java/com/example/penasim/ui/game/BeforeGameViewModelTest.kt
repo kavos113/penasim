@@ -2,18 +2,21 @@ package com.example.penasim.ui.game
 
 import androidx.compose.ui.graphics.Color
 import com.example.penasim.const.Constants
-import com.example.penasim.domain.GameFixture
-import com.example.penasim.domain.GameSchedule
-import com.example.penasim.domain.League
-import com.example.penasim.domain.OrderType
-import com.example.penasim.domain.Position
-import com.example.penasim.domain.Team
-import com.example.penasim.domain.TeamStanding
+import com.example.penasim.core.session.InMemorySelectedTeamStore
+import com.example.penasim.core.ui.model.DisplayFielder
+import com.example.penasim.features.command.domain.OrderType
+import com.example.penasim.features.command.usecase.DisplayFielderUseCase
+import com.example.penasim.features.game.ui.before.BeforeGameViewModel
+import com.example.penasim.features.schedule.domain.GameFixture
+import com.example.penasim.features.schedule.domain.GameSchedule
+import com.example.penasim.features.schedule.usecase.GameScheduleUseCase
+import com.example.penasim.features.player.domain.Position
+import com.example.penasim.features.standing.domain.TeamStanding
+import com.example.penasim.features.standing.usecase.RankingUseCase
+import com.example.penasim.features.team.domain.League
+import com.example.penasim.features.team.domain.Team
 import com.example.penasim.testing.MainDispatcherRule
-import com.example.penasim.ui.common.DisplayFielder
-import com.example.penasim.ui.common.GetDisplayFielder
-import com.example.penasim.usecase.GameScheduleUseCase
-import com.example.penasim.usecase.RankingUseCase
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -31,12 +34,13 @@ class BeforeGameViewModelTest {
 
     private val rankingUseCase: RankingUseCase = mock()
     private val gameScheduleUseCase: GameScheduleUseCase = mock()
-    private val getDisplayFielder: GetDisplayFielder = mock()
+    private val displayFielderUseCase: DisplayFielderUseCase = mock()
+    private val selectedTeamStore = InMemorySelectedTeamStore()
 
     private suspend fun buildEmptyViewModel(): BeforeGameViewModel {
         whenever(rankingUseCase.getAll()).thenReturn(emptyList())
         whenever(gameScheduleUseCase.getByDate(any())).thenReturn(emptyList())
-        return BeforeGameViewModel(rankingUseCase, gameScheduleUseCase, getDisplayFielder)
+        return BeforeGameViewModel(selectedTeamStore, rankingUseCase, gameScheduleUseCase, displayFielderUseCase)
     }
 
     private fun mkDisplayFielder(id: Int, name: String, position: Position, number: Int) =
@@ -45,8 +49,8 @@ class BeforeGameViewModelTest {
     @Test
     fun setDate_updatesDateInState() = runTest {
         val vm = buildEmptyViewModel()
-
         val newDate = LocalDate.of(2025, 5, 1)
+
         vm.setDate(newDate)
 
         assertEquals(newDate, vm.uiState.value.date)
@@ -55,14 +59,15 @@ class BeforeGameViewModelTest {
     @Test
     fun init_defaultDateIsConstantsStart() = runTest {
         val vm = buildEmptyViewModel()
+        advanceUntilIdle()
         assertEquals(Constants.START, vm.uiState.value.date)
     }
 
     @Test
     fun init_withNoSchedulesForDate_keepsDefaultState() = runTest {
         val vm = buildEmptyViewModel()
+        advanceUntilIdle()
 
-        // No schedule found → init returns early, keeping defaults
         assertTrue(vm.uiState.value.homeStartingPlayers.isEmpty())
         assertTrue(vm.uiState.value.awayStartingPlayers.isEmpty())
         assertEquals(0, vm.uiState.value.homeTeam.rank)
@@ -79,23 +84,22 @@ class BeforeGameViewModelTest {
         whenever(rankingUseCase.getAll()).thenReturn(emptyList())
         whenever(gameScheduleUseCase.getByDate(Constants.START)).thenReturn(listOf(schedule))
 
-        val vm = BeforeGameViewModel(rankingUseCase, gameScheduleUseCase, getDisplayFielder)
+        val vm = BeforeGameViewModel(selectedTeamStore, rankingUseCase, gameScheduleUseCase, displayFielderUseCase)
+        advanceUntilIdle()
 
-        // Schedule exists but neither team matches Constants.TEAM_ID (0)
         assertTrue(vm.uiState.value.homeStartingPlayers.isEmpty())
         assertTrue(vm.uiState.value.awayStartingPlayers.isEmpty())
     }
 
     @Test
     fun init_withMatchingSchedule_loadsRankingsAndStartingPlayers() = runTest {
-        val homeTeam = Team(Constants.TEAM_ID, "Home", League.L1)
+        val homeTeam = Team(0, "Home", League.L1)
         val awayTeam = Team(1, "Away", League.L1)
         val fixture = GameFixture(1, Constants.START, 0, homeTeam.id, awayTeam.id)
         val schedule = GameSchedule(fixture, homeTeam, awayTeam)
 
         val homeRanking = TeamStanding(homeTeam, rank = 1, wins = 0, losses = 0)
         val awayRanking = TeamStanding(awayTeam, rank = 2, wins = 0, losses = 0)
-
         val homeStarting = listOf(
             mkDisplayFielder(10, "HP1", Position.OUTFIELDER, 1),
             mkDisplayFielder(11, "HP2", Position.CATCHER, 2),
@@ -109,10 +113,11 @@ class BeforeGameViewModelTest {
 
         whenever(rankingUseCase.getAll()).thenReturn(listOf(homeRanking, awayRanking))
         whenever(gameScheduleUseCase.getByDate(Constants.START)).thenReturn(listOf(schedule))
-        whenever(getDisplayFielder.getStartingMember(eq(homeTeam), eq(OrderType.NORMAL))).thenReturn(homeStarting)
-        whenever(getDisplayFielder.getStartingMember(eq(awayTeam), eq(OrderType.NORMAL))).thenReturn(awayStarting)
+        whenever(displayFielderUseCase.getStartingMember(eq(homeTeam), eq(OrderType.NORMAL))).thenReturn(homeStarting)
+        whenever(displayFielderUseCase.getStartingMember(eq(awayTeam), eq(OrderType.NORMAL))).thenReturn(awayStarting)
 
-        val vm = BeforeGameViewModel(rankingUseCase, gameScheduleUseCase, getDisplayFielder)
+        val vm = BeforeGameViewModel(selectedTeamStore, rankingUseCase, gameScheduleUseCase, displayFielderUseCase)
+        advanceUntilIdle()
 
         val state = vm.uiState.value
         assertEquals(homeTeam.id, state.homeTeam.team.id)
@@ -123,7 +128,7 @@ class BeforeGameViewModelTest {
 
     @Test
     fun init_withMatchingSchedule_rankingsReflectWinsLosses() = runTest {
-        val homeTeam = Team(Constants.TEAM_ID, "Home", League.L1)
+        val homeTeam = Team(0, "Home", League.L1)
         val awayTeam = Team(1, "Away", League.L1)
         val fixture = GameFixture(1, Constants.START, 0, homeTeam.id, awayTeam.id)
         val schedule = GameSchedule(fixture, homeTeam, awayTeam)
@@ -133,9 +138,10 @@ class BeforeGameViewModelTest {
 
         whenever(rankingUseCase.getAll()).thenReturn(listOf(homeRanking, awayRanking))
         whenever(gameScheduleUseCase.getByDate(Constants.START)).thenReturn(listOf(schedule))
-        whenever(getDisplayFielder.getStartingMember(any(), any())).thenReturn(emptyList())
+        whenever(displayFielderUseCase.getStartingMember(any(), any())).thenReturn(emptyList())
 
-        val vm = BeforeGameViewModel(rankingUseCase, gameScheduleUseCase, getDisplayFielder)
+        val vm = BeforeGameViewModel(selectedTeamStore, rankingUseCase, gameScheduleUseCase, displayFielderUseCase)
+        advanceUntilIdle()
 
         val state = vm.uiState.value
         assertEquals(1, state.homeTeam.rank)
@@ -148,8 +154,9 @@ class BeforeGameViewModelTest {
 
     @Test
     fun init_awayTeamMatchesTeamId_loadsCorrectly() = runTest {
+        selectedTeamStore.setTeamId(2)
         val homeTeam = Team(1, "Home", League.L1)
-        val awayTeam = Team(Constants.TEAM_ID, "Away", League.L1)
+        val awayTeam = Team(2, "Away", League.L1)
         val fixture = GameFixture(1, Constants.START, 0, homeTeam.id, awayTeam.id)
         val schedule = GameSchedule(fixture, homeTeam, awayTeam)
 
@@ -158,9 +165,10 @@ class BeforeGameViewModelTest {
 
         whenever(rankingUseCase.getAll()).thenReturn(listOf(homeRanking, awayRanking))
         whenever(gameScheduleUseCase.getByDate(Constants.START)).thenReturn(listOf(schedule))
-        whenever(getDisplayFielder.getStartingMember(any(), any())).thenReturn(emptyList())
+        whenever(displayFielderUseCase.getStartingMember(any(), any())).thenReturn(emptyList())
 
-        val vm = BeforeGameViewModel(rankingUseCase, gameScheduleUseCase, getDisplayFielder)
+        val vm = BeforeGameViewModel(selectedTeamStore, rankingUseCase, gameScheduleUseCase, displayFielderUseCase)
+        advanceUntilIdle()
 
         val state = vm.uiState.value
         assertEquals(homeTeam.id, state.homeTeam.team.id)

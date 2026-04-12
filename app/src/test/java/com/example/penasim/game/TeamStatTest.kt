@@ -1,6 +1,8 @@
 package com.example.penasim.game
 
-import com.example.penasim.domain.HomeRun
+import com.example.penasim.features.game.domain.HomeRun
+import com.example.penasim.features.game.engine.HalfInning
+import com.example.penasim.features.game.engine.TeamStat
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.junit.Test
@@ -14,11 +16,11 @@ class TeamStatTest {
         assertEquals(listOf(0), ts.awayScores)
 
         // 表のイニング開始（2回表として0を追加）
-        ts.newInning(Half.INNING_TOP)
+        ts.newInning(HalfInning.TOP)
         assertEquals(listOf(0, 0), ts.awayScores)
 
         // 表で2点
-        ts.score(batterId = 10, pitcherId = 20, half = Half.INNING_TOP, count = 2)
+        ts.score(batterId = 10, pitcherId = 20, half = HalfInning.TOP, count = 2)
         assertEquals(2, ts.awayScore)
         assertEquals(listOf(0, 2), ts.awayScores)
 
@@ -35,11 +37,11 @@ class TeamStatTest {
         val ts = TeamStat(fixtureId = 2)
 
         // 裏のイニング開始（1回裏）
-        ts.newInning(Half.INNING_BOTTOM)
+        ts.newInning(HalfInning.BOTTOM)
         assertEquals(listOf(0), ts.homeScores)
 
         // 裏で1点
-        ts.score(batterId = 11, pitcherId = 21, half = Half.INNING_BOTTOM, count = 1)
+        ts.score(batterId = 11, pitcherId = 21, half = HalfInning.BOTTOM, count = 1)
         assertEquals(1, ts.homeScore)
         assertEquals(listOf(1), ts.homeScores)
     }
@@ -82,7 +84,7 @@ class TeamStatTest {
 
         // 1回表を開始（away side は初期 [0] があり、追加で 0 を入れる想定のケースもあるが、記録はどちらでも可）
         // ここでは本塁打の記録先のみ検証
-        ts.homeRun(batterId = 7, pitcherId = 8, half = Half.INNING_TOP, inning = 1, count = 1)
+        ts.homeRun(batterId = 7, pitcherId = 8, half = HalfInning.TOP, inning = 1, count = 1)
         assertEquals(1, ts.awayHomeRuns.size)
         assertEquals(0, ts.homeHomeRuns.size)
 
@@ -106,10 +108,10 @@ class TeamStatTest {
     fun inningScores_returnsHomeAndAwayCombined() {
         val ts = TeamStat(fixtureId = 6)
         // 1回表: away に1点
-        ts.score(batterId = 1, pitcherId = 2, half = Half.INNING_TOP, count = 1)
+        ts.score(batterId = 1, pitcherId = 2, half = HalfInning.TOP, count = 1)
         // 1回裏: home スコア用にイニングを作って1点
-        ts.newInning(Half.INNING_BOTTOM)
-        ts.score(batterId = 3, pitcherId = 4, half = Half.INNING_BOTTOM, count = 1)
+        ts.newInning(HalfInning.BOTTOM)
+        ts.score(batterId = 3, pitcherId = 4, half = HalfInning.BOTTOM, count = 1)
 
         val scores = ts.inningScores(homeTeamId = 100, awayTeamId = 200)
 
@@ -129,10 +131,10 @@ class TeamStatTest {
 
         // 試合経過を作る
         // 1回表: away 1点
-        ts.score(batterId = 10, pitcherId = 2000, half = Half.INNING_TOP, count = 1)
+        ts.score(batterId = 10, pitcherId = 2000, half = HalfInning.TOP, count = 1)
         // 1回裏: home 用にイニングを追加して2点（home がリード）
-        ts.newInning(Half.INNING_BOTTOM)
-        ts.score(batterId = 11, pitcherId = 1000, half = Half.INNING_BOTTOM, count = 2)
+        ts.newInning(HalfInning.BOTTOM)
+        ts.score(batterId = 11, pitcherId = 1000, half = HalfInning.BOTTOM, count = 2)
 
         // finalize で勝敗フラグを付けるため、両投手のエントリを作成
         ts.out(batterId = 99, pitcherId = 1000) // home 投手
@@ -151,3 +153,4 @@ class TeamStatTest {
         assertTrue(ts.pitchingStats[2000]!!.lose)
     }
 }
+
