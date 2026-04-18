@@ -64,10 +64,45 @@ fun sampleFielderResults(): List<FielderResult> = listOf(
   )
 )
 
-fun sampleRankings(): List<RankingUiInfo> = listOf(
-  RankingUiInfo(league = League.L1, rank = 1, teamIcon = R.drawable.team1_icon, gameBack = 0.0, isMyTeam = true),
-  RankingUiInfo(league = League.L1, rank = 2, teamIcon = R.drawable.team2_icon, gameBack = 1.5, isMyTeam = false),
-)
+fun sampleRankings(): List<RankingUiInfo> =
+  buildList {
+    repeat(6) { index ->
+      add(
+        RankingUiInfo(
+          league = League.L1,
+          rank = index + 1,
+          teamIcon = when (index) {
+            0 -> R.drawable.team1_icon
+            1 -> R.drawable.team2_icon
+            2 -> R.drawable.team3_icon
+            3 -> R.drawable.team4_icon
+            4 -> R.drawable.team5_icon
+            else -> R.drawable.team6_icon
+          },
+          gameBack = index * 1.0,
+          isMyTeam = index == 0
+        )
+      )
+    }
+    repeat(6) { index ->
+      add(
+        RankingUiInfo(
+          league = League.L2,
+          rank = index + 1,
+          teamIcon = when (index) {
+            0 -> R.drawable.team7_icon
+            1 -> R.drawable.team8_icon
+            2 -> R.drawable.team9_icon
+            3 -> R.drawable.team10_icon
+            4 -> R.drawable.team11_icon
+            else -> R.drawable.team12_icon
+          },
+          gameBack = index * 1.0,
+          isMyTeam = false
+        )
+      )
+    }
+  }
 
 fun sampleGames(date: LocalDate = LocalDate.of(2025, 3, 28)): Map<LocalDate, List<GameUiInfo>> = mapOf(
   date to listOf(
