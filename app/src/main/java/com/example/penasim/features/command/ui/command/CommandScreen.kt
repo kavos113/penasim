@@ -14,10 +14,12 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.penasim.R
 import com.example.penasim.core.navigation.NavigationDestination
+import com.example.penasim.core.ui.PenasimTestTags
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
@@ -31,20 +33,45 @@ fun CommandScreen(
   commandViewModel: CommandViewModel = hiltViewModel(),
   teamId: Int
 ) {
-  val tabs = listOf(R.string.fielder, R.string.pitcher)
-
-  val selectedTabIndex = rememberPagerState { tabs.size }
-  val tabScope = rememberCoroutineScope()
-
   LaunchedEffect(teamId) {
     commandViewModel.setTeamId(teamId)
   }
+
+  CommandContent(
+    modifier = modifier,
+    onDispose = { commandViewModel.save() },
+    fielderContent = {
+      FielderScreen(
+        modifier = Modifier.fillMaxSize(),
+        commandViewModel = commandViewModel
+      )
+    },
+    pitcherContent = {
+      PitcherScreen(
+        modifier = Modifier.fillMaxSize(),
+        commandViewModel = commandViewModel
+      )
+    }
+  )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun CommandContent(
+  modifier: Modifier = Modifier,
+  onDispose: () -> Unit = {},
+  fielderContent: @Composable () -> Unit,
+  pitcherContent: @Composable () -> Unit,
+) {
+  val tabs = listOf(R.string.fielder, R.string.pitcher)
+  val selectedTabIndex = rememberPagerState { tabs.size }
+  val tabScope = rememberCoroutineScope()
 
   Scaffold(
     topBar = {
       PrimaryTabRow(
         selectedTabIndex = selectedTabIndex.currentPage,
-        modifier = modifier,
+        modifier = modifier.testTag(PenasimTestTags.COMMAND_SCREEN),
       ) {
         tabs.forEachIndexed { index, titleResId ->
           Tab(
@@ -54,6 +81,13 @@ fun CommandScreen(
                 selectedTabIndex.animateScrollToPage(index)
               }
             },
+            modifier = Modifier.testTag(
+              if (index == 0) {
+                PenasimTestTags.COMMAND_FIELDER_TAB
+              } else {
+                PenasimTestTags.COMMAND_PITCHER_TAB
+              }
+            ),
             text = {
               Text(stringResource(titleResId))
             }
@@ -69,22 +103,15 @@ fun CommandScreen(
         .padding(innerPadding),
     ) { page ->
       when (page) {
-        0 -> FielderScreen(
-          modifier = Modifier.fillMaxSize(),
-          commandViewModel = commandViewModel
-        )
-
-        1 -> PitcherScreen(
-          modifier = Modifier.fillMaxSize(),
-          commandViewModel = commandViewModel
-        )
+        0 -> fielderContent()
+        1 -> pitcherContent()
       }
     }
   }
 
   DisposableEffect(Unit) {
     onDispose {
-      commandViewModel.save()
+      onDispose()
     }
   }
 }

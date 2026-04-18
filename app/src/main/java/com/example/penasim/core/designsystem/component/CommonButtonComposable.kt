@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import kotlinx.coroutines.delay
 
 // 押している間に一定間隔で関数を実行する
@@ -15,6 +16,7 @@ import kotlinx.coroutines.delay
 fun PressingButton(
   buttonText: String,
   intervalMs: Long,
+  modifier: Modifier = Modifier,
   function: () -> Unit,
 ) {
   val interactionSource = remember {
@@ -33,7 +35,8 @@ fun PressingButton(
 
   Button(
     onClick = {},
-    interactionSource = interactionSource
+    interactionSource = interactionSource,
+    modifier = modifier
   ) {
     Text(text = buttonText)
   }

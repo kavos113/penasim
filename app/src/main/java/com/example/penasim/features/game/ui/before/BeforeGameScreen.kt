@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,6 +28,7 @@ import com.example.penasim.features.team.domain.League
 import com.example.penasim.features.player.domain.Position
 import com.example.penasim.features.team.domain.Team
 import com.example.penasim.core.ui.model.DisplayFielder
+import com.example.penasim.core.ui.PenasimTestTags
 import com.example.penasim.features.standing.domain.TeamStanding
 import com.example.penasim.features.player.ui.component.OrderPlayerItem
 import com.example.penasim.core.designsystem.theme.catcherColor
@@ -69,7 +71,7 @@ fun BeforeGameScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BeforeGameContent(
+internal fun BeforeGameContent(
   beforeGameInfo: BeforeGameInfo,
   modifier: Modifier = Modifier,
   onClickSkipGame: () -> Unit = { },
@@ -92,7 +94,8 @@ private fun BeforeGameContent(
       modifier = Modifier
           .padding(innerPadding)
           .then(modifier)
-          .fillMaxSize(),
+          .fillMaxSize()
+          .testTag(PenasimTestTags.BEFORE_GAME_SCREEN),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.SpaceBetween
     ) {
@@ -123,6 +126,7 @@ private fun BeforeGameContent(
           onClick = onClickStartGame,
           modifier = Modifier
             .padding(24.dp)
+            .testTag(PenasimTestTags.BEFORE_GAME_START_BUTTON)
         ) {
           Text(text = "試合開始")
         }
@@ -130,6 +134,7 @@ private fun BeforeGameContent(
           onClick = onClickSkipGame,
           modifier = Modifier
             .padding(24.dp)
+            .testTag(PenasimTestTags.BEFORE_GAME_SKIP_BUTTON)
         ) {
           Text(text = "スキップ")
         }

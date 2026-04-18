@@ -17,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,6 +29,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.penasim.R
 import com.example.penasim.core.navigation.NavigationDestination
 import com.example.penasim.core.designsystem.theme.PenasimTheme
+import com.example.penasim.core.ui.PenasimTestTags
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
@@ -71,6 +73,7 @@ fun HomeScreen(
   Column(
     modifier = modifier
       .padding(30.dp)
+      .testTag(PenasimTestTags.HOME_SCREEN)
   ) {
     HomeInformation(
       date = uiState.currentDay,
@@ -121,6 +124,7 @@ fun HomeMenu(
         onClick = onGameClick,
         modifier = Modifier
           .fillMaxWidth()
+          .testTag(PenasimTestTags.HOME_GAME_BUTTON)
       ) {
         Text(stringResource(R.string.game))
       }
@@ -129,6 +133,7 @@ fun HomeMenu(
         onClick = onNoGameDayClick,
         modifier = Modifier
           .fillMaxWidth()
+          .testTag(PenasimTestTags.HOME_NEXT_DAY_BUTTON)
       ) {
         Text(stringResource(R.string.next_day))
       }
@@ -137,6 +142,7 @@ fun HomeMenu(
       onClick = onCalenderClick,
       modifier = Modifier
         .fillMaxWidth()
+        .testTag(PenasimTestTags.HOME_CALENDAR_BUTTON)
     ) {
       Text(stringResource(R.string.calender))
     }
@@ -144,6 +150,7 @@ fun HomeMenu(
       onClick = onCommandClick,
       modifier = Modifier
         .fillMaxWidth()
+        .testTag(PenasimTestTags.HOME_COMMAND_BUTTON)
     ) {
       Text(stringResource(R.string.command))
     }

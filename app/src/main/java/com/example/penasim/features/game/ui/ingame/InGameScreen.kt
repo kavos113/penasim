@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,6 +45,7 @@ import com.example.penasim.core.designsystem.theme.outColor
 import com.example.penasim.core.designsystem.theme.outfielderColor
 import com.example.penasim.core.designsystem.theme.pitcherColor
 import com.example.penasim.core.designsystem.theme.scoreColor
+import com.example.penasim.core.ui.PenasimTestTags
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
@@ -84,7 +86,7 @@ fun InGameScreen(
 }
 
 @Composable
-private fun InGameContent(
+internal fun InGameContent(
   inGameInfo: InGameInfo,
   modifier: Modifier = Modifier,
   onClickNext: () -> Unit = { },
@@ -94,7 +96,8 @@ private fun InGameContent(
 ) {
   Column(
     verticalArrangement = Arrangement.spacedBy(2.dp),
-    horizontalAlignment = Alignment.CenterHorizontally
+    horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = modifier.testTag(PenasimTestTags.IN_GAME_SCREEN)
   ) {
     InningScoresTable(
       homeTeamName = inGameInfo.homeTeam.name,
@@ -356,22 +359,26 @@ private fun FooterItems(
         .align(Alignment.CenterHorizontally)
     ) {
       Button(
-        onClick = onClickNext
+        onClick = onClickNext,
+        modifier = Modifier.testTag(PenasimTestTags.IN_GAME_NEXT_BUTTON)
       ) {
         Text("次へ")
       }
       PressingButton(
         buttonText = "高速",
         intervalMs = 100,
+        modifier = Modifier.testTag(PenasimTestTags.IN_GAME_FAST_BUTTON),
         function = onClickFast
       )
       Button(
-        onClick = onClickSkip
+        onClick = onClickSkip,
+        modifier = Modifier.testTag(PenasimTestTags.IN_GAME_SKIP_BUTTON)
       ) {
         Text("skip")
       }
       Button(
-        onClick = onClickChange
+        onClick = onClickChange,
+        modifier = Modifier.testTag(PenasimTestTags.IN_GAME_CHANGE_BUTTON)
       ) {
         Text("交代")
       }

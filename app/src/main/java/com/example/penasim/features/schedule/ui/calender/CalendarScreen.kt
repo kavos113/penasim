@@ -22,6 +22,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -31,6 +32,7 @@ import com.example.penasim.features.schedule.ui.component.Clause
 import com.example.penasim.features.standing.ui.component.Ranking
 import com.example.penasim.core.navigation.NavigationDestination
 import com.example.penasim.core.designsystem.theme.PenasimTheme
+import com.example.penasim.core.ui.PenasimTestTags
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -63,7 +65,7 @@ fun CalendarScreen(
 }
 
 @Composable
-private fun CalendarContent(
+internal fun CalendarContent(
   uiState: CalendarUiState,
   onNextGame: () -> Unit,
   modifier: Modifier = Modifier
@@ -79,7 +81,9 @@ private fun CalendarContent(
     }
   }
 
-  Box {
+  Box(
+    modifier = Modifier.testTag(PenasimTestTags.CALENDAR_SCREEN)
+  ) {
     Column(modifier = modifier) {
       Ranking(rankings = uiState.rankings)
       Spacer(modifier = Modifier.size(16.dp))
@@ -115,7 +119,7 @@ private fun NextGameButton(
 ) {
   Button(
     onClick = onClick,
-    modifier = modifier
+    modifier = modifier.testTag(PenasimTestTags.CALENDAR_NEXT_GAME_BUTTON)
   ) {
     Icon(
       imageVector = Icons.AutoMirrored.Filled.ArrowForward,

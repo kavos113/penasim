@@ -25,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,6 +45,7 @@ import com.example.penasim.core.navigation.NavigationDestination
 import com.example.penasim.core.designsystem.theme.errorContainerLight
 import com.example.penasim.core.designsystem.theme.playerBorderColor
 import com.example.penasim.core.designsystem.theme.primaryContainerLight
+import com.example.penasim.core.ui.PenasimTestTags
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
 
@@ -118,7 +120,7 @@ fun AfterGameScreenWithoutGameResult(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AfterGameContent(
+internal fun AfterGameContent(
   afterGameInfo: AfterGameInfo,
   modifier: Modifier = Modifier,
   onClickFinish: () -> Unit = { }
@@ -139,7 +141,8 @@ private fun AfterGameContent(
     Column(
       modifier = modifier
         .fillMaxSize()
-        .padding(innerPadding),
+        .padding(innerPadding)
+        .testTag(PenasimTestTags.AFTER_GAME_SCREEN),
     ) {
       InningScoresTable(
         homeTeamName = afterGameInfo.homeTeamName,
@@ -227,6 +230,7 @@ private fun AfterGameContent(
         modifier = Modifier
           .padding(24.dp)
           .align(Alignment.CenterHorizontally)
+          .testTag(PenasimTestTags.AFTER_GAME_FINISH_BUTTON)
       ) {
         Text(text = "終了")
       }
@@ -236,7 +240,7 @@ private fun AfterGameContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AfterGameContentWithoutGameResult(
+internal fun AfterGameContentWithoutGameResult(
   afterGameInfo: AfterGameInfo,
   modifier: Modifier = Modifier,
   onClickFinish: () -> Unit = { }
@@ -257,7 +261,8 @@ private fun AfterGameContentWithoutGameResult(
     Box(
       modifier = Modifier
         .fillMaxSize()
-        .padding(innerPadding),
+        .padding(innerPadding)
+        .testTag(PenasimTestTags.AFTER_GAME_WITHOUT_RESULT_SCREEN),
     ) {
       Column(
         modifier = Modifier.align(Alignment.BottomCenter)
@@ -281,6 +286,7 @@ private fun AfterGameContentWithoutGameResult(
           modifier = Modifier
             .padding(24.dp)
             .align(Alignment.CenterHorizontally)
+            .testTag(PenasimTestTags.AFTER_GAME_FINISH_BUTTON)
         ) {
           Text(text = "終了")
         }
